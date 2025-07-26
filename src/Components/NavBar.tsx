@@ -117,47 +117,88 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Dropdown */}
-      {mobileMenuOpen && (
-        <div className="md:hidden mt-4 space-y-4 text-sm font-medium">
-          <button className="flex items-center gap-2 bg-[#257B5A] text-white px-4 py-2 rounded-full w-full justify-center">
-            <FaMapMarkerAlt size={14} />
-            Schools Near You
-          </button>
+     {mobileMenuOpen && (
+  <div className="md:hidden mt-4 space-y-4 text-sm font-medium">
+    {/* Location Button */}
+    <button className="flex items-center gap-2 bg-[#257B5A] text-white px-4 py-2 rounded-full w-full justify-center">
+      <FaMapMarkerAlt size={14} />
+      Schools Near You
+    </button>
 
-          <div className="flex items-center bg-white px-3 py-2 rounded-full">
-            <FaSearch className="text-[#257B5A]" />
-            <input
-              type="text"
-              placeholder="Search"
-              className="outline-none text-sm ml-2 bg-transparent placeholder-gray-400 text-[#257B5A] w-full"
-            />
-          </div>
+    {/* Search Input */}
+    <div className="flex items-center bg-white px-3 py-2 rounded-full">
+      <FaSearch className="text-[#257B5A]" />
+      <input
+        type="text"
+        placeholder="Search"
+        className="outline-none text-sm ml-2 bg-transparent placeholder-gray-400 text-[#257B5A] w-full"
+      />
+    </div>
 
-          <div className="space-y-2 bg-[#1C1F24] p-4 rounded-lg">
+    {/* Explore Dropdown */}
+    <div className="bg-[#2A2E34] rounded-xl p-4">
+      <button
+        onClick={() => setIsExploreOpen(!isExploreOpen)}
+        className="flex items-center justify-between w-full text-white font-semibold"
+      >
+        <span>Explore</span>
+        <IoIosArrowDown
+          size={16}
+          className={`transition-transform duration-300 ${isExploreOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      <div
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          isExploreOpen ? 'max-h-[500px] opacity-100 mt-3' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <ul className="space-y-3 mt-2 text-white text-sm">
+          <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
             <Link href="/Schools">Recommended Schools</Link>
+          </li>
+          <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
             <Link href="/Listing">School List</Link>
+          </li>
+          <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
             <Link href="/About">About Us</Link>
+          </li>
+          <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
             <Link href="/SchoolDetails">Career Counselling</Link>
+          </li>
+          <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
             <Link href="/NewsUpdates">News & Blogs</Link>
+          </li>
+          <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
             <Link href="/contact">Contact Us</Link>
-          </div>
+          </li>
+        </ul>
+      </div>
+    </div>
 
-          <Link href="/AddSchool">
-            <span className="block text-center underline">Add Your School</span>
-          </Link>
+    {/* Add Your School */}
+    <div className="bg-[#2A2E34] rounded-xl px-4 py-3 text-center text-white">
+      <Link href="/AddSchool" className="underline">
+        Add Your School
+      </Link>
+    </div>
 
-          {isLoggedIn ? (
-            <ProfileDropdown />
-          ) : (
-            <Link href="/login">
-              <button className="w-full bg-[#257B5A] text-white py-2 rounded-full">
-                Login
-              </button>
-            </Link>
-          )}
-        </div>
+    {/* Profile Dropdown */}
+    <div className="bg-[#2A2E34] rounded-xl p-4">
+      {isLoggedIn ? (
+        <ProfileDropdown />
+      ) : (
+        <Link href="/login">
+          <button className="w-full bg-[#257B5A] text-white py-2 rounded-full">
+            Login
+          </button>
+        </Link>
       )}
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 }

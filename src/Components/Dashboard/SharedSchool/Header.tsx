@@ -24,7 +24,7 @@ const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
               e.stopPropagation();
               setSidebarOpen(!sidebarOpen);
             }}
-            className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+            className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 lg:hidden"
             aria-label="Toggle sidebar"
           >
             <Menu className="h-6 w-6" />

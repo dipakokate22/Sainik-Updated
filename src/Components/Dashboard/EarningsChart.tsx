@@ -52,19 +52,19 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const EarningsChart = () => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md mt-6">
-      <h3 className="text-xl font-semibold mb-4 text-gray-800">Earnings</h3>
-      <div className="flex items-center gap-4 mb-4">
+    <div className="bg-white p-3 sm:p-6 rounded-lg shadow-md mt-6 w-full">
+      <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">Earnings</h3>
+      <div className="flex flex-col xs:flex-row items-start xs:items-center gap-2 xs:gap-4 mb-4">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-income-green"></div>
-          <span className="text-gray-600">Income</span>
+          <span className="text-gray-600 text-xs sm:text-base">Income</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-expense-red"></div>
-          <span className="text-gray-600">Expense</span>
+          <span className="text-gray-600 text-xs sm:text-base">Expense</span>
         </div>
       </div>
-      <div style={{ width: '100%', height: 350 }}>
+      <div style={{ width: '100%', height: 250 }} className="sm:h-[350px]">
         <ResponsiveContainer>
           <LineChart
             data={data}

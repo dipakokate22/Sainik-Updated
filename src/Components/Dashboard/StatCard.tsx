@@ -13,16 +13,17 @@ interface StatCardProps {
 
 const StatCard = ({ title, value, subtitle, icon: Icon, color, iconBgColor }: StatCardProps) => {
   return (
-    <div className={`rounded-xl shadow-md p-6 ${color}`}>
-        <div className="flex items-center justify-between">
-            <div className={`p-4 rounded-lg ${iconBgColor}`}>
-                <Icon size={32} className="text-white"/>
+    <div className={`rounded-xl shadow-md p-3 sm:p-6 w-full ${color}`}>
+        <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2 xs:gap-0">
+            <div className={`p-2 sm:p-4 rounded-lg ${iconBgColor}`}>
+                <Icon size={24} className="text-white sm:hidden" />
+                <Icon size={32} className="text-white hidden sm:block" />
             </div>
         </div>
-        <div className="mt-4">
-            <h3 className="text-lg font-medium text-gray-700">{title}</h3>
-            <p className="text-3xl font-bold text-gray-800">{value}</p>
-            {subtitle && <p className="text-sm text-gray-600 mt-1">{subtitle}</p>}
+        <div className="mt-2 sm:mt-4">
+            <h3 className="text-sm sm:text-lg font-medium text-gray-700">{title}</h3>
+            <p className="text-xl sm:text-3xl font-bold text-gray-800">{value}</p>
+            {subtitle && <p className="text-xs sm:text-sm text-gray-600 mt-1">{subtitle}</p>}
         </div>
     </div>
   );

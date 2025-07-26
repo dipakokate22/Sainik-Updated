@@ -1,21 +1,21 @@
 'use client';
-import { FaSchool, FaLanguage, FaThLarge } from 'react-icons/fa';
+
+import { FaSchool, FaLanguage, FaThLarge, FaMapMarkerAlt } from 'react-icons/fa';
 import { PiCertificateFill } from 'react-icons/pi';
-import Image from 'next/image';
 import { FiArrowRight } from "react-icons/fi";
-import { FaMapMarkerAlt } from 'react-icons/fa';
 import { AiFillStar } from 'react-icons/ai';
+import SchoolCard from '../../Components/SchoolCard';
 
 
 export default function SchoolDetailSection() {
   return (
-    <section className={`w-full bg-[#f9f4f2] py-8 `}>
+    <section className="w-full bg-[#f9f4f2] py-8">
       {/* Top Bar Section */}
-      <div className="w-full h-[280px] bg-[#DAEADD] flex justify-center items-start pt-[20px] p-[40px]">
-        <div className="w-[1358px] flex flex-col gap-6 relative">
+      <div className="w-full min-h-[220px] bg-[#DAEADD] flex justify-center items-start pt-5 px-2 sm:px-4 md:px-8 lg:px-[40px]">
+        <div className="w-full max-w-[1358px] flex flex-col gap-6 relative">
 
           {/* Top Back Button - Absolute aligned top-left */}
-          <div className="absolute top-[10px] left-0 flex items-center gap-2 text-sm text-gray-700">
+          <div className="absolute top-[10px] left-0 flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
             <span className="text-[20px]">←</span>
             <span>Back</span>
           </div>
@@ -24,13 +24,13 @@ export default function SchoolDetailSection() {
           <div className="h-[40px]" />
 
           {/* Main Content Row */}
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 md:gap-0">
 
             {/* Left Section: Logo + Details */}
-            <div className="flex items-center gap-6">
+            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full md:w-auto">
               {/* Logo Card */}
-              <div className="w-[160px] h-[160px] rounded-xl bg-[#D9D9D9] flex items-center justify-center pl-[20px] pr-[20px] pt-[20px]">
-                <div className="w-[133px] h-[133px] rounded-full overflow-hidden border border-gray-300">
+              <div className="w-[120px] h-[120px] sm:w-[160px] sm:h-[160px] rounded-xl bg-[#D9D9D9] flex items-center justify-center p-4">
+                <div className="w-[90px] h-[90px] sm:w-[133px] sm:h-[133px] rounded-full overflow-hidden border border-gray-300">
                   <img
                     src="/Listing/Logo.png"
                     alt="School Logo"
@@ -40,20 +40,20 @@ export default function SchoolDetailSection() {
               </div>
 
               {/* Text Info */}
-              <div>
-                <h2 className="text-[32px] font-poppins font-semibold text-black">
+              <div className="text-center sm:text-left">
+                <h2 className="text-[22px] sm:text-[28px] md:text-[32px] font-poppins font-semibold text-black">
                   Sainik School, Pune
                 </h2>
-                <p className="text-[16px] font-poppins font-regular text-[#9B85E9] mt-1">
+                <p className="text-[15px] sm:text-[16px] font-poppins font-regular text-[#9B85E9] mt-1">
                   Pune, Maharashtra – 411030
                 </p>
-                <p className="text-[16px] font-poppins font-regular text-black mt-1 flex items-center gap-1">
+                <p className="text-[15px] sm:text-[16px] font-poppins font-regular text-black mt-1 flex items-center gap-1 justify-center sm:justify-start">
                   2.3 Km Away |
                   <span className="text-[16px] text-[#257B5A]">★★★★☆</span>
                 </p>
 
                 {/* Badges */}
-                <div className="flex gap-2 mt-3">
+                <div className="flex gap-2 mt-3 justify-center sm:justify-start">
                   <span className="bg-[#257B5A] font-poppins font-medium text-white px-3 py-1 rounded-full text-[12px]">
                     CBSE
                   </span>
@@ -68,7 +68,7 @@ export default function SchoolDetailSection() {
             </div>
 
             {/* Register Button */}
-            <button className="w-[265px] h-[65px] bg-[#1C1F24] text-white text-[20px] font-semibold rounded-full">
+            <button className="w-full md:w-[265px] h-[50px] md:h-[65px] bg-[#1C1F24] text-white text-[18px] md:text-[20px] font-semibold rounded-full mt-4 md:mt-0">
               Register
             </button>
           </div>
@@ -79,32 +79,31 @@ export default function SchoolDetailSection() {
 
       {/* Filter Tabs */}
       <div className="w-full flex justify-center mt-6">
-        <div className="w-[1358px]  flex gap-8 text-sm font-medium text-[#257B5A]">
+        <div className="w-full max-w-[1358px] flex flex-wrap gap-2 sm:gap-4 md:gap-8 text-sm font-medium text-[#257B5A] px-2 sm:px-4">
 
           {/* Active Tab */}
-          <button className="bg-[#257B5A] text-white text-[20px] font-semibold font-poppins px-6 py-2 rounded-full">
+          <button className="bg-[#257B5A] text-white text-[16px] sm:text-[18px] md:text-[20px] font-semibold font-poppins px-4 sm:px-6 py-2 rounded-full">
             Overview
           </button>
 
           {/* Inactive Tabs */}
-          <button className="pb-2 text-[20px] font-medium font-poppins hover:text-black">Facilities</button>
-          <button className="pb-2 text-[20px] font-medium font-poppins hover:text-black">Fees</button>
-          <button className="pb-2 text-[20px] font-medium font-poppins hover:text-black">Gallery</button>
-          <button className="pb-2 text-[20px] font-medium font-poppins hover:text-black">Reviews</button>
-          <button className="pb-2 text-[20px] font-medium font-poppins hover:text-black">FAQ’s</button>
+          <button className="pb-2 text-[16px] sm:text-[18px] md:text-[20px] font-medium font-poppins hover:text-black">Facilities</button>
+          <button className="pb-2 text-[16px] sm:text-[18px] md:text-[20px] font-medium font-poppins hover:text-black">Fees</button>
+          <button className="pb-2 text-[16px] sm:text-[18px] md:text-[20px] font-medium font-poppins hover:text-black">Gallery</button>
+          <button className="pb-2 text-[16px] sm:text-[18px] md:text-[20px] font-medium font-poppins hover:text-black">Reviews</button>
+          <button className="pb-2 text-[16px] sm:text-[18px] md:text-[20px] font-medium font-poppins hover:text-black">FAQ’s</button>
         </div>
       </div>
 
 
       {/* Main Content */}
       <div className="w-full flex justify-center mt-6">
-        <div className="w-[1358px] flex gap-8">
+        <div className="w-full max-w-[1358px] flex flex-col lg:flex-row gap-8 px-2 sm:px-4">
           {/* Left Column */}
-          <div className="w-[882px]">
+          <div className="w-full lg:w-[65%]">
             {/* Frame Name Section */}
-            <div className="w-[882px] h-[134px] bg-white border  rounded-xl pr-[54px] pl-[54px] p-[25px] mb-6">
-
-              <div className="grid grid-cols-2 gap-y-6 gap-x-8 text-sm text-black text-[20px] ">
+            <div className="w-full h-auto bg-white border rounded-xl px-4 md:px-[54px] py-[25px] mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8 text-sm text-black text-[18px] md:text-[20px]">
                 {/* Ownership */}
                 <div className="flex items-center gap-3 ">
                   <FaSchool className="text-xl " />
@@ -140,7 +139,7 @@ export default function SchoolDetailSection() {
             </div>
 
             {/* Description Section */}
-            <div className="mb-8 bg-white pr-[26px] pl-[26px] p-[25px]">
+            <div className="mb-8 bg-white px-4 md:px-[26px] py-[25px]">
               <h4 className="text-[20px] text-black font-poppins font-semibold mb-2">🏫 Welcome to Sainik School, Pune</h4>
               <p className="text-[17px] font-regular font-poppins text-black">
                 Established in 1961, Sainik School Pune is one of India’s premier military schools,
@@ -156,7 +155,7 @@ export default function SchoolDetailSection() {
             </div>
 
             {/* Key Highlights */}
-            <div className="mb-8 bg-white  pr-[26px] pl-[26px] p-[25px]">
+            <div className="mb-8 bg-white px-4 md:px-[26px] py-[25px]">
               <h4 className="text-[20px] text-black font-poppins font-semibold mb-2">🌟 Key Highlights</h4>
               <ul className="list-disc pl-6 text-[17px] font-regular font-poppins text-black space-y-1">
                 <li>🎯 Focused NDA Preparation:
@@ -175,7 +174,7 @@ export default function SchoolDetailSection() {
             </div>
 
             {/* Admission Dates */}
-            <div className="mb-8 bg-white text-black font-poppins pr-[26px] pl-[26px] p-[25px]">
+            <div className="mb-8 bg-white text-black font-poppins px-4 md:px-[26px] py-[25px]">
               <h4 className="text-[20px] text-black font-semibold mb-2">Admission Criteria & Eligibility</h4>
               <li className="flex items-start gap-2 text-[16px]">
                 <FiArrowRight className="text-black mt-[3px]" />
@@ -229,7 +228,7 @@ export default function SchoolDetailSection() {
             </div>
 
             {/* School Hours */}
-            <div className="mb-8 bg-white text-black font-poppins  pr-[26px] pl-[26px] p-[25px]">
+            <div className="mb-8 bg-white text-black font-poppins px-4 md:px-[26px] py-[25px]">
               <h4 className="text-[20px] text-black font-semibold mb-2">School Hours</h4>
               <li className="flex items-start gap-2 text-[16px]">
                 <FiArrowRight className="text-black mt-[3px]" />
@@ -263,64 +262,33 @@ export default function SchoolDetailSection() {
           </div>
 
           {/* Right Column */}
-          <div className="w-[433px]  gap-5">
-
-
-          <div className="w-[433px] bg-white font-poppins pt-[25px] pb-[25px]">
-      <h2 className="text-[24px] text-black font-poppins font-semibold pl-[23px] mb-4">Nearby Schools</h2>
-
-      {[...Array(6)].map((_, i) => (
-        <div
-          key={i}
-          className="w-[432px] h-[109px] bg-white border-b border-gray-300 flex items-center justify-center"
-        >
-          <div className="w-[368px] h-[88px] flex items-center">
-            {/* School Logo */}
-            <div className="w-[98px] h-[88px] bg-[#D9D9D9] flex items-center justify-center pt-[8px] pl-[2px] pr-[2px] overflow-hidden">
-              <Image
-                src="/Listing/Logo.png"
-                alt="Nearby School"
-                width={88}
-                height={88}
-                className="object-contain w-full h-full"
-              />
-            </div>
-
-            {/* School Info */}
-            <div className="pl-4">
-              <p className="text-[20px] text-black font-poppins font-semibold">Sainik School, Pune</p>
-              <div className="flex items-center font-poppins text-[12px] text-[#9B85E9] mt-1">
-                <FaMapMarkerAlt className="mr-1 text-[14px]" />
-                <span>Pune, Maharashtra – 411030</span>
-              </div>
-              <div className="flex items-center font-poppins text-[14px] text-gray-600 mt-1">
-                <span>2.3 Km Away</span>
-                <span className="mx-2">|</span>
-                <div className="flex text-green-500">
-                  {[...Array(4)].map((_, i) => (
-                    <AiFillStar key={i} className="text-sm" />
-                  ))}
-                  <AiFillStar className="text-sm text-gray-300" />
-                </div>
+          <div className="w-full lg:w-[35%] flex flex-col gap-5 mt-8 lg:mt-0">
+            {/* Nearby Schools - Use SchoolCard */}
+            <div className="w-full bg-white font-poppins pt-[25px] pb-[25px] px-4 md:px-6">
+              <h2 className="text-[20px] sm:text-[22px] md:text-[24px] text-black font-poppins font-semibold mb-4">Nearby Schools</h2>
+              <div className="flex flex-col gap-4">
+                {[...Array(6)].map((_, i) => (
+                  <SchoolCard
+                    key={i}
+                    name="Sainik School, Pune"
+                    image="/Listing/Logo.png"
+                    desc={"Pune, Maharashtra – 411030 | 2.3 Km Away | 4/5 Rating"}
+                  />
+                ))}
               </div>
             </div>
-          </div>
-        </div>
-      ))}
-    </div>
-
 
             {/* Review Section */}
-            <div className="w-[432px] bg-white  border shadow-sm pt-[25px] pb-[25px] pl-[23px] mt-4">
-              <h4 className="font-semibold text-[24px] text-black font-poppins mb-2">Get More Reviews</h4>
-              <button className="bg-[#d3e7dc] text-green-700 font-medium py-2 px-4 rounded-md text-[20px]">
+            <div className="w-full bg-white border shadow-sm pt-[25px] pb-[25px] px-4 md:pl-[23px] mt-4">
+              <h4 className="font-semibold text-[20px] sm:text-[22px] md:text-[24px] text-black font-poppins mb-2">Get More Reviews</h4>
+              <button className="bg-[#d3e7dc] text-green-700 font-medium py-2 px-4 rounded-md text-[16px] md:text-[20px]">
                 📩 Ask for Reviews
               </button>
             </div>
 
             {/* Embedded Map */}
-            <div className="w-[432px] mt-4 bg-white rounded-xl border shadow-sm pt-[25px] pb-[25px] pl-[23px] pr-[23px]">
-              <h4 className="font-semibold font-poppins text-[24px] mb-2">Explore Location</h4>
+            <div className="w-full mt-4 bg-white rounded-xl border shadow-sm pt-[25px] pb-[25px] px-4 md:pl-[23px] md:pr-[23px]">
+              <h4 className="font-semibold font-poppins text-[20px] sm:text-[22px] md:text-[24px] mb-2">Explore Location</h4>
               <iframe
                 title="School Location"
                 src="https://maps.google.com/maps?q=Sainik%20School,%20Pune&t=&z=13&ie=UTF8&iwloc=&output=embed"
