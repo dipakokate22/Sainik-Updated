@@ -10,7 +10,7 @@ export default function Navbar() {
   const [isExploreOpen, setIsExploreOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const exploreDropdownRef = useRef<HTMLDivElement>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Assume true for demo
+  const [isLoggedIn] = useState(true); // Assume true for demo
 
   // Close dropdown on outside click
   useEffect(() => {

@@ -3,7 +3,6 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { Menu, MessageSquare, Bell, Settings, User } from 'lucide-react';
 
 interface HeaderProps {
