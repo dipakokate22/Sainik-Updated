@@ -28,7 +28,17 @@ const data = [
 ];
 
 // Custom Tooltip from the image
-const CustomTooltip = ({ active, payload, label }: any) => {
+// Replace the 'any' type with proper interface
+interface TooltipPayload {
+  value: number;
+  dataKey: string;
+}
+
+const CustomTooltip = ({ active, payload }: { 
+  active?: boolean; 
+  payload?: TooltipPayload[]; 
+  label?: string 
+}) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">

@@ -51,10 +51,10 @@ export default function HeroSection() {
         {/* Left Column */}
         <div className="w-full lg:w-1/2 flex flex-col justify-start gap-6 text-center lg:text-left lg:-mt-80">
           <h1 className="text-[32px] sm:text-[40px] lg:text-[48px] font-normal leading-tight text-black">
-            We're proud to help <br className="hidden sm:inline" />
+            Were proud to help <br className="hidden sm:inline" />
             students find the right <br className="hidden sm:inline" />
-            path to success. Here's <br className="hidden sm:inline" />
-            how far we've come:
+            path to success. Heres <br className="hidden sm:inline" />
+            how far weve come:
           </h1>
 
           <p className="text-gray-600 text-[16px] sm:text-[18px] lg:text-[20px]">
