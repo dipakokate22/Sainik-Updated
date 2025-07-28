@@ -56,6 +56,13 @@ const ProfileDropdown = () => {
           >
             <LayoutDashboard size={16} /> Dashboard
           </Link>
+          <Link
+            href="/StudentDashboard"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-[#257B5A] md:hover:bg-gray-100 transition"
+          >
+            <LayoutDashboard size={16} /> Student Dashboard
+          </Link>
           <button
             onClick={handleLogout}
             className="w-full text-left flex items-center gap-3 px-4 py-2 text-sm hover:bg-[#257B5A] md:hover:bg-gray-100 transition"

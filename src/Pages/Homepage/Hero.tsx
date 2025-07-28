@@ -49,30 +49,31 @@ export default function HeroSection() {
     <section className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 font-poppins overflow-hidden">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
         {/* Left Column */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-start gap-6 text-center lg:text-left">
+        <div className="w-full lg:w-1/2 flex flex-col justify-start gap-6 text-center lg:text-left lg:-mt-80">
           <h1 className="text-[32px] sm:text-[40px] lg:text-[48px] font-normal leading-tight text-black">
-            We’re proud to help <br className="hidden sm:inline" />
+            We're proud to help <br className="hidden sm:inline" />
             students find the right <br className="hidden sm:inline" />
-            path to success. Here’s <br className="hidden sm:inline" />
-            how far we’ve come:
+            path to success. Here's <br className="hidden sm:inline" />
+            how far we've come:
           </h1>
 
           <p className="text-gray-600 text-[16px] sm:text-[18px] lg:text-[20px]">
             Trusted by Students, Schools & Cities Across India
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-6 mt-4">
-            <div>
-              <p className="font-medium text-[18px] lg:text-[20px] text-black">📍 Cities Covered</p>
-              <p className="text-black text-[14px]">Across all major <br /> Indian regions</p>
+          <div className="flex flex-row justify-center lg:justify-start gap-4 sm:gap-6 mt-4">
+            <div className="flex-1 text-center lg:text-left">
+              <p className="font-medium text-[16px] sm:text-[18px] lg:text-[20px] text-black">📍 Cities Covered</p>
+              <p className="text-black text-[12px] sm:text-[14px]">Across all major <br className="hidden sm:inline" /> Indian regions</p>
             </div>
-            <div>
-              <p className="font-medium text-[18px] lg:text-[20px] text-black">🏫 Schools Listed</p>
-              <p className="text-black text-[14px]">From CBSE, ICSE, & <br /> state boards</p>
+            <div className="flex-1 text-center lg:text-left">
+              <p className="font-medium text-[16px] sm:text-[18px] lg:text-[20px] text-black">🏫 Schools Listed</p>
+              <p className="text-black text-[12px] sm:text-[14px]">From CBSE, ICSE, & <br className="hidden sm:inline" /> state boards</p>
             </div>
           </div>
 
-          <div className="flex justify-center lg:justify-start">
+          {/* Desktop Button - Only show on large screens */}
+          <div className="hidden lg:flex justify-center lg:justify-start">
             <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full mt-6 hover:bg-green-800 transition">
               Take Admission
             </button>
@@ -136,6 +137,13 @@ export default function HeroSection() {
             </Swiper>
           )}
         </div>
+      </div>
+
+      {/* Mobile Button - Only show below images on mobile/tablet */}
+      <div className="flex lg:hidden justify-center mt-8">
+        <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full hover:bg-green-800 transition">
+          Take Admission
+        </button>
       </div>
     </section>
   );

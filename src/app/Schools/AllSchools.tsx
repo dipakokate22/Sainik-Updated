@@ -81,28 +81,28 @@ const SchoolListSection = () => {
   const paginationItems = getPaginationItems();
 
   return (
-    <section className="w-full bg-[#F7F1EE] py-14">
-      <div className="mx-auto flex w-full max-w-[1402px] flex-col lg:flex-row gap-[30px] px-4">
+    <section className="w-full bg-[#F7F1EE] py-8">
+      <div className="mx-auto flex w-full max-w-[1380px] flex-col lg:flex-row gap-6 px-4 sm:px-6 lg:px-8 mt-4">
         
         {/* Sidebar Filters */}
-        <aside className="w-full lg:w-[387px] h-fit lg:max-h-[calc(100vh-100px)] overflow-y-auto bg-white p-8 space-y-8 rounded-xl shadow-md">
+        <aside className="w-full lg:w-[320px] h-fit lg:max-h-[calc(100vh-100px)] overflow-y-auto bg-white p-6 space-y-6 rounded-xl shadow-md">
           
           {/* Board */}
           <div>
-            <h3 className="text-[28px] font-medium text-[#257B5A] mb-4">Filter By Board</h3>
+            <h3 className="text-[22px] font-medium text-[#257B5A] mb-3">Filter By Board</h3>
             <div className="space-y-2">
               {boardList.map(board => (
                 <label key={board} className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-md transition-all duration-200">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <input
                       type="checkbox"
                       checked={selectedBoards.includes(board)}
                       onChange={() => handleCheckboxChange(board, selectedBoards, setSelectedBoards)}
-                      className="appearance-none h-6 w-6 rounded-[3px] border-2 border-gray-300 checked:bg-[#50B848] checked:border-transparent focus:outline-none"
+                      className="appearance-none h-5 w-5 rounded-[3px] border-2 border-gray-300 checked:bg-[#50B848] checked:border-transparent focus:outline-none"
                     />
-                    <span className="text-[18px] text-[#6C6B6B]">{board}</span>
+                    <span className="text-[16px] text-[#6C6B6B]">{board}</span>
                   </div>
-                  <span className="text-[16px] text-[#353535]">({getCount('board', board)})</span>
+                  <span className="text-[14px] text-[#353535]">({getCount('board', board)})</span>
                 </label>
               ))}
             </div>
@@ -110,25 +110,25 @@ const SchoolListSection = () => {
 
           {/* Medium */}
           <div>
-            <h3 className="text-[28px] font-medium text-[#257B5A] mb-4">Filter By Medium</h3>
+            <h3 className="text-[22px] font-medium text-[#257B5A] mb-3">Filter By Medium</h3>
             <div className="space-y-2">
               {displayedMediums.map(medium => (
                 <label key={medium} className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-md transition-all duration-200">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <input
                       type="checkbox"
                       checked={selectedMediums.includes(medium)}
                       onChange={() => handleCheckboxChange(medium, selectedMediums, setSelectedMediums)}
-                      className="appearance-none h-6 w-6 rounded-[3px] border-2 border-gray-300 checked:bg-[#50B848] checked:border-transparent focus:outline-none"
+                      className="appearance-none h-5 w-5 rounded-[3px] border-2 border-gray-300 checked:bg-[#50B848] checked:border-transparent focus:outline-none"
                     />
-                    <span className="text-[18px] text-[#6C6B6B]">{medium}</span>
+                    <span className="text-[16px] text-[#6C6B6B]">{medium}</span>
                   </div>
-                  <span className="text-[16px] text-[#353535]">(10)</span>
+                  <span className="text-[14px] text-[#353535]">(10)</span>
                 </label>
               ))}
             </div>
             {mediumList.length > 5 && (
-              <button onClick={() => setShowAllMediums(!showAllMediums)} className="mt-3 text-[16px] font-medium text-[#101CFB]">
+              <button onClick={() => setShowAllMediums(!showAllMediums)} className="mt-3 text-[14px] font-medium text-[#101CFB]">
                 {showAllMediums ? 'Show less' : 'Show more'}
               </button>
             )}
@@ -136,7 +136,7 @@ const SchoolListSection = () => {
 
           {/* Range */}
           <div>
-            <h3 className="text-[28px] font-medium text-[#257B5A] mb-4">Range</h3>
+            <h3 className="text-[22px] font-medium text-[#257B5A] mb-3">Range</h3>
             <input
               type="range"
               min={1}
@@ -145,25 +145,25 @@ const SchoolListSection = () => {
               onChange={e => setRange(Number(e.target.value))}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#AA0111]"
             />
-            <p className="text-[#AA0111] mt-2">{range}km</p>
+            <p className="text-[#AA0111] mt-2 text-[14px]">{range}km</p>
           </div>
 
           {/* Category */}
           <div>
-            <h3 className="text-[28px] font-medium text-[#257B5A] mb-4">Filter By Category</h3>
+            <h3 className="text-[22px] font-medium text-[#257B5A] mb-3">Filter By Category</h3>
             <div className="space-y-2">
               {categoryList.map(category => (
                 <label key={category} className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-md transition-all duration-200">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <input
                       type="checkbox"
                       checked={selectedCategories.includes(category)}
                       onChange={() => handleCheckboxChange(category, selectedCategories, setSelectedCategories)}
-                      className="appearance-none h-6 w-6 rounded-[3px] border-2 border-gray-300 checked:bg-[#50B848] checked:border-transparent focus:outline-none"
+                      className="appearance-none h-5 w-5 rounded-[3px] border-2 border-gray-300 checked:bg-[#50B848] checked:border-transparent focus:outline-none"
                     />
-                    <span className="text-[18px] text-[#6C6B6B]">{category}</span>
+                    <span className="text-[16px] text-[#6C6B6B]">{category}</span>
                   </div>
-                  <span className="text-[16px] text-[#353535]">(10)</span>
+                  <span className="text-[14px] text-[#353535]">(10)</span>
                 </label>
               ))}
             </div>
@@ -171,10 +171,10 @@ const SchoolListSection = () => {
         </aside>
 
         {/* School Cards */}
-        <div className="w-full lg:w-[955px] flex flex-col gap-[27px]">
+        <div className="w-full lg:w-[calc(100%-336px)] flex flex-col gap-6">
           <h2 className="text-2xl md:text-3xl font-semibold text-[#1E1E1E] mb-2">Schools Near You</h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {paginatedSchools.map(school => (
               <SchoolCard
                 key={school.id}

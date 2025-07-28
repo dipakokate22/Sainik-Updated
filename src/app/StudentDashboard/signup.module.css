@@ -1,0 +1,124 @@
+/* General container styles */
+.pageContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #ffffff;
+    padding: 20px;
+  }
+  
+  .signupForm {
+    width: 1000px;
+    height: 541px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 45px 20px; /* Adjusted padding */
+    box-sizing: border-box;
+  }
+  
+  /* New wrapper for form grid, checkbox, and register button */
+  .formContent {
+    width: 857px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Aligns children to the left */
+  }
+  
+  /* Button styles */
+  .btn {
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  .btnSignupTop {
+    width: 204px;
+    height: 43px;
+    background-color: #DAEADD;
+    border: 1px solid #10744E;
+    color: #10744E;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  
+  .btnRegister {
+    width: 100%; /* Takes full width of formContent (857px) */
+    height: 51px;
+    background-color: #10744E;
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    margin-top: 40px; /* Space above register button */
+  }
+  
+  /* Text and Input styles */
+  .loginText {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    margin-top: 6px;
+    margin-bottom: 80px;
+    color: #1E1E1E;
+  }
+  
+  .loginText span {
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  .formGrid {
+    display: grid;
+    /* Two columns of 380px with space in between */
+    grid-template-columns: 380px 380px;
+    justify-content: space-between; /* Creates the gap automatically */
+    row-gap: 30px; /* Vertical gap between rows */
+    width: 100%; /* Takes full width of formContent */
+  }
+  
+  .inputGroup {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: #1E1E1E;
+    margin-bottom: 5px;
+  }
+  
+  .input {
+    width: 100%; /* Takes full width of grid column (380px) */
+    height: 43px;
+    border-radius: 10px;
+    background-color: #DAEADD;
+    border: none;
+    padding: 0 15px;
+    box-sizing: border-box;
+  }
+  
+  /* Checkbox styles */
+  .checkboxContainer {
+    display: flex;
+    align-items: center;
+    margin-top: 25px;
+    margin-bottom:40px; /* Spacing below the input fields */
+  }
+  
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px; /* Space between checkbox and label */
+  }
+  
+  .checkboxLabel {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    color: #1E1E1E;
+  }

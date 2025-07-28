@@ -21,7 +21,7 @@ const Footer = () => {
             
             {/* Left */}
             <div className="w-full lg:w-[500px]">
-              <h2 className="text-white text-4xl sm:text-5xl mb-6 font-cursive font-bold">Logo</h2>
+              <h2 className="text-white text-4xl sm:text-5xl mb-6 font-cursive font-bold">sainik</h2>
               <p className="text-gray-200 text-base mb-6 leading-relaxed">
                 Subscribe to our newsletter for the latest updates on features and releases.
               </p>
@@ -95,7 +95,7 @@ const Footer = () => {
 
           {/* Bottom Footer */}
           <div className="flex flex-col sm:flex-row justify-between items-center text-sm text-gray-400 pt-8 gap-4">
-            <p className="text-center">© 2025 Relume. All rights reserved.</p>
+            <p className="text-center">© 2025 Designed & developed by : Code Krafters.</p>
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-center">
               <a href="#" className="hover:text-white font-medium transition">Privacy Policy</a>
               <a href="#" className="hover:text-white font-medium transition">Terms of Service</a>

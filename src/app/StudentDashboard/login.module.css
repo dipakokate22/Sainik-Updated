@@ -1,0 +1,139 @@
+/* General container styles */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #ffffff;
+    padding: 20px;
+  }
+  
+  .loginForm {
+    width: 100%;
+    max-width: 900px; /* Adjusted for better responsiveness */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Button styles */
+  .btn {
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 727px;
+    height: 85px;
+  }
+  
+  .btnLoginTop {
+    background-color: #10744E;
+    width: 372px;
+    height: 69px;
+  }
+  
+  .btnLogin {
+    background-color: #10744E;
+  }
+  
+  .btnSignup {
+    background-color: #9C0707;
+  }
+  
+  .btnFacebook,
+  .btnGoogle {
+    background-color: #DAEADD;
+    color: #000;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    width: 100%;
+    max-width: 321px;
+    height: 69px;
+  }
+  
+  .socialLogin {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 727px;
+    gap: 20px;
+  }
+  
+  /* Text and Input styles */
+  .signupText {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    margin-bottom: 40px;
+    color:#000;
+  }
+  
+  .signupText span {
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  .inputGroup {
+    width: 100%;
+    max-width: 727px;
+    margin-bottom: 20px;
+  }
+  
+  .label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 8px;
+    display: block;
+    color:#000;
+  }
+  
+  .input {
+    width: 100%;
+    height: 85px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 0 20px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    background-color: #E6F0E8;
+    color:#000;
+  }
+  
+  /* Separator styles */
+  .orSeparator {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 719px;
+    margin: 20px 0;
+  }
+  
+  .hrLine {
+    flex-grow: 1;
+    border: none;
+    border-top: 1px dashed #000;
+  }
+  
+  .orText {
+    padding: 0 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color:#000;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .socialLogin {
+      flex-direction: column;
+      align-items: center;
+    }
+  }

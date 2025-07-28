@@ -2,8 +2,8 @@
 'use client';
 
 import SchoolCard from '../../Components/SchoolCard';
-import React, { useState, useMemo } from 'react';
-import { FaSearch, FaFilter, FaTimes, FaMapMarkerAlt, FaStar, FaRegStar } from 'react-icons/fa';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { FaSearch, FaFilter, FaTimes, FaMapMarkerAlt, FaStar, FaRegStar, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 // --- SVG ICONS REPLACED WITH REACT-ICONS ---
 const SearchIcon = () => <FaSearch className="h-5 w-5 text-gray-400" />;
@@ -12,6 +12,8 @@ const CloseIcon = ({ className = "h-4 w-4" }: { className?: string }) => <FaTime
 const LocationIcon = () => <FaMapMarkerAlt className="h-4 w-4" />;
 const StarFilledIcon = () => <FaStar className="h-5 w-5 text-yellow-400" />;
 const StarOutlineIcon = () => <FaRegStar className="h-5 w-5 text-yellow-400" />;
+const ChevronDownIcon = () => <FaChevronDown className="h-4 w-4 text-gray-500" />;
+const ChevronUpIcon = () => <FaChevronUp className="h-4 w-4 text-gray-500" />;
 
 
 // --- TYPE DEFINITIONS ---
@@ -165,55 +167,95 @@ const categories = [...new Set(rawSchoolData.map(s => s.category))];
 // =================================================================================
 
 
-// --- COMPONENTS (No changes here) ---
+// --- MODERN DROPDOWN FILTER COMPONENTS ---
 
-// ...SchoolCard is now imported from shared component...
+const FilterDropdown = ({ 
+  label, 
+  options, 
+  filterKey, 
+  activeFilters, 
+  onFilterChange, 
+  isOpen, 
+  onToggle 
+}: { 
+  label: string; 
+  options: string[]; 
+  filterKey: keyof ActiveFilters; 
+  activeFilters: ActiveFilters; 
+  onFilterChange: (category: keyof ActiveFilters, value: string) => void; 
+  isOpen: boolean; 
+  onToggle: () => void; 
+}) => {
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-const FilterPanel = ({ isOpen, onClose, activeFilters, onFilterChange, onClearFilters }: { isOpen: boolean; onClose: () => void; activeFilters: ActiveFilters; onFilterChange: (category: keyof ActiveFilters, value: string) => void; onClearFilters: () => void;}) => {
-    if (!isOpen) return null;
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        onToggle();
+      }
+    };
 
-    const FilterSection = ({ title, options, filterKey }: { title: string, options: string[], filterKey: keyof ActiveFilters }) => (
-        <div className="mb-6">
-            <h4 className="font-semibold text-lg mb-3 text-gray-800">{title}</h4>
-            <div className="flex flex-wrap gap-2">
-                {options.map(option => (
-                    <button key={option} onClick={() => onFilterChange(filterKey, option)}
-                        className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${activeFilters[filterKey] === option ? 'bg-[#A91D3A] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>
-                        {option}
-                    </button>
-                ))}
-            </div>
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onToggle]);
+
+  const selectedValue = activeFilters[filterKey];
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={onToggle}
+        className={`flex items-center justify-between w-full px-4 py-3 text-left border rounded-lg transition-all duration-200 ${
+          selectedValue 
+            ? 'border-[#A91D3A] bg-[#A91D3A]/5 text-[#A91D3A]' 
+            : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+        }`}
+      >
+        <span className="text-sm font-medium">
+          {selectedValue || label}
+        </span>
+        {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+      </button>
+      
+      {isOpen && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+          <div className="py-2">
+            {options.map((option) => (
+              <button
+                key={option}
+                onClick={() => {
+                  onFilterChange(filterKey, option);
+                  onToggle();
+                }}
+                className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors ${
+                  selectedValue === option ? 'bg-[#A91D3A]/10 text-[#A91D3A] font-medium' : 'text-gray-700'
+                }`}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
         </div>
-    );
-
-    return (
-        <div className="fixed inset-0 z-40 flex justify-end md:justify-center" style={{background: 'rgba(0,0,0,0.4)'}} onClick={onClose}>
-            <div className="w-full max-w-md bg-white h-full p-6 overflow-y-auto md:rounded-lg md:mt-10 md:mb-10 md:h-auto" onClick={(e) => e.stopPropagation()}>
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-bold text-gray-900">Filters</h3>
-                    <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100"><CloseIcon className="h-6 w-6" /></button>
-                </div>
-                <FilterSection title="Location" options={locations} filterKey="location" />
-                <FilterSection title="Board" options={boards} filterKey="board" />
-                <FilterSection title="Medium" options={mediums} filterKey="medium" />
-                <FilterSection title="Category" options={categories} filterKey="category" />
-                <div className="mt-8 flex gap-4 flex-col md:flex-row">
-                    <button onClick={onClearFilters} className="w-full md:flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-100">Clear All</button>
-                    <button onClick={onClose} className="w-full md:flex-1 py-2 px-4 bg-[#A91D3A] text-white rounded-lg font-semibold hover:bg-red-800">Apply</button>
-                </div>
-            </div>
-        </div>
-    );
+      )}
+    </div>
+  );
 };
 
-// --- MAIN PAGE COMPONENT (No changes here) ---
+// --- MAIN PAGE COMPONENT ---
 
 const SchoolListingPage = () => {
-    const [isFilterOpen, setFilterOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeFilters, setActiveFilters] = useState<ActiveFilters>({ location: null, board: null, medium: null, category: null });
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 9;
+    
+    // Dropdown states
+    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
     const filteredSchools = useMemo(() => {
         setCurrentPage(1);
@@ -237,11 +279,17 @@ const SchoolListingPage = () => {
     const handleFilterChange = (category: keyof ActiveFilters, value: string) => {
         setActiveFilters(prev => ({ ...prev, [category]: prev[category] === value ? null : value }));
     };
+    
     const removeFilter = (category: keyof ActiveFilters) => {
         setActiveFilters(prev => ({ ...prev, [category]: null }));
     };
+    
     const clearAllFilters = () => {
         setActiveFilters({ location: null, board: null, medium: null, category: null });
+    };
+    
+    const toggleDropdown = (dropdownName: string) => {
+        setOpenDropdown(openDropdown === dropdownName ? null : dropdownName);
     };
 
     const renderPagination = () => {
@@ -269,50 +317,116 @@ const SchoolListingPage = () => {
     };
 
     return (
-        <>
-            <FilterPanel isOpen={isFilterOpen} onClose={() => setFilterOpen(false)} activeFilters={activeFilters} onFilterChange={handleFilterChange} onClearFilters={clearAllFilters}/>
-            <div className="bg-[#FDF8F4] font-sans min-h-screen">
-                <main>
-                    <section className="max-w-[1440px] mx-auto py-10 px-4 sm:px-6 md:px-10 lg:px-[81.5px]">
-                        <h1 className="text-2xl sm:text-3xl md:text-[32px] font-medium text-[#333333] mb-6">School Listing</h1>
-                        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-                            <div className="relative w-full sm:w-[561px]">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><SearchIcon /></div>
-                                <input type="text" placeholder="Search school" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full h-[51px] pl-12 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A91D3A] text-[15px] font-light text-gray-900" />
+        <div className="bg-[#FDF8F4] font-sans min-h-screen">
+            <main>
+                <section className="max-w-[1380px] mx-auto py-8 px-4 sm:px-6 lg:px-8 mt-4">
+                    <h1 className="text-2xl sm:text-3xl md:text-[32px] font-medium text-[#333333] mb-6">School Listing</h1>
+                    
+                    {/* Search and Filters Row */}
+                    <div className="flex flex-col lg:flex-row gap-4 mb-6">
+                        {/* Search Bar */}
+                        <div className="relative flex-1">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <SearchIcon />
                             </div>
-                            <button onClick={() => setFilterOpen(true)} className="p-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 w-full sm:w-auto flex justify-center items-center"><FilterIcon /></button>
+                            <input 
+                                type="text" 
+                                placeholder="Search school" 
+                                value={searchTerm} 
+                                onChange={(e) => setSearchTerm(e.target.value)} 
+                                className="w-full h-[51px] pl-12 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A91D3A] text-[15px] font-light text-gray-900" 
+                            />
                         </div>
-                        <div className="flex justify-end flex-wrap items-center gap-3 mb-10 min-h-[40px]">
+                        
+                        {/* Filter Dropdowns */}
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <FilterDropdown
+                                label="Location"
+                                options={locations}
+                                filterKey="location"
+                                activeFilters={activeFilters}
+                                onFilterChange={handleFilterChange}
+                                isOpen={openDropdown === 'location'}
+                                onToggle={() => toggleDropdown('location')}
+                            />
+                            <FilterDropdown
+                                label="Board"
+                                options={boards}
+                                filterKey="board"
+                                activeFilters={activeFilters}
+                                onFilterChange={handleFilterChange}
+                                isOpen={openDropdown === 'board'}
+                                onToggle={() => toggleDropdown('board')}
+                            />
+                            <FilterDropdown
+                                label="Medium"
+                                options={mediums}
+                                filterKey="medium"
+                                activeFilters={activeFilters}
+                                onFilterChange={handleFilterChange}
+                                isOpen={openDropdown === 'medium'}
+                                onToggle={() => toggleDropdown('medium')}
+                            />
+                            <FilterDropdown
+                                label="Category"
+                                options={categories}
+                                filterKey="category"
+                                activeFilters={activeFilters}
+                                onFilterChange={handleFilterChange}
+                                isOpen={openDropdown === 'category'}
+                                onToggle={() => toggleDropdown('category')}
+                            />
+                        </div>
+                    </div>
+                    
+                    {/* Active Filters */}
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex flex-wrap items-center gap-3">
                             {Object.entries(activeFilters).map(([key, value]) => value && (
                                 <div key={key} className="flex items-center gap-2 bg-white border border-gray-300 rounded-full px-4 py-1.5 text-[16px] sm:text-[18px] font-light text-gray-800">
                                     <span>{value}</span>
-                                    <button onClick={() => removeFilter(key as keyof ActiveFilters)}><CloseIcon /></button>
+                                    <button onClick={() => removeFilter(key as keyof ActiveFilters)}>
+                                        <CloseIcon />
+                                    </button>
                                 </div>
                             ))}
                         </div>
-                        {displayedSchools.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
-                                {displayedSchools.map((school) => (
-                                  <SchoolCard
-                                    key={school.id}
-                                    name={school.name}
-                                    image={school.imageUrl}
-                                    desc={school.location + ' | ' + school.board + ' | ' + school.medium + ' | ' + school.category}
-                                  />
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-20">
-                                <h2 className="text-xl sm:text-2xl font-semibold text-gray-700">No Schools Found</h2>
-                                <p className="text-gray-500 mt-2">Try adjusting your filters or search term.</p>
-                                <button onClick={() => { clearAllFilters(); setSearchTerm(''); }} className="mt-6 py-2 px-6 bg-[#A91D3A] text-white rounded-lg font-semibold hover:bg-red-800">Clear All Filters & Search</button>
-                            </div>
+                        {Object.values(activeFilters).some(Boolean) && (
+                            <button 
+                                onClick={clearAllFilters} 
+                                className="text-[#A91D3A] text-sm font-medium hover:underline"
+                            >
+                                Clear All
+                            </button>
                         )}
-                        <nav className="flex justify-center items-center mt-12 gap-2" aria-label="Pagination">{renderPagination()}</nav>
-                    </section>
-                </main>
-            </div>
-        </>
+                    </div>
+                    {/* School Cards */}
+                    {displayedSchools.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {displayedSchools.map((school) => (
+                              <SchoolCard
+                                key={school.id}
+                                name={school.name}
+                                image={school.imageUrl}
+                                desc={school.location + ' | ' + school.board + ' | ' + school.medium + ' | ' + school.category}
+                              />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-20">
+                            <h2 className="text-xl sm:text-2xl font-semibold text-gray-700">No Schools Found</h2>
+                            <p className="text-gray-500 mt-2">Try adjusting your filters or search term.</p>
+                            <button onClick={() => { clearAllFilters(); setSearchTerm(''); }} className="mt-6 py-2 px-6 bg-[#A91D3A] text-white rounded-lg font-semibold hover:bg-red-800">Clear All Filters & Search</button>
+                        </div>
+                    )}
+                    
+                    {/* Pagination */}
+                    <nav className="flex justify-center items-center mt-12 gap-2" aria-label="Pagination">
+                        {renderPagination()}
+                    </nav>
+                </section>
+            </main>
+        </div>
     );
 };
 
