@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import Image from 'next/image';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -25,54 +23,82 @@ export default function HeroSection() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    if (!isMobile) {
-      gsap.to(".col-left", {
-        y: "-30%",
-        duration: 20,
-        repeat: -1,
-        ease: "none",
-        yoyo: true,
-      });
+ useEffect(() => {
+  if (!isMobile) {
+    const colLeft = gsap.utils.toArray(".col-left .scroll-image");
+    const colRight = gsap.utils.toArray(".col-right .scroll-image");
 
-      gsap.to(".col-right", {
-        y: "30%",
+    const animateColumn = (elements: gsap.TweenTarget, direction = 1) => {
+      gsap.set(elements, { yPercent: 0 });
+
+      gsap.to(elements, {
+        yPercent: -100 * direction,
+        ease: "none",
         duration: 20,
         repeat: -1,
-        ease: "none",
-        yoyo: true,
+        modifiers: {
+          yPercent: gsap.utils.wrap(-100, 0)
+        }
       });
-    }
-  }, [isMobile]);
+    };
+
+    animateColumn(colLeft, 1);  // Scroll Up
+    animateColumn(colRight, -1); // Scroll Down
+  }
+}, [isMobile]);
+
 
   return (
-    <section className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 font-poppins overflow-hidden">
+    <section className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 font-poppins overflow-hidden">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
         {/* Left Column */}
         <div className="w-full lg:w-1/2 flex flex-col justify-start gap-6 text-center lg:text-left lg:-mt-80">
-          <h1 className="text-[32px] sm:text-[40px] lg:text-[48px] font-normal leading-tight text-black">
-            Were proud to help <br className="hidden sm:inline" />
+          <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
+            We're proud to help <br className="hidden sm:inline" />
             students find the right <br className="hidden sm:inline" />
-            path to success. Heres <br className="hidden sm:inline" />
-            how far weve come:
-          </h1>
+            path to success. Here's <br className="hidden sm:inline" />
+            how far we've come:
+          </h2>
 
           <p className="text-gray-600 text-[16px] sm:text-[18px] lg:text-[20px]">
             Trusted by Students, Schools & Cities Across India
           </p>
 
-          <div className="flex flex-row justify-center lg:justify-start gap-4 sm:gap-6 mt-4">
-            <div className="flex-1 text-center lg:text-left">
-              <p className="font-medium text-[16px] sm:text-[18px] lg:text-[20px] text-black">📍 Cities Covered</p>
-              <p className="text-black text-[12px] sm:text-[14px]">Across all major <br className="hidden sm:inline" /> Indian regions</p>
-            </div>
-            <div className="flex-1 text-center lg:text-left">
-              <p className="font-medium text-[16px] sm:text-[18px] lg:text-[20px] text-black">🏫 Schools Listed</p>
-              <p className="text-black text-[12px] sm:text-[14px]">From CBSE, ICSE, & <br className="hidden sm:inline" /> state boards</p>
-            </div>
-          </div>
+          {/* Stats Row */}
+<div className="flex flex-col lg:flex-row gap-6 lg:gap-12 justify-center lg:justify-start mt-4">
+  {/* Cities Covered */}
+  <div className="flex-1">
+    <div className="flex items-start gap-2">
+      <span className="text-[20px] leading-[1] pt-[2px]">📍</span>
+      <div>
+        <p className="font-medium text-[16px] sm:text-[18px] lg:text-[20px] text-black">
+          Cities Covered
+        </p>
+        <p className="text-black text-[12px] sm:text-[14px] mt-1">
+          Across all major <br className="hidden sm:inline" /> Indian regions
+        </p>
+      </div>
+    </div>
+  </div>
 
-          {/* Desktop Button - Only show on large screens */}
+  {/* Schools Listed */}
+  <div className="flex-1">
+    <div className="flex items-start gap-2">
+      <span className="text-[20px] leading-[1] pt-[2px]">🏫</span>
+      <div>
+        <p className="font-medium text-[16px] sm:text-[18px] lg:text-[20px] text-black">
+          Schools Listed
+        </p>
+        <p className="text-black text-[12px] sm:text-[14px] mt-1">
+          From CBSE, ICSE, & <br className="hidden sm:inline" /> state boards
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+          {/* Desktop CTA Button */}
           <div className="hidden lg:flex justify-center lg:justify-start">
             <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full mt-6 hover:bg-green-800 transition">
               Take Admission
@@ -80,22 +106,23 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Right Section */}
-        <div className="w-full lg:w-1/2">
-          {/* Desktop GSAP scrolling */}
+        {/* Right Section (Images) */}
+        <div className="w-full lg:w-1/2 lg:pl-8">
+
           {!isMobile ? (
             <div className="flex gap-4 overflow-hidden max-h-[830px]">
               {/* Column 1 */}
               <div className="col-left flex flex-col gap-4">
                 {images.map((img, index) => (
                   <Image
-                    key={`left-${index}`}
-                    src={img}
-                    alt={`col1-${index}`}
-                    width={311}
-                    height={331}
-                    className="rounded-lg object-cover w-[311px] h-auto"
-                  />
+  key={`left-${index}`}
+  src={img}
+  alt={`col1-${index}`}
+  width={311}
+  height={331}
+  className="scroll-image rounded-lg object-cover w-[311px] h-auto"
+/>
+
                 ))}
               </div>
 
@@ -103,43 +130,55 @@ export default function HeroSection() {
               <div className="col-right flex flex-col gap-4">
                 {images.map((img, index) => (
                   <Image
-                    key={`right-${index}`}
-                    src={img}
-                    alt={`col2-${index}`}
-                    width={311}
-                    height={331}
-                    className="rounded-lg object-cover w-[311px] h-auto"
-                  />
+  key={`right-${index}`}
+  src={img}
+  alt={`col2-${index}`}
+  width={311}
+  height={331}
+  className="scroll-image rounded-lg object-cover w-[311px] h-auto"
+/>
+
                 ))}
               </div>
             </div>
           ) : (
-            // Mobile: Swiper Carousel
-            <Swiper
-              spaceBetween={16}
-              slidesPerView={1.2}
-              centeredSlides
-              loop
-              autoplay={{ delay: 2500, disableOnInteraction: false }}
-              className="w-full py-6"
-            >
-              {images.map((img, index) => (
-                <SwiperSlide key={`slide-${index}`} className="flex justify-center">
-                  <Image
-                    src={img}
-                    alt={`slide-${index}`}
-                    width={240}
-                    height={240}
-                    className="rounded-lg object-cover w-[240px] h-[240px]"
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+            // Mobile: 2 Rows with Auto-moving Animation
+            <div className="w-full overflow-hidden py-6">
+              {/* Row 1 - Moving Left */}
+              <div className="flex gap-4 mb-4 animate-scroll-left">
+                {[...images, ...images].map((img, index) => (
+                  <div key={`row1-${index}`} className="flex-shrink-0">
+                    <Image
+                      src={img}
+                      alt={`row1-${index}`}
+                      width={160}
+                      height={160}
+                      className="rounded-lg object-cover w-[160px] h-[160px]"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Row 2 - Moving Right */}
+              <div className="flex gap-4 animate-scroll-right">
+                {[...images, ...images].map((img, index) => (
+                  <div key={`row2-${index}`} className="flex-shrink-0">
+                    <Image
+                      src={img}
+                      alt={`row2-${index}`}
+                      width={160}
+                      height={160}
+                      className="rounded-lg object-cover w-[160px] h-[160px]"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Mobile Button - Only show below images on mobile/tablet */}
+      {/* Mobile CTA Button */}
       <div className="flex lg:hidden justify-center mt-8">
         <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full hover:bg-green-800 transition">
           Take Admission

@@ -20,7 +20,7 @@ const ContactUs = () => {
 
         {/* b. Paragraph */}
         <p className={styles.getInTouchParagraph}>
-          Have questions about admissions, academics, or campus life? Reach out to us — we’re here to guide you at every step toward a brighter, disciplined future.
+          "Have questions about admissions, academics, or campus life? Reach out to us — we’re here to guide you at every step toward a brighter, disciplined future."
         </p>
         
         {/* c. contact-us-img */}

@@ -6,7 +6,7 @@ const LoginPage = () => {
       <div className={styles.loginForm}>
         <button className={`${styles.btn} ${styles.btnLoginTop}`}>Login</button>
         <p className={styles.signupText}>
-          Dont have an account yet? <span>Sign up</span>
+          Don't have an account yet? <span>Sign up</span>
         </p>
 
         <div className={styles.inputGroup}>

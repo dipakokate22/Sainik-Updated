@@ -54,50 +54,55 @@ const FeatureCard = ({ icon: Icon, title, description, lightColor }: FeatureCard
 
 const WhyJoinSainikSchool = () => {
   return (
-    <section className={`relative w-full py-16 md:py-24 px-4 sm:px-8 lg:px-16 max-w-[1440px] mx-auto ${poppins.className}`}>
-      {/* Background Image Wrapper */}
-      <div className="absolute inset-0 w-full h-full min-h-[400px]">
-        <Image
-          src="/homePage/bgwhyjoinsanikschool.jpg"
-          alt="Sainik School promotional background"
-          fill
-          priority
-          style={{ objectFit: "cover" }}
-          className="absolute inset-0"
-        />
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-white opacity-20"></div>
-      </div>
-      {/* Main Layout */}
-      <div className="relative z-10 flex flex-col md:flex-row justify-between items-start gap-10">
-        {/* Left Content */}
-        <div className="text-black w-full md:w-[500px]">
-          <h2 className="text-3xl sm:text-4xl md:text-[48px] font-bold mb-4 leading-tight">
-            Why Join <br /> Sainik School?
-          </h2>
-          <p className="text-base sm:text-lg mb-6 leading-relaxed">
-            Where courage meets discipline, and education <br />
-            shapes future defense leaders. <br />
-            Sainik Schools are more than institutions — they <br />
-            are launchpads for tomorrow’s heroes.
-          </p>
-          <button className="bg-[#1C1F24] hover:bg-[#2c2d30] text-white font-semibold w-[200px] h-[40px] rounded-full transition-colors">
-            Explore All Schools
-          </button>
-        </div>
+    <section className={`relative w-full py-16 md:py-16 ${poppins.className}`}>
+  {/* Background Image Wrapper - full width */}
+  <div className="absolute inset-0 w-full h-full min-h-[400px]">
+    <Image
+      src="/homePage/bgwhyjoinsanikschool.jpg"
+      alt="Sainik School promotional background"
+      fill
+      priority
+      style={{ objectFit: "cover" }}
+      className="absolute inset-0"
+    />
+    <div className="absolute inset-0 bg-white opacity-20"></div>
+  </div>
 
-        {/* Right Feature Cards */}
-        <div className="flex flex-wrap justify-center md:justify-end gap-6 w-full md:w-[calc(100%-540px)]">
-          {cardData.map((card, index) => {
-            const lightColor =
-              index < 2 ? LIGHT_EFFECT_COLORS.ORANGE :
-              index < 4 ? LIGHT_EFFECT_COLORS.GRAY :
-                          LIGHT_EFFECT_COLORS.GREEN;
-            return <FeatureCard key={index} {...card} lightColor={lightColor} />;
-          })}
-        </div>
+  {/* Inner Content - max width centered */}
+  <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16">
+    <div className="flex flex-col md:flex-row justify-between items-start gap-10">
+      {/* Left Content */}
+      <div className="text-black w-full md:w-[500px]">
+        <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
+          Why Join <br /> Sainik School?
+        </h2>
+        <p className="text-base sm:text-lg mb-6 leading-relaxed">
+          Where courage meets discipline, and education <br />
+          shapes future defense leaders. <br />
+          Sainik Schools are more than institutions — they <br />
+          are launchpads for tomorrow’s heroes.
+        </p>
+        <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full mt-6 hover:bg-green-800 transition">
+          Explore All Schools
+        </button>
       </div>
-    </section>
+
+      {/* Right Feature Cards */}
+      <div className="flex flex-wrap justify-center md:justify-end gap-6 w-full md:w-[calc(100%-540px)]">
+        {cardData.map((card, index) => {
+          const lightColor =
+            index < 2
+              ? LIGHT_EFFECT_COLORS.ORANGE
+              : index < 4
+              ? LIGHT_EFFECT_COLORS.GRAY
+              : LIGHT_EFFECT_COLORS.GREEN;
+          return <FeatureCard key={index} {...card} lightColor={lightColor} />;
+        })}
+      </div>
+    </div>
+  </div>
+</section>
+
   );
 };
 

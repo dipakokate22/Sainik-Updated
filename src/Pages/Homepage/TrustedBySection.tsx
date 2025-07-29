@@ -5,10 +5,10 @@ import gsap from 'gsap';
 import Image from 'next/image';
 
 const logos = [
-  { name: 'Aurora International', logo: '/homePage/logo.png' },
-  { name: 'Crystal Lake School', logo: '/homePage/logo.png' },
-  { name: 'Army Public School', logo: '/homePage/logo.png' },
-  { name: 'Rashtriya Military School', logo: '/homePage/logo.png' },
+  { name: 'Aurora International', logo: '/Trusted/aurora.png' },
+  { name: 'Crystal Lake School', logo: '/Trusted/crystal.png' },
+  { name: 'Army Public School', logo: '/Trusted/army.png' },
+  { name: 'Rashtriya Military School', logo: '/Trusted/rashtriya.png' },
 ];
 
 const TrustedBySection = () => {
@@ -41,9 +41,9 @@ const TrustedBySection = () => {
   const loopItems = [...logos, ...logos];
 
   return (
-    <section className="bg-[#f8f1ed] py-12 sm:py-16 w-full overflow-hidden">
+    <section className="bg-[#f8f1ed] pt-12 pb-16 w-full overflow-hidden">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 text-center">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-medium font-poppins mb-10 sm:mb-12 text-[#111] leading-tight">
+         <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-6">
           Trusted by top educational <br className="hidden sm:block" />
           institutions worldwide
         </h2>

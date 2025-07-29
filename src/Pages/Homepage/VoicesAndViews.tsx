@@ -18,7 +18,15 @@ interface BlogPost {
   imageUrl: string;
 }
 
-const blogPosts: BlogPost[] = [/*... your blogPosts array ...*/];
+const blogPosts: BlogPost[] = [
+  { id: 1, category: 'Educational Tips', title: '5 Ways to Enhance Student Engagement', description: 'Engaging students through innovative teaching methods is essential for success.', author: { name: 'Jane Doe', avatarUrl: '/Voices/John.png' }, date: '15 Feb 2023', readTime: '4 min read', imageUrl: '/homePage/news.png' },
+  { id: 2, category: 'School News', title: 'Top Strategies for Effective Classroom Management', description: 'Learn how to create a positive learning environment for all students.', author: { name: 'John Smith', avatarUrl: '/Voices/John.png' }, date: '10 Mar 2023', readTime: '6 min read', imageUrl: '/homePage/news.png' },
+  { id: 3, category: 'Educational Tips', title: 'Innovative Tools for Modern Education', description: 'Explore the latest technology that enhances learning experiences for students.', author: { name: 'Alice Johnson', avatarUrl: '/Voices/John.png' }, date: '22 Apr 2023', readTime: '5 min read', imageUrl: '/homePage/news.png' },
+  { id: 4, category: 'Parent Resources', title: 'The Importance of Parental Involvement', description: "Discover how parents can positively impact their children's education.", author: { name: 'Mark Lee', avatarUrl: '/Voices/John.png' }, date: '30 May 2023', readTime: '7 min read', imageUrl: '/homePage/news.png' },
+  { id: 5, category: 'Student Life', title: 'Creative Approaches to Homework', description: 'Innovative homework strategies that foster student creativity and independence.', author: { name: 'Sara White', avatarUrl: '/Voices/John.png' }, date: '12 Jun 2023', readTime: '8 min read', imageUrl: '/homePage/news.png' },
+  { id: 6, category: 'Educational Tips', title: 'Understanding Learning Styles in Education', description: 'Tailoring education to individual learning styles for better outcomes.', author: { name: 'Tom Brown', avatarUrl: '/Voices/John.png' }, date: '25 Jul 2023', readTime: '4 min read', imageUrl: '/homePage/news.png' },
+];
+
 
 const filterTabs = ['All', 'Educational Tips', 'School News', 'Parent Resources', 'Student Life'];
 
@@ -63,19 +71,20 @@ const VoicesAndViews = () => {
   }, [activeTab]);
 
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-white pt-11 pb-16">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 md:px-12 lg:px-[72px]">
         {/* Header */}
         <div className="text-center">
-          <h2 className="text-3xl sm:text-4xl font-semibold text-gray-900">Voices & Views</h2>
+           <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">Voices & Views</h2>
           <p className="mt-4 text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
             Explore inspiring vlogs and the latest news from our Sainik School community.
           </p>
         </div>
 
         {/* Filter Tabs */}
-        <div className="mt-10 sm:mt-12 border border-black rounded-full overflow-x-auto scrollbar-hide">
-          <div className="relative flex w-full justify-between py-3 min-w-max">
+       <div className="mt-10 sm:mt-12 border border-black rounded-full overflow-x-auto scrollbar-hide">
+  <div className="relative flex w-full justify-between py-3 px-4 min-w-max">
+
             <div
               className="absolute top-1/2 -translate-y-1/2 h-[40px] bg-emerald-700 rounded-full shadow transition-all duration-300 ease-in-out"
               style={sliderStyle}
@@ -101,10 +110,12 @@ const VoicesAndViews = () => {
         </div>
 
         {/* CTA Button */}
-        <div className="mt-12 sm:mt-16 text-center">
-          <button className="bg-emerald-700 text-white text-sm sm:text-base font-semibold py-2.5 px-6 sm:px-8 rounded-full hover:bg-emerald-800 transition">
-            View all
-          </button>
+        <div className="mt-4 sm:mt-4 text-center">
+          {/* View All Button */}
+<button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full mt-6 hover:bg-green-800 transition">
+  View all
+</button>
+
         </div>
       </div>
     </section>

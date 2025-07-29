@@ -27,12 +27,10 @@ const NationwideFootprint = () => {
     const items = list.children;
     const totalHeight = list.scrollHeight;
 
-    // Clone for infinite scroll
     Array.from(items).forEach((item) => {
       list.appendChild(item.cloneNode(true));
     });
 
-    // GSAP Scroll Animation
     tl.current = gsap.timeline({ repeat: -1 });
     tl.current.to(list, {
       y: `-${totalHeight}px`,
@@ -40,7 +38,6 @@ const NationwideFootprint = () => {
       ease: 'none',
     });
 
-    // Pause scroll on hover
     const handleMouseEnter = () => tl.current?.pause();
     const handleMouseLeave = () => tl.current?.play();
 
@@ -54,7 +51,10 @@ const NationwideFootprint = () => {
   }, []);
 
   return (
-    <section className="w-full bg-[#1C1F24] px-4 py-16 overflow-hidden">
+<section className="w-full bg-[#1C1F24] px-4 pb-4 pt-20 overflow-hidden">
+
+
+
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-start">
 
         {/* Left Column - Scrollable Cards */}
@@ -67,7 +67,6 @@ const NationwideFootprint = () => {
                   key={idx}
                   className="bg-white rounded-xl shadow-md transition-all duration-300 overflow-hidden w-full max-w-[600px] mx-auto"
                 >
-                  {/* Clickable Header */}
                   <div
                     className="flex items-center justify-between px-4 sm:px-6 py-4 cursor-pointer"
                     onClick={() => setActiveState(isActive ? null : idx)}
@@ -88,7 +87,6 @@ const NationwideFootprint = () => {
                     />
                   </div>
 
-                  {/* Expanded Schools */}
                   {isActive && state.schools.length > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 sm:px-6 pb-6">
                       {state.schools.map((school, sIdx) => (
@@ -118,10 +116,11 @@ const NationwideFootprint = () => {
 
         {/* Right Column - Title & Map */}
         <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left">
-          <h2 className="text-[32px] sm:text-[40px] lg:text-[48px] font-poppins text-white mb-4">
-            Nationwide Footprint
-          </h2>
-          <p className="text-[16px] sm:text-[18px] lg:text-[20px] text-white mb-6 max-w-[90%]">
+         <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-white mb-4">
+  Nationwide Footprint
+</h2>
+
+          <p className="text-[16px] sm:text-[18px] lg:text-[20px] text-white mb-4 max-w-[90%]">
             Sainik Schools are strategically located across states to provide equal opportunity
             and access to disciplined, defense-oriented education.
           </p>

@@ -37,52 +37,61 @@ export default function Navbar() {
     
     if (mobileMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.body.classList.add('overflow-hidden'); // Prevent background scroll
+    } else {
+      document.body.classList.remove('overflow-hidden');
     }
     
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.body.classList.remove('overflow-hidden');
     };
   }, [mobileMenuOpen]);
 
   return (
-    <div className="bg-[#1C1F24] w-full rounded-none md:rounded-[20px] max-w-[1380px] mx-auto mt-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white py-[18px] relative">
+    <div className="px-3 sm:px-0">
+  <div className="bg-[#1C1F24] w-full rounded-[16px] md:rounded-[20px] max-w-[1380px] mx-auto mt-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white py-[18px] relative">
+
       <div className="flex justify-between items-center">
         {/* Left Logo & Search */}
         <div className="flex items-center gap-4">
           <span className="text-white text-[28px] font-poppins font-bold">Sainik</span>
 
-          {/* Desktop Only */}
-          <div className="hidden md:flex items-center gap-4">
-            <button className="h-10 px-4 rounded-full bg-[#257B5A] text-white flex items-center gap-2 hover:bg-green-800 transition cursor-pointer font-medium text-sm">
-              <FaMapMarkerAlt size={14} />
-              <span>Schools Near You</span>
-            </button>
+         {/* Desktop Only */}
+<div className="hidden md:flex items-center gap-4">
+  {/* Button */}
+  <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2">
+    <FaMapMarkerAlt size={14} />
+    <span>Schools Near You</span>
+  </button>
 
-            <div className="flex items-center h-10 bg-white rounded-full pl-3 pr-3">
-              <FaSearch className="text-[#257B5A]" size={14} />
-              <input
-                type="text"
-                placeholder="Search"
-                className="outline-none text-sm font-normal w-32 bg-transparent placeholder-gray-400 text-[#257B5A] ml-2"
-              />
-            </div>
-          </div>
-        </div>
+  {/* Search Box */}
+  <div className="flex items-center bg-white rounded-full px-4 h-[48px]">
+    <FaSearch className="text-[#257B5A]" size={14} />
+    <input
+      type="text"
+      placeholder="Search"
+      className="outline-none text-sm font-normal w-32 bg-transparent placeholder-gray-400 text-[#257B5A] ml-2"
+    />
+  </div>
+</div>
+</div>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-6">
           {/* Explore Dropdown */}
           <div className="relative" ref={exploreDropdownRef}>
             <button
-              onClick={() => setIsExploreOpen(!isExploreOpen)}
-              className="h-10 px-4 rounded-full bg-[#B91C1C] text-white flex items-center gap-2 hover:bg-red-800 transition font-normal text-sm"
-            >
-              Explore
-              <IoIosArrowDown
-                size={14}
-                className={`transition-transform duration-300 ${isExploreOpen ? 'rotate-180' : ''}`}
-              />
-            </button>
+  onClick={() => setIsExploreOpen(!isExploreOpen)}
+  className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2"
+>
+  Explore
+  <IoIosArrowDown
+    size={14}
+    className={`transition-transform duration-300 ${isExploreOpen ? 'rotate-180' : ''}`}
+  />
+</button>
+
 
             {/* Dropdown Items */}
             {isExploreOpen && (
@@ -210,9 +219,7 @@ export default function Navbar() {
                       <Link href="/Listing" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
                         School List
                       </Link>
-                      <Link href="/About" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
-                        About Us
-                      </Link>
+                      
                       <Link href="/SchoolDetails" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
                         Career Counselling
                       </Link>
@@ -235,10 +242,7 @@ export default function Navbar() {
                     <FaInfoCircle className="text-[#257B5A] mr-3" size={18} />
                     <span className="text-white font-medium">About Us</span>
                   </Link>
-                  <Link href="/SchoolDetails" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group">
-                    <FaGraduationCap className="text-[#257B5A] mr-3" size={18} />
-                    <span className="text-white font-medium">Career Counselling</span>
-                  </Link>
+                  
                   <Link href="/NewsUpdates" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group">
                     <FaNewspaper className="text-[#257B5A] mr-3" size={18} />
                     <span className="text-white font-medium">News & Updates</span>
@@ -255,8 +259,28 @@ export default function Navbar() {
           {/* Footer */}
           <div className="p-6 border-t border-gray-700 flex-shrink-0">
             {isLoggedIn ? (
-              <div className="space-y-3">
-                <ProfileDropdown />
+              // Mobile Profile Section
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-14 h-14 rounded-full bg-[#257B5A] flex items-center justify-center text-white text-xl font-bold mb-2">
+                  {/* Placeholder avatar, replace with user image if available */}
+                  <span>A</span>
+                </div>
+                <div className="text-white text-base font-semibold">Ayush Kumar</div>
+                <div className="text-gray-400 text-xs mb-2">ayush@email.com</div>
+                <div className="flex flex-col gap-2 w-full mt-2">
+                  <Link href="/profile" className="w-full">
+                    <button className="w-full bg-[#257B5A] text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors text-sm mb-1">Profile</button>
+                  </Link>
+                  <Link href="/SchoolDashboard" className="w-full">
+                    <button className="w-full bg-[#257B5A] text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors text-sm mb-1">Dashboard</button>
+                  </Link>
+                  <Link href="/StudentDashboard" className="w-full">
+                    <button className="w-full bg-[#257B5A] text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors text-sm mb-1">Student Dashboard</button>
+                  </Link>
+                  <Link href="/logout" className="w-full">
+                    <button className="w-full bg-transparent border border-[#257B5A] text-[#257B5A] py-2 rounded-lg font-medium hover:bg-[#257B5A] hover:text-white transition-colors text-sm">Logout</button>
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="space-y-3">
@@ -275,6 +299,7 @@ export default function Navbar() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }
