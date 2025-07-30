@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { FaMapMarkerAlt, FaSearch, FaBars, FaTimes, FaHome, FaSchool, FaInfoCircle, FaGraduationCap, FaNewspaper, FaEnvelope, FaPlus } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaSearch, FaBars, FaTimes, FaHome, FaSchool, FaInfoCircle, FaNewspaper, FaEnvelope, FaPlus } from 'react-icons/fa';
 import { IoIosArrowDown } from 'react-icons/io';
 import ProfileDropdown from './ProfileDropdown';
 
@@ -10,7 +10,7 @@ export default function Navbar() {
   const [isExploreOpen, setIsExploreOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const exploreDropdownRef = useRef<HTMLDivElement>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Assume true for demo
+  const [isLoggedIn] = useState(true); // Assume true for demo
 
   // Close dropdown on outside click
   useEffect(() => {

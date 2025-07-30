@@ -1,6 +1,5 @@
 import Sidebar from '../Sidebar';
 import Header from '../Header';
-import Image from 'next/image';
 import Link from 'next/link';
 
 const EntranceExamsPage = () => {
@@ -44,27 +43,18 @@ const EntranceExamsPage = () => {
           <div style={{ top: '70px', left: '0px' }} className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {/* Upcoming Exams Card */}
             <div className="relative w-full h-[140px] bg-[#46B495] rounded-xl shadow-md p-6 text-white flex flex-col justify-center">
-              <div className="absolute top-4 left-4 opacity-20">
-                 <img src="" alt="Upcoming Exam Icon" style={{ width: '80px', height: '80px' }} />
-              </div>
               <p className="text-4xl font-bold z-10">12</p>
               <p className="text-lg z-10">Upcoming Exams</p>
             </div>
             
             {/* Registered Exams Card */}
             <div className="relative w-full h-[140px] bg-[#5B63B7] rounded-xl shadow-md p-6 text-white flex flex-col justify-center">
-              <div className="absolute top-4 left-4 opacity-20">
-                 <img src="" alt="Registered Exam Icon" style={{ width: '80px', height: '80px' }} />
-              </div>
               <p className="text-4xl font-bold z-10">15</p>
               <p className="text-lg z-10">Registered Exams</p>
             </div>
 
             {/* Completed Exams Card */}
             <div className="relative w-full h-[140px] bg-[#B959C9] rounded-xl shadow-md p-6 text-white flex flex-col justify-center">
-              <div className="absolute top-4 left-4 opacity-20">
-                <img src="" alt="Completed Exam Icon" style={{ width: '80px', height: '80px' }} />
-              </div>
               <p className="text-4xl font-bold z-10">23</p>
               <p className="text-lg z-10">Completed Exams</p>
             </div>

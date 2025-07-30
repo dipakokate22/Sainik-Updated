@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import SchoolCard from '../../Components/SchoolCard';
-import { IoChevronDown, IoChevronUp, IoAdd, IoClose } from 'react-icons/io5';
+import { IoAdd, IoClose } from 'react-icons/io5';
 
 // --- Sample Data ---
 const initialSchools = Array.from({ length: 140 }).map((_, i) => ({
@@ -22,13 +22,27 @@ const boardList = ['CBSE', 'CISCE', 'ICSCI', 'BSCUI', 'CBBS', 'HSSC'];
 const mediumList = ['English', 'Hindi', 'Marathi', 'Bengali', 'Gujarati', 'Tamil', 'Telugu'];
 const categoryList = ['Boys', 'Girls', 'Co-ed'];
 
+// Define proper types for FilterSection props
+interface FilterSectionProps {
+  title: string;
+  items: string[];
+  selectedItems: string[];
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
+  searchable?: boolean;
+  searchTerm?: string;
+  setSearchTerm?: React.Dispatch<React.SetStateAction<string>>;
+  isExpanded: boolean;
+  onToggle: () => void;
+  showCount?: boolean;
+  field: 'board' | 'medium' | 'category';
+}
+
 const SchoolListSection = () => {
   const [selectedBoards, setSelectedBoards] = useState<string[]>([]);
   const [selectedMediums, setSelectedMediums] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [range, setRange] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [showAllMediums, setShowAllMediums] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [boardSearch, setBoardSearch] = useState('');
   const [mediumSearch, setMediumSearch] = useState('');
@@ -83,7 +97,6 @@ const SchoolListSection = () => {
   }, [filteredSchools, currentPage, pageSize]);
 
   const totalPages = Math.ceil(filteredSchools.length / pageSize);
-  const displayedMediums = showAllMediums ? mediumList : mediumList.slice(0, 5);
 
   const getCount = (field: 'board' | 'medium' | 'category', value: string) => {
     return initialSchools.filter(school => school[field] === value).length;
@@ -104,7 +117,7 @@ const SchoolListSection = () => {
 
   const paginationItems = getPaginationItems();
 
-  const FilterSection = ({ title, items, selectedItems, setSelectedItems, searchable = false, searchTerm = '', setSearchTerm, isExpanded, onToggle, showCount = false, field }: any) => (
+  const FilterSection = ({ title, items, selectedItems, setSelectedItems, searchable = false, searchTerm = '', setSearchTerm, isExpanded, onToggle, field }: FilterSectionProps) => (
     <div className="border-b border-gray-100 pb-4">
       <button
         onClick={onToggle}
@@ -138,7 +151,7 @@ const SchoolListSection = () => {
       
       {isExpanded && (
         <div className="mt-3 space-y-2">
-          {searchable && (
+          {searchable && setSearchTerm && (
             <div className="relative">
               <input
                 type="text"

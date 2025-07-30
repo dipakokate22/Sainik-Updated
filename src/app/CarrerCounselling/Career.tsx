@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -125,7 +124,7 @@ const CareerCounselling = () => {
       name: "Michael Chen",
       role: "Medical Student",
       image: "/Voices/John.png",
-      story: "Thanks to the personality assessment, I realized medicine was my calling. Now I'm pursuing my dream career."
+      story: "Thanks to the personality assessment, I realized medicine was my calling. Now I am pursuing my dream career."
     },
     {
       name: "Emily Davis",
@@ -135,28 +134,6 @@ const CareerCounselling = () => {
     }
   ];
 
-  const resources = [
-    {
-      title: "Career Blogs",
-      description: "Latest insights and trends in various career fields.",
-      icon: "📝"
-    },
-    {
-      title: "Industry Reports",
-      description: "Comprehensive reports on different industries and job markets.",
-      icon: "📊"
-    },
-    {
-      title: "University Guides",
-      description: "Detailed guides about universities and their admission processes.",
-      icon: "🎓"
-    },
-    {
-      title: "Admission Updates",
-      description: "Latest updates on admission deadlines and requirements.",
-      icon: "📅"
-    }
-  ];
 
   return (
     <div className="bg-gray-50 min-h-screen">

@@ -1,6 +1,5 @@
 import Sidebar from '../Sidebar';
 import Header from '../Header';
-import Image from 'next/image';
 
 const ExamResultsPage = () => {
   // Data for the exam results table to make the component dynamic and easier to modify.

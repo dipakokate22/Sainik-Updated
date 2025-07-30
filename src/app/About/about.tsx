@@ -105,36 +105,32 @@ const AboutUsSection = () => {
           <Link href="/" className="text-[#10744E] hover:underline">Home</Link> / About Us
         </p>
 
-        <h2 className="text-xl sm:text-2xl text-[#10744E] text-center font-medium font-poppins mt-4">
-          About Us
-        </h2>
-
         <h1 className="text-2xl sm:text-3xl md:text-4xl text-black text-center font-semibold font-poppins mt-2 leading-snug">
           Shaping minds. Building futures. <br className="hidden sm:block" /> Empowering generations.
         </h1>
 
         <div className="mt-6 space-y-4 text-justify sm:text-left">
           <p className="text-base sm:text-lg text-[#595858] font-light font-poppins">
-            At School Dekho, we believe every child deserves a school where they can grow with discipline,
-            courage, and a strong foundation for the future. We are India's first search engine dedicated to
+            At Sainik School, we believe every child deserves a school where they can grow with discipline,
+            courage, and a strong foundation for the future. We are Indias first search engine dedicated to
             school admissions — including special focus on schools that prepare students for careers in the
             armed forces.
           </p>
           <p className="text-base sm:text-lg text-[#595858] font-light font-poppins">
-            School Dekho started in 2021 with a clear mission — to help parents explore and choose the best
+            Sainik School started in 2021 with a clear mission — to help parents explore and choose the best
             schools from the comfort of their homes, without stress or confusion. We understand that finding
             the right Sainik or military-preparatory school can be challenging, especially for parents who want
             the best training and discipline for their children.
           </p>
           <p className="text-base sm:text-lg text-[#595858] font-light font-poppins">
-            With School Dekho, you do more than just search — you experience. We offer 360° virtual tours and
+            With Sainik School, you do more than just search — you experience. We offer 360° virtual tours and
             detailed insights into academics, hostels, sports, and training programs that build leadership and
             discipline.
           </p>
           <p className="text-base sm:text-lg text-[#595858] font-light font-poppins">
-            School Dekho is not just a website — we are your partner in guiding your child toward a
+            Sainik School is not just a website — we are your partner in guiding your child toward a
             disciplined and successful future. Whether your dream is a career in the armed forces or building
-            strength in character, we help you find the school that fits your child's goals.
+            strength in character, we help you find the school that fits your childs goals.
           </p>
         </div>
       </div>

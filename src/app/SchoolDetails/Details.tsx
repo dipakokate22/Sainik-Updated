@@ -1,9 +1,9 @@
 'use client';
 
-import { FaSchool, FaLanguage, FaThLarge, FaMapMarkerAlt, FaStar } from 'react-icons/fa';
+import Image from 'next/image';
+import { FaSchool, FaLanguage, FaThLarge, FaStar } from 'react-icons/fa';
 import { PiCertificateFill } from 'react-icons/pi';
 import { FiArrowRight } from "react-icons/fi";
-import { AiFillStar } from 'react-icons/ai';
 
 // Horizontal School Card Component
 const HorizontalSchoolCard = ({ name, image, location, distance, rating }: { 
@@ -17,9 +17,11 @@ const HorizontalSchoolCard = ({ name, image, location, distance, rating }: {
     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
       {/* School Image */}
       <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-        <img
+        <Image
           src={image}
           alt={name}
+          width={64}
+          height={64}
           className="w-full h-full object-cover"
         />
       </div>
@@ -73,9 +75,11 @@ export default function SchoolDetailSection() {
               {/* Logo Card */}
               <div className="w-[120px] h-[120px] sm:w-[160px] sm:h-[160px] rounded-xl bg-[#D9D9D9] flex items-center justify-center p-4">
                 <div className="w-[90px] h-[90px] sm:w-[133px] sm:h-[133px] rounded-full overflow-hidden border border-gray-300">
-                  <img
+                  <Image
                     src="/Listing/Logo.png"
                     alt="School Logo"
+                    width={133}
+                    height={133}
                     className="w-full h-full object-cover"
                   />
                 </div>

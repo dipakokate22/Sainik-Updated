@@ -3,15 +3,11 @@
 
 import SchoolCard from '../../Components/SchoolCard';
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { FaSearch, FaFilter, FaTimes, FaMapMarkerAlt, FaStar, FaRegStar, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaSearch, FaTimes, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 // --- SVG ICONS REPLACED WITH REACT-ICONS ---
 const SearchIcon = () => <FaSearch className="h-5 w-5 text-gray-400" />;
-const FilterIcon = () => <FaFilter className="h-6 w-6 text-gray-700" />;
 const CloseIcon = ({ className = "h-4 w-4" }: { className?: string }) => <FaTimes className={`${className} text-gray-500 hover:text-gray-800`} />;
-const LocationIcon = () => <FaMapMarkerAlt className="h-4 w-4" />;
-const StarFilledIcon = () => <FaStar className="h-5 w-5 text-yellow-400" />;
-const StarOutlineIcon = () => <FaRegStar className="h-5 w-5 text-yellow-400" />;
 const ChevronDownIcon = () => <FaChevronDown className="h-4 w-4 text-gray-500" />;
 const ChevronUpIcon = () => <FaChevronUp className="h-4 w-4 text-gray-500" />;
 

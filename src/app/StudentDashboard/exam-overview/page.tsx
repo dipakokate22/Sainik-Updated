@@ -57,7 +57,6 @@ const ExamPage = () => {
           <button className="text-sm font-medium text-gray-600 hover:text-gray-900">Exit</button>
           <button className="flex items-center bg-[#2A3E7B] text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors">
             Review And Submit
-            <img src="" alt="Submit Icon" className="ml-2 w-4 h-4" />
           </button>
         </div>
       </header>
@@ -130,6 +129,9 @@ const ExamPage = () => {
                         Skip and Next →
                     </button>
                 </div>
+                <button className="w-full flex items-center justify-center text-sm font-medium text-gray-700 border border-gray-300 py-2.5 rounded-lg hover:bg-gray-100">
+                    Read Instructions
+                </button>
             </div>
 
           </div>
