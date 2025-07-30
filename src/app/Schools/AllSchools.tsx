@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import SchoolCard from '../../Components/SchoolCard';
+import { IoChevronDown, IoChevronUp, IoAdd, IoClose } from 'react-icons/io5';
 
 // --- Sample Data ---
 const initialSchools = Array.from({ length: 140 }).map((_, i) => ({
@@ -28,8 +29,26 @@ const SchoolListSection = () => {
   const [range, setRange] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [showAllMediums, setShowAllMediums] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [boardSearch, setBoardSearch] = useState('');
+  const [mediumSearch, setMediumSearch] = useState('');
+  
+  // Expanded states for filter sections
+  const [expandedSections, setExpandedSections] = useState({
+    board: true,
+    medium: false,
+    category: false,
+    range: false,
+  });
 
   const pageSize = 8;
+
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section as keyof typeof prev]
+    }));
+  };
 
   const handleCheckboxChange = (
     value: string,
@@ -41,6 +60,11 @@ const SchoolListSection = () => {
         ? groupState.filter(item => item !== value)
         : [...groupState, value]
     );
+    setCurrentPage(1);
+  };
+
+  const removeFilter = (value: string, groupState: string[], groupSetter: React.Dispatch<React.SetStateAction<string[]>>) => {
+    groupSetter(groupState.filter(item => item !== value));
     setCurrentPage(1);
   };
 
@@ -80,98 +104,196 @@ const SchoolListSection = () => {
 
   const paginationItems = getPaginationItems();
 
+  const FilterSection = ({ title, items, selectedItems, setSelectedItems, searchable = false, searchTerm = '', setSearchTerm, isExpanded, onToggle, showCount = false, field }: any) => (
+    <div className="border-b border-gray-100 pb-4">
+      <button
+        onClick={onToggle}
+        className="flex items-center justify-between w-full py-2 text-left"
+      >
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium text-gray-900">{title}</h3>
+        </div>
+        <IoAdd className="h-4 w-4 text-blue-500" />
+      </button>
+      
+      {/* Show applied filters when minimized */}
+      {!isExpanded && selectedItems.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1">
+          {selectedItems.map((item: string) => (
+            <div key={item} className="flex items-center gap-1 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+              <span>{item}</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeFilter(item, selectedItems, setSelectedItems);
+                }}
+                className="hover:bg-blue-200 rounded-full p-0.5"
+              >
+                <IoClose className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      
+      {isExpanded && (
+        <div className="mt-3 space-y-2">
+          {searchable && (
+            <div className="relative">
+              <input
+                type="text"
+                placeholder={`Search ${title}...`}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+          )}
+          
+          <div className="max-h-48 overflow-y-auto space-y-1">
+            {items
+              .filter((item: string) => 
+                !searchable || item.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+              .map((item: string) => (
+              <label key={item} className="flex items-center justify-between py-1 px-2 hover:bg-gray-50 rounded text-sm">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.includes(item)}
+                    onChange={() => handleCheckboxChange(item, selectedItems, setSelectedItems)}
+                    className="h-3 w-3 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="text-gray-700">{item}</span>
+                </div>
+                <span className="text-xs text-gray-500">({getCount(field, item)})</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <section className="w-full bg-[#F7F1EE] py-8">
+    <section className="w-full bg-[#F7F1EE] pt-8 pb-16">
       <div className="mx-auto flex w-full max-w-[1380px] flex-col lg:flex-row gap-6 px-4 sm:px-6 lg:px-8 mt-4">
         
         {/* Sidebar Filters */}
-        <aside className="w-full lg:w-[320px] h-fit lg:max-h-[calc(100vh-100px)] overflow-y-auto bg-white p-6 space-y-6 rounded-xl shadow-md">
-          
-          {/* Board */}
-          <div>
-            <h3 className="text-[22px] font-medium text-[#257B5A] mb-3">Filter By Board</h3>
-            <div className="space-y-2">
-              {boardList.map(board => (
-                <label key={board} className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-md transition-all duration-200">
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedBoards.includes(board)}
-                      onChange={() => handleCheckboxChange(board, selectedBoards, setSelectedBoards)}
-                      className="appearance-none h-5 w-5 rounded-[3px] border-2 border-gray-300 checked:bg-[#50B848] checked:border-transparent focus:outline-none"
-                    />
-                    <span className="text-[16px] text-[#6C6B6B]">{board}</span>
-                  </div>
-                  <span className="text-[14px] text-[#353535]">({getCount('board', board)})</span>
-                </label>
-              ))}
+        <aside className="w-full lg:w-[280px] h-fit bg-white rounded-lg shadow-sm border border-gray-200">
+          {/* Header */}
+          <div className="p-4 border-b border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+            </div>
+            
+            {/* Search */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search schools..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
             </div>
           </div>
 
-          {/* Medium */}
-          <div>
-            <h3 className="text-[22px] font-medium text-[#257B5A] mb-3">Filter By Medium</h3>
-            <div className="space-y-2">
-              {displayedMediums.map(medium => (
-                <label key={medium} className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-md transition-all duration-200">
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedMediums.includes(medium)}
-                      onChange={() => handleCheckboxChange(medium, selectedMediums, setSelectedMediums)}
-                      className="appearance-none h-5 w-5 rounded-[3px] border-2 border-gray-300 checked:bg-[#50B848] checked:border-transparent focus:outline-none"
-                    />
-                    <span className="text-[16px] text-[#6C6B6B]">{medium}</span>
-                  </div>
-                  <span className="text-[14px] text-[#353535]">(10)</span>
-                </label>
-              ))}
-            </div>
-            {mediumList.length > 5 && (
-              <button onClick={() => setShowAllMediums(!showAllMediums)} className="mt-3 text-[14px] font-medium text-[#101CFB]">
-                {showAllMediums ? 'Show less' : 'Show more'}
-              </button>
-            )}
-          </div>
-
-          {/* Range */}
-          <div>
-            <h3 className="text-[22px] font-medium text-[#257B5A] mb-3">Range</h3>
-            <input
-              type="range"
-              min={1}
-              max={50}
-              value={range}
-              onChange={e => setRange(Number(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#AA0111]"
+          {/* Filter Content */}
+          <div className="p-4 space-y-4">
+            {/* Board */}
+            <FilterSection
+              title="Board"
+              items={boardList}
+              selectedItems={selectedBoards}
+              setSelectedItems={setSelectedBoards}
+              searchable={true}
+              searchTerm={boardSearch}
+              setSearchTerm={setBoardSearch}
+              isExpanded={expandedSections.board}
+              onToggle={() => toggleSection('board')}
+              showCount={true}
+              field="board"
             />
-            <p className="text-[#AA0111] mt-2 text-[14px]">{range}km</p>
-          </div>
 
-          {/* Category */}
-          <div>
-            <h3 className="text-[22px] font-medium text-[#257B5A] mb-3">Filter By Category</h3>
-            <div className="space-y-2">
-              {categoryList.map(category => (
-                <label key={category} className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-md transition-all duration-200">
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedCategories.includes(category)}
-                      onChange={() => handleCheckboxChange(category, selectedCategories, setSelectedCategories)}
-                      className="appearance-none h-5 w-5 rounded-[3px] border-2 border-gray-300 checked:bg-[#50B848] checked:border-transparent focus:outline-none"
-                    />
-                    <span className="text-[16px] text-[#6C6B6B]">{category}</span>
+            {/* Medium */}
+            <FilterSection
+              title="Medium"
+              items={mediumList}
+              selectedItems={selectedMediums}
+              setSelectedItems={setSelectedMediums}
+              searchable={true}
+              searchTerm={mediumSearch}
+              setSearchTerm={setMediumSearch}
+              isExpanded={expandedSections.medium}
+              onToggle={() => toggleSection('medium')}
+              showCount={true}
+              field="medium"
+            />
+
+            {/* Category */}
+            <FilterSection
+              title="Category"
+              items={categoryList}
+              selectedItems={selectedCategories}
+              setSelectedItems={setSelectedCategories}
+              isExpanded={expandedSections.category}
+              onToggle={() => toggleSection('category')}
+              showCount={true}
+              field="category"
+            />
+
+            {/* Range */}
+            <div className="border-b border-gray-100 pb-4">
+              <button
+                onClick={() => toggleSection('range')}
+                className="flex items-center justify-between w-full py-2 text-left"
+              >
+                <h3 className="text-sm font-medium text-gray-900">Range</h3>
+                <IoAdd className="h-4 w-4 text-blue-500" />
+              </button>
+              
+              {/* Show range value when minimized */}
+              {!expandedSections.range && range > 1 && (
+                <div className="mt-2">
+                  <div className="flex items-center gap-1 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full w-fit">
+                    <span>{range} km</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setRange(1);
+                      }}
+                      className="hover:bg-blue-200 rounded-full p-0.5"
+                    >
+                      <IoClose className="h-3 w-3" />
+                    </button>
                   </div>
-                  <span className="text-[14px] text-[#353535]">(10)</span>
-                </label>
-              ))}
+                </div>
+              )}
+              
+              {expandedSections.range && (
+                <div className="mt-3">
+                  <input
+                    type="range"
+                    min="1"
+                    max="50"
+                    value={range}
+                    onChange={(e) => setRange(Number(e.target.value))}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>1 km</span>
+                    <span>{range} km</span>
+                    <span>50 km</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </aside>
 
         {/* School Cards */}
-        <div className="w-full lg:w-[calc(100%-336px)] flex flex-col gap-6">
+        <div className="w-full lg:w-[calc(100%-296px)] flex flex-col gap-6">
           <h2 className="text-2xl md:text-3xl font-semibold text-[#1E1E1E] mb-2">Schools Near You</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

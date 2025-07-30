@@ -317,9 +317,9 @@ const SchoolListingPage = () => {
     };
 
     return (
-        <div className="bg-[#FDF8F4] font-sans min-h-screen">
+        <div className="bg-[#F7F1EE] font-sans min-h-screen">
             <main>
-                <section className="max-w-[1380px] mx-auto py-8 px-4 sm:px-6 lg:px-8 mt-4">
+                <section className="max-w-[1380px] mx-auto py-8 px-4 sm:px-6 lg:px-8 mt-4 mb-16">
                     <h1 className="text-2xl sm:text-3xl md:text-[32px] font-medium text-[#333333] mb-6">School Listing</h1>
                     
                     {/* Search and Filters Row */}
@@ -402,13 +402,14 @@ const SchoolListingPage = () => {
                     </div>
                     {/* School Cards */}
                     {displayedSchools.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {displayedSchools.map((school) => (
                               <SchoolCard
                                 key={school.id}
                                 name={school.name}
                                 image={school.imageUrl}
                                 desc={school.location + ' | ' + school.board + ' | ' + school.medium + ' | ' + school.category}
+                                logoUrl={school.logoUrl}
                               />
                             ))}
                         </div>

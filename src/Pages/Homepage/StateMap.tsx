@@ -55,7 +55,7 @@ const NationwideFootprint = () => {
 
 
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-start">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-14 items-start">
 
         {/* Left Column - Scrollable Cards */}
         <div className="w-full lg:w-1/2 relative h-[550px] sm:h-[600px] overflow-hidden">
@@ -120,17 +120,19 @@ const NationwideFootprint = () => {
   Nationwide Footprint
 </h2>
 
-          <p className="text-[16px] sm:text-[18px] lg:text-[20px] text-white mb-4 max-w-[90%]">
+          <p className="text-[16px] sm:text-[18px] lg:text-[20px] text-white mb-2 max-w-[100%]">
             Sainik Schools are strategically located across states to provide equal opportunity
             and access to disciplined, defense-oriented education.
           </p>
+         
           <Image
             src="/homePage/map.png"
             alt="India Map"
             width={500}
-            height={400}
-            className="object-contain w-full max-w-[500px] h-auto"
+            height={390}
+            className="object-contain w-full max-w-[500px] h-auto ml-20"
           />
+          
         </div>
       </div>
     </section>
