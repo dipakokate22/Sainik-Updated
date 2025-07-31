@@ -330,7 +330,7 @@ const SchoolListingPage = () => {
                                 placeholder="Search school" 
                                 value={searchTerm} 
                                 onChange={(e) => setSearchTerm(e.target.value)} 
-                                className="w-full h-[51px] pl-12 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A91D3A] text-[15px] font-light text-gray-900" 
+                                className="w-120 h-[51px] pl-12 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A91D3A] text-[15px] font-light text-gray-900" 
                             />
                         </div>
                         

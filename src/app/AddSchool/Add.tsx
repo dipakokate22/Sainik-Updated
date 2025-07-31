@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const AddSchoolPage = () => {
   return (
-    <main className="bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-[120px] py-10 lg:py-[80px] min-h-screen flex flex-col items-center mb-[80px]">
+    <main className="bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-[120px] py-4 lg:pt-[60px] pb-[80px] min-h-screen flex flex-col items-center">
       {/* Header */}
       <header className="text-center mb-10 px-2">
         <h1 className="text-[22px] sm:text-[26px] md:text-[30px] lg:text-[32px] font-medium text-gray-800">
@@ -135,7 +135,7 @@ const AddSchoolPage = () => {
 
           {/* Terms & Submit */}
           <div>
-            <div className="flex items-start mb-8 sm:mb-10">
+            <div className="flex items-start mb-6 sm:mb-10">
               <input
                 type="checkbox"
                 id="terms"

@@ -49,8 +49,8 @@ export default function Navbar() {
   }, [mobileMenuOpen]);
 
   return (
-    <div className="px-3 sm:px-0">
-  <div className="bg-[#1C1F24] w-full rounded-[16px] md:rounded-[20px] max-w-[1380px] mx-auto mt-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white py-[18px] relative">
+    <div className="px-4 sm:px-6 lg:px-8 xl:px-12">
+      <div className="bg-[#1C1F24] w-full rounded-[16px] md:rounded-[20px] max-w-[1380px] mx-auto mt-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white py-[18px] relative">
 
       <div className="flex justify-between items-center">
         {/* Left Logo & Search */}
@@ -71,7 +71,7 @@ export default function Navbar() {
     <input
       type="text"
       placeholder="Search"
-      className="outline-none text-sm font-normal w-32 bg-transparent placeholder-gray-400 text-[#257B5A] ml-2"
+      className="outline-none text-sm font-normal w-48 bg-transparent placeholder-gray-400 text-[#257B5A] ml-2"
     />
   </div>
 </div>
@@ -95,7 +95,7 @@ export default function Navbar() {
 
             {/* Dropdown Items */}
             {isExploreOpen && (
-              <div className="absolute top-[50px] right-0 w-56 bg-[#1C1F24] text-white rounded-xl shadow-xl p-2 z-50">
+              <div className="absolute top-[70px] right-0 w-56 bg-[#1C1F24] text-white rounded-xl shadow-xl p-2 z-50">
                 <ul className="space-y-1 text-sm">
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/Schools">Recommended Schools</Link>
@@ -116,7 +116,7 @@ export default function Navbar() {
                     <Link href="/NewsUpdates">News & Blogs</Link>
                   </li>
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
-                    <Link href="/contact">Contact Us</Link>
+                    <Link href="/ContactUs">Contact Us</Link>
                   </li>
                 </ul>
               </div>

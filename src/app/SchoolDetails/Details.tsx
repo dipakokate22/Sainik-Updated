@@ -53,71 +53,79 @@ const HorizontalSchoolCard = ({ name, image, location, distance, rating }: {
 
 export default function SchoolDetailSection() {
   return (
-    <section className="w-full bg-[#f9f4f2] py-8">
+    <section className="w-full bg-[#F7F1EE] pt-8 pb-16">
       {/* Top Bar Section */}
-      <div className="w-full min-h-[220px] bg-[#DAEADD] flex justify-center items-start pt-5 px-2 sm:px-4 md:px-8 lg:px-[40px]">
-        <div className="w-full max-w-[1358px] flex flex-col gap-6 relative">
-
-          {/* Top Back Button - Absolute aligned top-left */}
-          <div className="absolute top-[10px] left-0 flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-            <span className="text-[20px]">←</span>
-            <span>Back</span>
+      <div className="w-full bg-[#DAEADD] pt-10 pb-14 px-2 sm:px-4 md:px-8 lg:px-[60px]  relative">
+        <div className="w-full max-w-full mx-auto">
+          
+          {/* Back Button */}
+          <div className="flex items-center gap-2 text-gray-700 cursor-pointer hover:text-gray-900 transition-colors mb-6">
+            <span className="text-[18px]">←</span>
+            <span className="text-[16px] font-medium">Back</span>
           </div>
 
-          {/* Spacer to push main content below the back button */}
-          <div className="h-[40px]" />
-
-          {/* Main Content Row */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 md:gap-0">
-
-            {/* Left Section: Logo + Details */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full md:w-auto">
-              {/* Logo Card */}
-              <div className="w-[120px] h-[120px] sm:w-[160px] sm:h-[160px] rounded-xl bg-[#D9D9D9] flex items-center justify-center p-4">
-                <div className="w-[90px] h-[90px] sm:w-[133px] sm:h-[133px] rounded-full overflow-hidden border border-gray-300">
+          {/* Main Content */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+            
+            {/* Left Section: Logo + School Info */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 flex-1">
+              
+              {/* School Logo */}
+              <div className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] rounded-2xl bg-white shadow-lg flex items-center justify-center p-3 flex-shrink-0">
+                <div className="w-[90px] h-[90px] sm:w-[110px] sm:h-[110px] rounded-full overflow-hidden border-2 border-gray-100">
                   <Image
                     src="/Listing/Logo.png"
                     alt="School Logo"
-                    width={133}
-                    height={133}
+                    width={110}
+                    height={110}
                     className="w-full h-full object-cover"
                   />
                 </div>
               </div>
 
-              {/* Text Info */}
-              <div className="text-center sm:text-left">
-                <h2 className="text-[22px] sm:text-[28px] md:text-[32px] font-poppins font-semibold text-black">
+              {/* School Details */}
+              <div className="text-center sm:text-left flex-1">
+                <h1 className="text-[28px] sm:text-[32px] lg:text-[36px] font-bold text-gray-900 font-poppins leading-tight mb-1">
                   Sainik School, Pune
-                </h2>
-                <p className="text-[15px] sm:text-[16px] font-poppins font-regular text-[#9B85E9] mt-1">
-                  Pune, Maharashtra – 411030
+                </h1>
+                
+                <p className="text-[16px] sm:text-[18px] font-medium text-[#8B5CF6] mb-2 flex items-center gap-1 justify-center sm:justify-start">
+                  <span>📍</span>
+                  Pune, Maharashtra - 411030
                 </p>
-                <p className="text-[15px] sm:text-[16px] font-poppins font-regular text-black mt-1 flex items-center gap-1 justify-center sm:justify-start">
-                  2.3 Km Away |
-                  <span className="text-[16px] text-[#257B5A]">★★★★☆</span>
-                </p>
+                
+                <div className="flex items-center gap-3 mb-2 justify-center sm:justify-start">
+                  <span className="text-[15px] font-medium text-gray-600">2.3 Km Away</span>
+                  <span className="text-gray-400">|</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[16px] text-yellow-500">★★★★</span>
+                    <span className="text-[16px] text-gray-300">★</span>
+                    <span className="text-[14px] text-gray-600 ml-1">(4.0)</span>
+                  </div>
+                </div>
 
                 {/* Badges */}
-                <div className="flex gap-2 mt-3 justify-center sm:justify-start">
-                  <span className="bg-[#257B5A] font-poppins font-medium text-white px-3 py-1 rounded-full text-[12px]">
+                <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+                  <span className="bg-[#257B5A] text-white px-3 py-1.5 rounded-full text-[12px] font-semibold">
                     CBSE
                   </span>
-                  <span className="bg-[#257B5A] font-poppins font-medium text-white px-3 py-1 rounded-full text-[12px]">
+                  <span className="bg-[#257B5A] text-white px-3 py-1.5 rounded-full text-[12px] font-semibold">
                     English
                   </span>
-                  <span className="bg-[#257B5A] font-poppins font-medium text-white px-3 py-1 rounded-full text-[12px]">
+                  <span className="bg-[#257B5A] text-white px-3 py-1.5 rounded-full text-[12px] font-semibold">
                     Co-ed
                   </span>
                 </div>
               </div>
             </div>
-
-            {/* Register Button */}
-            <button className="w-full md:w-[265px] h-[50px] md:h-[65px] bg-[#1C1F24] text-white text-[18px] md:text-[20px] font-semibold rounded-full mt-4 md:mt-0">
-              Register
-            </button>
           </div>
+        </div>
+        
+        {/* Register Button - Absolutely positioned in center */}
+        <div className="absolute top-1/2 right-8 lg:right-[60px] transform -translate-y-1/2">
+          <button className="w-[280px] h-[60px] bg-[#1F2937] hover:bg-[#374151] text-white text-[18px] font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+            Register
+          </button>
         </div>
       </div>
 
@@ -220,53 +228,53 @@ export default function SchoolDetailSection() {
             </div>
 
             {/* Admission Dates */}
-            <div className="mb-6 bg-white border rounded-lg text-black font-poppins px-4 md:px-[26px] py-[25px]">
+            <div className="mb-6 bg-white border rounded-lg  px-4 md:px-[26px] py-[25px]">
               <h4 className="text-[20px] text-black font-semibold mb-2">Admission Criteria & Eligibility</h4>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class I</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class II</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class III</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class VI</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class V</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class VI</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class VII</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class VIII</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class X</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class X</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class XI</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class XII</span>
               </li>
@@ -274,33 +282,33 @@ export default function SchoolDetailSection() {
             </div>
 
             {/* School Hours */}
-            <div className="mb-6 bg-white border rounded-lg text-black font-poppins px-4 md:px-[26px] py-[25px]">
+            <div className="mb-6 bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
               <h4 className="text-[20px] text-black font-semibold mb-2">School Hours</h4>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Monday : 10 AM - 4 PM</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Tuesday : 10 AM - 4 PM</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Wednesday : 10 AM - 4 PM</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Thursday : 10 AM - 4 PM</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Friday : 10 AM - 4 PM</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Saturday : 10 AM - 4 PM</span>
               </li>
-              <li className="flex items-start gap-2 text-[16px]">
+              <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Sunday : Holiday</span>
               </li>
@@ -336,7 +344,7 @@ export default function SchoolDetailSection() {
 
             {/* Embedded Map */}
             <div className="w-full bg-white rounded-lg border pt-[25px] pb-[25px] px-4 md:pl-[23px] md:pr-[23px]">
-              <h4 className="font-semibold font-poppins text-[20px] sm:text-[22px] md:text-[24px] mb-2">Explore Location</h4>
+              <h4 className="font-semibold font-poppins text-[20px] text-black sm:text-[22px] md:text-[24px] mb-2">Explore Location</h4>
               <iframe
                 title="School Location"
                 src="https://maps.google.com/maps?q=Sainik%20School,%20Pune&t=&z=13&ie=UTF8&iwloc=&output=embed"

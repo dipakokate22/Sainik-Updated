@@ -4,7 +4,7 @@ import Image from 'next/image';
 const SainikPointsSection = () => {
   return (
     <section className="max-w-[1440px] mx-auto px-4 pt-16 pb-16 ">
-      <div className="w-full max-w-[1306px] mx-auto space-y-16">
+      <div className="w-full max-w-[1306px] mx-auto space-y-8">
         {/* Row 1 - Life of a Sainik */}
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* Left Image */}

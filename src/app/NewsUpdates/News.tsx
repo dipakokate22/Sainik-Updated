@@ -15,18 +15,18 @@ const newsData = [...Array(9)].map((_, i) => ({
 const NewsAndBlogsSection = () => {
   return (
     <>
-<div className="w-full h-[246px] bg-[#DFEEDF] mt-8">
-      <div className="max-w-[1277px] h-full mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
+<div className="w-full h-[230px] mt-2">
+      <div className="max-w-full h-full mx-auto px-2 sm:px-4 lg:px-22 flex flex-col justify-center">
         {/* Breadcrumb */}
         <p className="text-sm text-black/70">Home / Blog & News</p>
 
         {/* Title */}
-        <h1 className="text-2xl sm:text-3xl text-black font-semibold mt-2">
+        <h1 className="text-2xl sm:text-3xl text-black font-semibold mt-6">
           Sainik School Blogs
         </h1>
 
         {/* Search Box */}
-        <div className="mt-6 w-full max-w-[637px] h-[57px] bg-[#D5D5D5] rounded-lg flex items-center px-4 gap-3">
+        <div className="mt-4 w-full max-w-[637px] h-[57px] bg-[#D5D5D5] rounded-lg flex items-center px-4 gap-3">
           <FaSearch className="text-gray-500" />
           <input
             type="text"
@@ -36,9 +36,9 @@ const NewsAndBlogsSection = () => {
         </div>
       </div>
     </div>
-    <section className="w-full px-4 py-8 font-poppins">
+    <section className="w-full px-4 pt-4 pb-16 font-poppins">
   {/* Cards Section */}
-  <div className="max-w-[1277px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
+  <div className="max-w-[1277px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6">
     {newsData.map((news) => (
       <div
         key={news.id}

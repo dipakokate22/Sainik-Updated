@@ -100,8 +100,8 @@ const AboutUsSection = () => {
   return (
     <section className="w-full">
       {/* Breadcrumb + Content */}
-      <div className="w-full px-4 sm:px-6 lg:px-0 max-w-[1135px] mx-auto pt-10">
-        <p className="text-sm sm:text-base text-black font-light font-poppins">
+      <div className="w-full px-4 sm:px-6 lg:px-0 max-w-[1135px] mx-auto pt-12 pb-10">
+        <p className="text-sm sm:text-base text-black font-light font-poppins mb-8">
           <Link href="/" className="text-[#10744E] hover:underline">Home</Link> / About Us
         </p>
 
@@ -136,8 +136,8 @@ const AboutUsSection = () => {
       </div>
 
       {/* Modern Stats Section (No Animations) */}
-      <div className="w-full mt-16 px-4 sm:px-6">
-        <div className="max-w-[1100px] mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div className="w-full  px-4 sm:px-6">
+        <div className="max-w-[1100px] pt-16 pb-16 mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* Stat Card 1 */}
           <div className="flex flex-col items-center text-center p-6 border rounded-2xl shadow-sm hover:shadow-md transition duration-300 bg-white">
             <Image
@@ -181,20 +181,19 @@ const AboutUsSection = () => {
 
       {/* Associated Partners Section - Subtle Animations Only */}
       <section 
-        className="w-full bg-[#F7F1EE] from-slate-50 to-blue-50 pt-14 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden"
-        style={{ marginTop: '80px', marginBottom: '80px' }}
+        className="w-full bg-[#F7F1EE] from-slate-50 to-blue-50 pt-16 pb-18 px-4 sm:px-6 lg:px-8 overflow-hidden"
+        
       >
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
             <h2 
               ref={titleRef}
-              className="text-4xl lg:text-5xl xl:text-6xl font-semibold text-gray-900 mb-6"
+              className="text-4xl lg:text-5xl xl:text-6xl font-semibold text-gray-900 mb-4"
               style={{ fontSize: '36px', fontFamily: 'Poppins, sans-serif' }}
             >
               Our Associated Partners
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full"></div>
           </div>
 
           {/* Partners Grid */}
