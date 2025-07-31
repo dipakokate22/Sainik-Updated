@@ -26,13 +26,13 @@ export default function SchoolsSection() {
     <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
       Explore Best Schools Near You
     </h2>
-    <p className="text-base md:text-lg text-black/80 mt-3">
+    <p className="text-base md:text-lg text-black/80 mt-2">
       Discover innovative designs that inspire learning.
     </p>
   </div>
 
   {/* Cards */}
-  <div className="mt-12 grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full justify-items-center">
+  <div className="mt-10 grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full justify-items-center">
     {Array(2)
       .fill(schools)
       .flat()

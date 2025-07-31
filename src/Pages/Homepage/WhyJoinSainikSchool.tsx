@@ -76,13 +76,13 @@ const WhyJoinSainikSchool = () => {
         <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
           Why Join <br /> Sainik School?
         </h2>
-        <p className="text-base sm:text-lg mb-6 leading-relaxed">
+        <p className="text-base sm:text-lg mb-4 leading-relaxed">
           Where courage meets discipline, and education <br />
           shapes future defense leaders. <br />
           Sainik Schools are more than institutions — they <br />
           are launchpads for tomorrow’s heroes.
         </p>
-        <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full mt-6 hover:bg-green-800 transition">
+        <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full mt-4 hover:bg-green-800 transition">
           Explore All Schools
         </button>
       </div>

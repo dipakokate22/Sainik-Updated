@@ -3,15 +3,11 @@
 
 import SchoolCard from '../../Components/SchoolCard';
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { FaSearch, FaFilter, FaTimes, FaMapMarkerAlt, FaStar, FaRegStar, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaSearch, FaTimes, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 // --- SVG ICONS REPLACED WITH REACT-ICONS ---
 const SearchIcon = () => <FaSearch className="h-5 w-5 text-gray-400" />;
-const FilterIcon = () => <FaFilter className="h-6 w-6 text-gray-700" />;
 const CloseIcon = ({ className = "h-4 w-4" }: { className?: string }) => <FaTimes className={`${className} text-gray-500 hover:text-gray-800`} />;
-const LocationIcon = () => <FaMapMarkerAlt className="h-4 w-4" />;
-const StarFilledIcon = () => <FaStar className="h-5 w-5 text-yellow-400" />;
-const StarOutlineIcon = () => <FaRegStar className="h-5 w-5 text-yellow-400" />;
 const ChevronDownIcon = () => <FaChevronDown className="h-4 w-4 text-gray-500" />;
 const ChevronUpIcon = () => <FaChevronUp className="h-4 w-4 text-gray-500" />;
 
@@ -317,9 +313,9 @@ const SchoolListingPage = () => {
     };
 
     return (
-        <div className="bg-[#FDF8F4] font-sans min-h-screen">
+        <div className="bg-[#F7F1EE] font-sans min-h-screen">
             <main>
-                <section className="max-w-[1380px] mx-auto py-8 px-4 sm:px-6 lg:px-8 mt-4">
+                <section className="max-w-[1380px] mx-auto py-8 px-4 sm:px-6 lg:px-8 mt-4 mb-16">
                     <h1 className="text-2xl sm:text-3xl md:text-[32px] font-medium text-[#333333] mb-6">School Listing</h1>
                     
                     {/* Search and Filters Row */}
@@ -402,13 +398,14 @@ const SchoolListingPage = () => {
                     </div>
                     {/* School Cards */}
                     {displayedSchools.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {displayedSchools.map((school) => (
                               <SchoolCard
                                 key={school.id}
                                 name={school.name}
                                 image={school.imageUrl}
                                 desc={school.location + ' | ' + school.board + ' | ' + school.medium + ' | ' + school.category}
+                                logoUrl={school.logoUrl}
                               />
                             ))}
                         </div>

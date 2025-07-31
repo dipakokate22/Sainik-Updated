@@ -149,7 +149,7 @@ const AddSchoolPage = () => {
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="bg-[#1E6741] text-white w-[180px] sm:w-[200px] md:w-[220px] h-[48px] sm:h-[54px] text-[16px] sm:text-[18px] font-medium rounded-md hover:bg-opacity-90 transition"
+                className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full hover:bg-green-800 transition"
               >
                 Submit
               </button>

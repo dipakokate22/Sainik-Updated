@@ -1,10 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import clsx from 'clsx';
-import MySchool from '@/Components/Dashboard/MySchool/myschool';
-import Header from '@/Components/Dashboard/SharedSchool/Header';
-import Sidebar from '@/Components/Dashboard/SharedSchool/Sidebar';
+import MySchool from '@/Components/Dashboard/MySchool/myschool'
 
 
 const MySchoolRoutePage = () => {

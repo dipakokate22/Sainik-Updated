@@ -18,7 +18,7 @@ export default function SchoolCard({ name, image, desc, logo }: SchoolCardProps)
           src={image}
           alt={name}
           width={400}
-          height={192}
+          height={130}
           className="object-cover w-full h-full"
         />
       </div>
@@ -54,7 +54,7 @@ export default function SchoolCard({ name, image, desc, logo }: SchoolCardProps)
             <span className="bg-[#DAEADD] text-black px-3 py-1 rounded-md text-xs font-medium">Rating</span>
           </div>
 
-          <div className="flex items-center mt-3 text-xl">
+          <div className="flex items-center text-lg mb-1">
             <span className="text-yellow-400">★</span>
             <span className="text-yellow-400">★</span>
             <span className="text-yellow-400">★</span>
@@ -62,7 +62,7 @@ export default function SchoolCard({ name, image, desc, logo }: SchoolCardProps)
             <span className="text-gray-300">★</span>
           </div>
 
-          <button className="text-green-700 mt-2 text-sm font-medium hover:underline">
+          <button className="text-green-700 text-sm font-medium hover:underline">
             View Details →
           </button>
         </div>

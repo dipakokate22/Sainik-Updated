@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { FaMapMarkerAlt, FaSearch, FaBars, FaTimes, FaHome, FaSchool, FaInfoCircle, FaGraduationCap, FaNewspaper, FaEnvelope, FaPlus } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaSearch, FaBars, FaTimes, FaHome, FaSchool, FaInfoCircle, FaNewspaper, FaEnvelope, FaPlus } from 'react-icons/fa';
 import { IoIosArrowDown } from 'react-icons/io';
 import ProfileDropdown from './ProfileDropdown';
 
@@ -10,7 +10,7 @@ export default function Navbar() {
   const [isExploreOpen, setIsExploreOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const exploreDropdownRef = useRef<HTMLDivElement>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Assume true for demo
+  const [isLoggedIn] = useState(true); // Assume true for demo
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -84,7 +84,7 @@ export default function Navbar() {
           <div className="relative" ref={exploreDropdownRef}>
             <button
   onClick={() => setIsExploreOpen(!isExploreOpen)}
-  className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2"
+  className="bg-[#AA0111] text-white text-[16px] font-medium px-6 py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2"
 >
   Explore
   <IoIosArrowDown
@@ -108,7 +108,10 @@ export default function Navbar() {
                     <Link href="/About">About Us</Link>
                   </li>
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
-                    <Link href="/SchoolDetails">Career Counselling</Link>
+                    <Link href="/CarrerCounselling">Career Counselling</Link>
+                  </li>
+                  <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
+                    <Link href="/SchoolDetails">School Details</Link>
                   </li>
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/NewsUpdates">News & Blogs</Link>

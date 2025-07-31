@@ -113,32 +113,32 @@ export default function HeroSection() {
         <div className="w-full lg:w-1/2 lg:pl-8">
 
           {!isMobile ? (
-            <div className="flex gap-4 overflow-hidden max-h-[830px]">
+            <div className="flex gap-5 overflow-hidden max-h-[830px]">
               {/* Column 1 */}
-              <div className="col-left flex flex-col gap-4">
+              <div className="col-left flex flex-col gap-5">
                 {images.map((img, index) => (
                   <Image
   key={`left-${index}`}
   src={img}
   alt={`col1-${index}`}
-  width={311}
-  height={331}
-  className="scroll-image rounded-lg object-cover w-[311px] h-auto"
+  width={300}
+  height={260}
+  className="scroll-image rounded-lg object-cover w-[300px] h-[260px]"
 />
 
                 ))}
               </div>
 
               {/* Column 2 */}
-              <div className="col-right flex flex-col gap-4">
+              <div className="col-right flex flex-col gap-5">
                 {images.map((img, index) => (
                   <Image
   key={`right-${index}`}
   src={img}
   alt={`col2-${index}`}
-  width={311}
-  height={331}
-  className="scroll-image rounded-lg object-cover w-[311px] h-auto"
+  width={300}
+  height={260}
+  className="scroll-image rounded-lg object-cover w-[300px] h-[260px]"
 />
 
                 ))}
@@ -154,9 +154,9 @@ export default function HeroSection() {
                     <Image
                       src={img}
                       alt={`row1-${index}`}
-                      width={160}
-                      height={160}
-                      className="rounded-lg object-cover w-[160px] h-[160px]"
+                      width={140}
+                      height={140}
+                      className="rounded-lg object-cover w-[140px] h-[140px]"
                     />
                   </div>
                 ))}

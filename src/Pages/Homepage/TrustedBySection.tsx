@@ -38,17 +38,17 @@ gsap.to(target, {
     return () => ctx.revert();
   }, []);
 
-  const loopItems = [...logos, ...logos];
+  const loopItems = [...logos, ...logos, ...logos]; // Triple the items for better seamless loop
 
   return (
-    <section className="bg-[#f8f1ed] pt-12 pb-16 w-full overflow-hidden">
+    <section className="bg-[#F7F1EE] pt-12 pb-16 w-full overflow-hidden">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 text-center">
-         <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-6">
+         <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-8">
           Trusted by top educational <br className="hidden sm:block" />
           institutions worldwide
         </h2>
 
-        {/* Row 1 */}
+        {/* Row 1 - Moving Left */}
         <div className="overflow-hidden w-full mb-6">
           <div className="flex w-max gap-8 sm:gap-12" ref={row1Ref}>
             {loopItems.map((item, idx) => (
@@ -63,7 +63,7 @@ gsap.to(target, {
                   height={40}
                   className="mr-2 sm:mr-3 w-8 h-8 sm:w-10 sm:h-10"
                 />
-                <span className="text-sm sm:text-base md:text-lg text-gray-800 font-poppins whitespace-nowrap">
+                <span className="text-sm sm:text-base md:text-lg text-black font-poppins whitespace-nowrap">
                   {item.name}
                 </span>
               </div>
@@ -71,7 +71,7 @@ gsap.to(target, {
           </div>
         </div>
 
-        {/* Row 2 */}
+        {/* Row 2 - Moving Right */}
         <div className="overflow-hidden w-full">
           <div className="flex w-max gap-8 sm:gap-12" ref={row2Ref}>
             {loopItems.map((item, idx) => (
@@ -86,7 +86,7 @@ gsap.to(target, {
                   height={40}
                   className="mr-2 sm:mr-3 w-8 h-8 sm:w-10 sm:h-10"
                 />
-                <span className="text-sm sm:text-base md:text-lg text-gray-800 font-poppins whitespace-nowrap">
+                <span className="text-sm sm:text-base md:text-lg text-black font-poppins whitespace-nowrap">
                   {item.name}
                 </span>
               </div>
