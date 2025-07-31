@@ -38,11 +38,13 @@ export default function SchoolsSection() {
       .flat()
       .map((school, idx) => (
         <SchoolCard
-          key={idx}
-          name={school.name}
-          image={school.image}
-          desc={school.desc}
-        />
+  key={idx}
+  name={school.name}
+  image={school.image}
+  logo={school.logo}
+  desc={school.desc}
+/>
+
       ))}
   </div>
 

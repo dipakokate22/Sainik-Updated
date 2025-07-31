@@ -49,7 +49,8 @@ export default function HeroSection() {
 
 
   return (
-    <section className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 font-poppins overflow-hidden">
+<section className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-30 pb-16 font-poppins overflow-hidden">
+
       <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
         {/* Left Column */}
         <div className="w-full lg:w-1/2 flex flex-col justify-start gap-6 text-center lg:text-left lg:-mt-80">
@@ -63,11 +64,10 @@ export default function HeroSection() {
           <p className="text-gray-600 text-[16px] sm:text-[18px] lg:text-[20px]">
             Trusted by Students, Schools & Cities Across India
           </p>
-
-          {/* Stats Row */}
-<div className="flex flex-col lg:flex-row gap-6 lg:gap-12 justify-center lg:justify-start mt-4">
+{/* Stats Row */}
+<div className="flex flex-wrap gap-6 lg:gap-12 justify-center mt-4">
   {/* Cities Covered */}
-  <div className="flex-1">
+  <div className="flex-1 min-w-[140px]">
     <div className="flex items-start gap-2">
       <span className="text-[20px] leading-[1] pt-[2px]">📍</span>
       <div>
@@ -75,14 +75,15 @@ export default function HeroSection() {
           Cities Covered
         </p>
         <p className="text-black text-[12px] sm:text-[14px] mt-1">
-          Across all major <br className="hidden sm:inline" /> Indian regions
+          Across all major <br className="block sm:hidden" />
+          Indian regions
         </p>
       </div>
     </div>
   </div>
 
   {/* Schools Listed */}
-  <div className="flex-1">
+  <div className="flex-1 min-w-[140px]">
     <div className="flex items-start gap-2">
       <span className="text-[20px] leading-[1] pt-[2px]">🏫</span>
       <div>
@@ -90,12 +91,14 @@ export default function HeroSection() {
           Schools Listed
         </p>
         <p className="text-black text-[12px] sm:text-[14px] mt-1">
-          From CBSE, ICSE, & <br className="hidden sm:inline" /> state boards
+          From CBSE, ICSE, & <br className="block sm:hidden" />
+          state boards
         </p>
       </div>
     </div>
   </div>
 </div>
+
 
 
           {/* Desktop CTA Button */}

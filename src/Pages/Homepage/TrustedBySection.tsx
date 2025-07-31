@@ -19,16 +19,16 @@ const TrustedBySection = () => {
     const ctx = gsap.context(() => {
       const loopScroll = (target: HTMLDivElement, reverse = false) => {
         const totalWidth = target.scrollWidth / 2;
+gsap.to(target, {
+  x: reverse ? totalWidth : -totalWidth,
+  duration: 30, // slowed down from 20 to 30
+  ease: 'linear',
+  repeat: -1,
+  modifiers: {
+    x: gsap.utils.unitize((x: string) => parseFloat(x) % totalWidth),
+  },
+});
 
-        gsap.to(target, {
-          x: reverse ? totalWidth : -totalWidth,
-          duration: 20,
-          ease: 'linear',
-          repeat: -1,
-          modifiers: {
-            x: gsap.utils.unitize((x: string) => parseFloat(x) % totalWidth),
-          },
-        });
       };
 
       if (row1Ref.current) loopScroll(row1Ref.current, false);

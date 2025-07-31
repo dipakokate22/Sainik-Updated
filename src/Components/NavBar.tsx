@@ -49,8 +49,9 @@ export default function Navbar() {
   }, [mobileMenuOpen]);
 
   return (
-    <div className="px-3 sm:px-0">
-  <div className="bg-[#1C1F24] w-full rounded-[16px] md:rounded-[20px] max-w-[1380px] mx-auto mt-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white py-[18px] relative">
+   <div className="fixed top-0 left-0 w-full z-50 bg-transparent">
+  <div className="px-3 sm:px-0">
+    <div className="bg-[#1C1F24] w-full rounded-[16px] md:rounded-[20px] max-w-[1380px] mx-auto mt-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white py-[18px] relative">
 
       <div className="flex justify-between items-center">
         {/* Left Logo & Search */}
@@ -301,5 +302,7 @@ export default function Navbar() {
       )}
     </div>
     </div>
+    </div>
+    
   );
 }

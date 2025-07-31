@@ -55,7 +55,8 @@ const NationwideFootprint = () => {
 
 
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-start">
+      <div className="max-w-7xl mx-auto flex flex-col-reverse lg:flex-row gap-12 items-start">
+
 
         {/* Left Column - Scrollable Cards */}
         <div className="w-full lg:w-1/2 relative h-[550px] sm:h-[600px] overflow-hidden">
