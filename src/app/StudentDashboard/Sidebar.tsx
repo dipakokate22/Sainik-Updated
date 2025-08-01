@@ -1,91 +1,132 @@
 'use client';
 
-import Image from 'next/image';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Poppins } from 'next/font/google';
+import {
+  ChevronLeft,
+  LogOut,
+  User,
+  School,
+  Library,
+  FileText,
+  ClipboardList,
+  CreditCard,
+  LayoutDashboard,
+  Menu,
+  X,
+} from 'lucide-react';
 
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['300', '400', '500', '700'],
 });
 
-// Define the props for the Sidebar component
 interface SidebarProps {
-  height: string;
+  height?: string;
   activePage: string;
+  isOpen?: boolean;
+  setIsOpen?: (val: boolean) => void;
 }
+
 
 const Sidebar = ({ height, activePage }: SidebarProps) => {
   const pathname = usePathname();
-  
+  const [isOpen, setIsOpen] = useState(false);
+
   const navItems = [
-    { name: 'Dashboard', href: '/StudentDashboard/dashboard' },
-    { name: 'Profile', href: '/StudentDashboard/profile' },
-    { name: 'Applied Schools', href: '/StudentDashboard/applied-schools' },
-    { name: 'Library', href: '/StudentDashboard/library' },
-    { name: 'Entrance Exams', href: '/StudentDashboard/entrance-exams' },
-    { name: 'Exam Results', href: '/StudentDashboard/exam-results' },
-    { name: 'Payment History', href: '/StudentDashboard/payment-history' },
+    { name: 'Dashboard', href: '/StudentDashboard/dashboard', icon: <LayoutDashboard size={18} /> },
+    { name: 'Profile', href: '/StudentDashboard/profile', icon: <User size={18} /> },
+    { name: 'Applied Schools', href: '/StudentDashboard/applied-schools', icon: <School size={18} /> },
+    { name: 'Library', href: '/StudentDashboard/library', icon: <Library size={18} /> },
+    { name: 'Entrance Exams', href: '/StudentDashboard/entrance-exams', icon: <FileText size={18} /> },
+    { name: 'Exam Results', href: '/StudentDashboard/exam-results', icon: <ClipboardList size={18} /> },
+    { name: 'Payment History', href: '/StudentDashboard/payment-history', icon: <CreditCard size={18} /> },
   ];
 
-  const isActive = (href: string) => {
-    return pathname === href || activePage === href.split('/').pop()?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
-  };
+  const isActive = (href: string) =>
+    pathname === href || activePage.toLowerCase().replace(' ', '-') === href.split('/').pop();
 
   return (
-    <div className={`relative w-[270px] bg-[#257B5A] text-white flex-shrink-0 ${poppins.className}`} style={{ height }}>
-      <Link href="/" className="absolute top-[17px] left-[31px] flex items-center cursor-pointer">
-        <div className="relative w-[31px] h-[31px]">
-          <div className="absolute top-[3.88px] left-[3.88px]">
-            <Image 
-              src="/images/Icon.png" 
-              alt="Back Icon" 
-              width={23.25} 
-              height={23.25}
-            />
-          </div>
+    <>
+      {/* Mobile Toggle Button */}
+      <button
+        className="md:hidden fixed top-4 left-4 z-50 bg-[#257B5A] p-2 rounded"
+        onClick={() => setIsOpen(true)}
+      >
+        <Menu className="text-white" />
+      </button>
+
+      {/* Mobile Overlay */}
+      {isOpen && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-20 z-40 md:hidden"
+    onClick={() => setIsOpen?.(false)}
+  />
+)}
+
+<div
+  className={`
+    fixed top-0 left-0 z-50 md:relative 
+    transition-transform duration-300 ease-in-out 
+    ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
+    w-[270px] bg-[#257B5A] text-white flex flex-col p-6 space-y-4 h-screen ${poppins.className}
+  `}
+>
+        {/* Close button for mobile */}
+        <div className="md:hidden flex justify-end mb-2">
+          <button onClick={() => setIsOpen(false)}>
+            <X size={24} />
+          </button>
         </div>
-        <p className="ml-2 text-[0.85rem] font-light">Back to Website</p>
-      </Link>
 
-      <div className="absolute top-[56px] w-[359px] border-t border-[#ACA9A9]"></div>
+        {/* Back to Website */}
+        <Link href="/" className="flex items-center gap-2 text-sm hover:underline">
+          <ChevronLeft size={24} />
+          <span>Back to Website</span>
+        </Link>
 
-      <div className="absolute top-[101px] left-[31px]">
-        <Image src="/images/sainik-logo.png" alt="Special Forces Logo" width={127} height={130} className="rounded-[5px]" />
-      </div>
+        {/* Logo */}
+        <div className="flex justify-center py-4">
+          <img src="/images/sainik-logo.png" alt="Logo" className="w-[127px] h-[130px] rounded-[5px]" />
+        </div>
 
-      <h1 className="absolute top-[248px] left-[32px] text-[1.125rem] font-medium">Hello, Dipali Kokate</h1>
-      <p className="absolute top-[297px] left-[32px] text-[0.85rem] font-normal">Student ID : 2025</p>
-      <p className="absolute top-[323px] left-[32px] text-[0.85rem] font-normal">Activation Date : 12-06-2025</p>
+        {/* User Info */}
+        <div className="text-sm space-y-1">
+          <h2 className="font-medium text-lg">Hello, Dipali Kokate</h2>
+          <p>Student ID: 2025</p>
+          <p>Activation Date: 12-06-2025</p>
+        </div>
 
-      <div className="absolute top-[366px] w-[270px] border-t border-[#979797]"></div>
-      
-      <div className="absolute top-[377.5px] w-full flex flex-col">
-        <div className="flex flex-col space-y-1.25 text-[0.85rem] font-light">
+        {/* Navigation */}
+        <nav className="flex flex-col gap-1 mt-4">
           {navItems.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className={`h-[30px] flex items-center pl-[32px] py-4 cursor-pointer transition-colors ${
+              onClick={() => setIsOpen(false)} // close sidebar on nav click (mobile)
+              className={`flex items-center gap-3 py-2 px-4 rounded-r-[15px] transition-colors ${
                 isActive(item.href)
-                  ? 'bg-[#AA0111] shadow-inner_custom rounded-r-[15px]'
+                  ? 'bg-[#AA0111] font-medium text-white shadow-inner_custom'
                   : 'hover:bg-[#2a8a63]'
               }`}
             >
-              <p className={`text-[0.85rem] ${isActive(item.href) ? 'font-medium text-white' : ''}`}>{item.name}</p>
+              {item.icon}
+              <span>{item.name}</span>
             </Link>
           ))}
+        </nav>
+
+        {/* Logout */}
+        <div className="mt-auto border-t border-[#979797] pt-3">
+          <button className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#2a8a63] w-full text-left">
+            <LogOut size={20} />
+            Logout
+          </button>
         </div>
-
-        <div className="w-full border-t border-[#979797] mt-3 mb-3"></div>
-
-        <button className="flex items-center pl-[31px] cursor-pointer hover:bg-[#2a8a63] py-2 transition-colors">
-          <Image src="/images/logout-icon.png" alt="Logout Icon" width={21} height={20} />
-          <p className="ml-2 text-[0.85rem] font-light">Logout</p>
-        </button>
       </div>
-    </div>
+    </>
   );
 };
 
