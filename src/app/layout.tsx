@@ -36,13 +36,10 @@ export default function RootLayout({
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    // This is the main container for your entire site.
-    // We apply the background color here.
     <div className="bg-[#F7F1EE] min-h-screen">
       <Navbar />
-      {/* This main tag will hold the page-specific content */}
-      {/* We apply the max-width and center it with mx-auto */}
-      <main className="max-w-full mx-auto">
+      {/* Add top padding to account for fixed navbar */}
+      <main className="max-w-full mx-auto pt-24 md:pt-28">
         {children}
       </main>
       <Footer />

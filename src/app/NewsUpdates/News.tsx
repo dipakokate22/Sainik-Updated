@@ -15,13 +15,13 @@ const newsData = [...Array(9)].map((_, i) => ({
 const NewsAndBlogsSection = () => {
   return (
     <>
-<div className="w-full h-[230px] mt-2">
+<div className="w-full h-[230px] ">
       <div className="max-w-full h-full mx-auto px-2 sm:px-4 lg:px-22 flex flex-col justify-center">
         {/* Breadcrumb */}
         <p className="text-sm text-black/70">Home / Blog & News</p>
 
         {/* Title */}
-        <h1 className="text-2xl sm:text-3xl text-black font-semibold mt-6">
+        <h1 className="text-[48px] sm:text-[26px] md:text-[30px] lg:text-[32px] text-black font-medium mt-6">
           Sainik School Blogs
         </h1>
 

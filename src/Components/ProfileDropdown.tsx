@@ -33,42 +33,32 @@ const ProfileDropdown = () => {
       </button>
 
       {isOpen && (
-        <div
-          className={`
-            absolute mt-2 z-50 rounded-md shadow-lg py-1
-            bg-[#1C1F24] md:bg-white text-white md:text-gray-700
-            left-1/2 md:left-auto md:right-0 transform -translate-x-1/2 md:translate-x-0
-            w-[90vw] max-w-xs md:w-48
-            border border-gray-700 md:border-none
-          `}
-        >
-          <Link
-            href="/profile"
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-[#257B5A] md:hover:bg-gray-100 transition"
-          >
-            <User size={16} /> Profile
-          </Link>
-          <Link
-            href="/SchoolDashboard"
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-[#257B5A] md:hover:bg-gray-100 transition"
-          >
-            <LayoutDashboard size={16} /> Dashboard
-          </Link>
-          <Link
-            href="/StudentDashboard"
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-[#257B5A] md:hover:bg-gray-100 transition"
-          >
-            <LayoutDashboard size={16} /> Student Dashboard
-          </Link>
-          <button
-            onClick={handleLogout}
-            className="w-full text-left flex items-center gap-3 px-4 py-2 text-sm hover:bg-[#257B5A] md:hover:bg-gray-100 transition"
-          >
-            <LogOut size={16} /> Logout
-          </button>
+        <div className="absolute top-[70px] right-0 w-56 bg-[#1C1F24] text-white rounded-xl shadow-xl p-2 z-50">
+          <ul className="space-y-1 text-sm">
+            <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
+              <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3">
+                <User size={16} /> Profile
+              </Link>
+            </li>
+            <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
+              <Link href="/SchoolDashboard" onClick={() => setIsOpen(false)} className="flex items-center gap-3">
+                <LayoutDashboard size={16} /> Dashboard
+              </Link>
+            </li>
+            <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
+              <Link href="/StudentDashboard" onClick={() => setIsOpen(false)} className="flex items-center gap-3">
+                <LayoutDashboard size={16} /> Student Dashboard
+              </Link>
+            </li>
+            <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
+              <button
+                onClick={handleLogout}
+                className="w-full text-left flex items-center gap-3"
+              >
+                <LogOut size={16} /> Logout
+              </button>
+            </li>
+          </ul>
         </div>
       )}
     </div>

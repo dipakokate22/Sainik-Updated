@@ -98,14 +98,14 @@ const AboutUsSection = () => {
   }, []);
 
   return (
-    <section className="w-full">
+    <section className="w-full pb-16">
       {/* Breadcrumb + Content */}
-      <div className="w-full px-4 sm:px-6 lg:px-0 max-w-[1135px] mx-auto pt-12 pb-10">
+      <div className="w-full px-4 sm:px-6 lg:px-0 max-w-[1135px] mx-auto pt-10 pb-10">
         <p className="text-sm sm:text-base text-black font-light font-poppins mb-8">
           <Link href="/" className="text-[#10744E] hover:underline">Home</Link> / About Us
         </p>
 
-        <h1 className="text-2xl sm:text-3xl md:text-4xl text-black text-center font-semibold font-poppins mt-2 leading-snug">
+        <h1 className="text-2xl text-[48px] sm:text-3xl md:text-4xl text-black text-center font-semibold font-poppins mt-2 leading-snug">
           Shaping minds. Building futures. <br className="hidden sm:block" /> Empowering generations.
         </h1>
 

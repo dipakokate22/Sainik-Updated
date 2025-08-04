@@ -16,7 +16,7 @@ const ContactUs = () => {
         <div className="max-w-[1280px] mx-auto relative">
           {/* Get in Touch Title and Description */}
           <div className="mb-8">
-            <h1 className="text-[32px] text-black font-bold font-poppins leading-[150%] mb-4">
+            <h1 className="text-[48px] text-black font-medium font-poppins leading-[150%] mb-4">
               Get in Touch
             </h1>
             <p className="text-[20px] text-black font-medium font-poppins leading-[150%] max-w-[540px]">
@@ -101,7 +101,7 @@ const ContactUs = () => {
             {/* Right Column - Office Details */}
             <div className="w-full max-w-full ml-auto mt-[160px] lg:mt-[160px]">
               <div className="space-y-6">
-                <h2 className="text-[32px] text-black font-bold font-poppins leading-[150%]">
+                <h2 className="text-[48px] text-black font-medium font-poppins leading-[150%]">
                   Office Address
                 </h2>
                 

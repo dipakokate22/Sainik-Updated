@@ -55,7 +55,8 @@ const NationwideFootprint = () => {
 
 
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-14 items-start">
+      <div className="max-w-7xl mx-auto flex flex-col-reverse lg:flex-row gap-12 items-start">
+
 
         {/* Left Column - Scrollable Cards */}
         <div className="w-full lg:w-1/2 relative h-[550px] sm:h-[600px] overflow-hidden">
@@ -130,7 +131,7 @@ const NationwideFootprint = () => {
             alt="India Map"
             width={500}
             height={390}
-            className="object-contain w-full max-w-[500px] h-auto ml-20"
+            className="object-contain w-full max-w-[500px] h-auto"
           />
           
         </div>

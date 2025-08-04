@@ -140,7 +140,7 @@ const CareerCounselling = () => {
       {/* Hero Section */}
       <section 
         ref={heroRef}
-        className="bg-[#F5F1ED] py-16 px-8"
+        className="bg-[#F5F1ED] pb-16 pt-14 px-8"
       >
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

@@ -190,7 +190,7 @@ const SchoolListSection = () => {
 
   return (
     <section className="w-full bg-[#F7F1EE] pt-8 pb-16">
-      <div className="mx-auto flex w-full max-w-[1380px] flex-col lg:flex-row gap-6 px-4 sm:px-6 lg:px-8 mt-4">
+      <div className="mx-auto flex w-full max-w-[1380px] flex-col lg:flex-row gap-6 px-4 sm:px-6 lg:px-8 mt-2">
         
         {/* Sidebar Filters */}
         <aside className="w-full lg:w-[280px] h-fit bg-white rounded-lg shadow-sm border border-gray-200">

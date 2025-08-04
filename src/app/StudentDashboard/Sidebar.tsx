@@ -89,7 +89,7 @@ const Sidebar = ({ height, activePage }: SidebarProps) => {
 
         {/* Logo */}
         <div className="flex justify-center py-4">
-          <img src="/images/sainik-logo.png" alt="Logo" className="w-[127px] h-[130px] rounded-[5px]" />
+          <img src="/Image/Sainik-logo.jpg" alt="Logo" className="w-[127px] h-[130px] rounded-[5px]" />
         </div>
 
         {/* User Info */}
