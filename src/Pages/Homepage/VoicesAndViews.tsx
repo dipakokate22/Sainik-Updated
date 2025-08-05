@@ -71,8 +71,8 @@ const VoicesAndViews = () => {
   }, [activeTab]);
 
   return (
-    <section className="bg-white pt-11 pb-16">
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 md:px-12 lg:px-[72px]">
+    <section className="bg-white py-16">
+      <div className="max-w-[1440px] mx-auto px-14">
         {/* Header */}
         <div className="text-center">
            <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">Voices & Views</h2>

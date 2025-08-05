@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import SchoolCard from '../../Components/SchoolCard';
-import { IoAdd, IoClose } from 'react-icons/io5';
+import { IoClose, IoChevronUp, IoChevronDown } from 'react-icons/io5';
 
 // --- Sample Data ---
 const initialSchools = Array.from({ length: 140 }).map((_, i) => ({
@@ -47,12 +47,12 @@ const SchoolListSection = () => {
   const [boardSearch, setBoardSearch] = useState('');
   const [mediumSearch, setMediumSearch] = useState('');
   
-  // Expanded states for filter sections
+  // Expanded states for filter sections - ALL OPEN BY DEFAULT
   const [expandedSections, setExpandedSections] = useState({
     board: true,
-    medium: false,
-    category: false,
-    range: false,
+    medium: true,
+    category: true,
+    range: true,
   });
 
   const pageSize = 8;
@@ -121,12 +121,16 @@ const SchoolListSection = () => {
     <div className="border-b border-gray-100 pb-4">
       <button
         onClick={onToggle}
-        className="flex items-center justify-between w-full py-2 text-left"
+        className="flex items-center justify-between w-full py-2 text-left hover:bg-gray-50 rounded transition-colors"
       >
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-medium text-gray-900">{title}</h3>
         </div>
-        <IoAdd className="h-4 w-4 text-blue-500" />
+        {isExpanded ? (
+          <IoChevronUp className="h-4 w-4 text-gray-600 transition-transform duration-200" />
+        ) : (
+          <IoChevronDown className="h-4 w-4 text-gray-600 transition-transform duration-200" />
+        )}
       </button>
       
       {/* Show applied filters when minimized */}
@@ -260,10 +264,14 @@ const SchoolListSection = () => {
             <div className="border-b border-gray-100 pb-4">
               <button
                 onClick={() => toggleSection('range')}
-                className="flex items-center justify-between w-full py-2 text-left"
+                className="flex items-center justify-between w-full py-2 text-left hover:bg-gray-50 rounded transition-colors"
               >
                 <h3 className="text-sm font-medium text-gray-900">Range</h3>
-                <IoAdd className="h-4 w-4 text-blue-500" />
+                {expandedSections.range ? (
+                  <IoChevronUp className="h-4 w-4 text-gray-600 transition-transform duration-200" />
+                ) : (
+                  <IoChevronDown className="h-4 w-4 text-gray-600 transition-transform duration-200" />
+                )}
               </button>
               
               {/* Show range value when minimized */}

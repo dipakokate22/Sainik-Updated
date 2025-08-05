@@ -10,7 +10,6 @@ export default function Page() {
       <Layout>
         <Navbar/>
         <SchoolListing/>
-        <Footer/>
       </Layout>
     </div>
   )

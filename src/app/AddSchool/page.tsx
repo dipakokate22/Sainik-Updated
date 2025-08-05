@@ -9,7 +9,6 @@ export default function Page() {
       <Layout>
         <Navbar/>
         <Add/>
-        <Footer/>
       </Layout>
     </div>
   )

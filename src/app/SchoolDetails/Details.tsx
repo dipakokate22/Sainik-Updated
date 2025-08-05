@@ -726,18 +726,19 @@ export default function SchoolDetailSection({
             {/* School Information */}
             <div className="flex-1">
               {/* School Name */}
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+              <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-2">
                 {schoolName}
               </h1>
 
               {/* Location with Pin Icon */}
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
-                <span className="text-lg text-purple-600 font-medium">{location}</span>
+               <div className="flex items-center gap-2 mb-1">
+                <FaMapMarkerAlt className="text-[#257B5A] text-lg" />
+                <span className="text-lg text-[#257B5A] font-medium">{location}</span>
               </div>
+              
 
               {/* Distance and Rating */}
-              <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center gap-4 mb-2">
                 <span className="text-gray-600 font-medium">2.3 Km Away</span>
                 <span className="text-gray-400">|</span>
                 <div className="flex items-center gap-2">
@@ -776,7 +777,7 @@ export default function SchoolDetailSection({
       <section className="bg-[#F7F1EE] px-4 pb-16 md:px-6 lg:px-8 min-h-screen ">
         <div className="max-w-[1380px] mx-auto pt-6 ">
           {/* Top Bar with Contact Info and Register Button */}
-          <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px] mb-6">
+          <div className="border border-[#257B5A] rounded-lg px-4 md:px-[26px] py-[25px] mb-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               {/* School Info */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">

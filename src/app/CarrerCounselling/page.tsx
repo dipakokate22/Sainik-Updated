@@ -9,7 +9,6 @@ export default function Page() {
       <Layout>
         <Navbar/>
         <Career/>
-        <Footer/>
       </Layout>
     </div>
   )

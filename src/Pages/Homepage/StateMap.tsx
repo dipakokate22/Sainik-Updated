@@ -51,13 +51,8 @@ const NationwideFootprint = () => {
   }, []);
 
   return (
-<section className="w-full bg-[#1C1F24] px-4 pb-4 pt-20 overflow-hidden">
-
-
-
-      <div className="max-w-7xl mx-auto flex flex-col-reverse lg:flex-row gap-12 items-start">
-
-
+    <section className="w-full bg-[#1C1F24] px-14 pt-16 pb-16 overflow-hidden">
+      <div className="max-w-[1440px] mx-auto flex flex-col-reverse lg:flex-row gap-12 items-start">
         {/* Left Column - Scrollable Cards */}
         <div className="w-full lg:w-1/2 relative h-[550px] sm:h-[600px] overflow-hidden">
           <div ref={scrollRef} className="space-y-4 will-change-transform">
@@ -118,8 +113,8 @@ const NationwideFootprint = () => {
         {/* Right Column - Title & Map */}
         <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left">
          <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-white mb-4">
-  Nationwide Footprint
-</h2>
+             Nationwide Footprint
+        </h2>
 
           <p className="text-[16px] sm:text-[18px] lg:text-[20px] text-white mb-2 max-w-[100%]">
             Sainik Schools are strategically located across states to provide equal opportunity
@@ -130,8 +125,8 @@ const NationwideFootprint = () => {
             src="/homePage/map.png"
             alt="India Map"
             width={500}
-            height={390}
-            className="object-contain w-full max-w-[500px] h-auto"
+            height={450}
+            className="object-contain w-full max-w-[500px] h-[450px]"
           />
           
         </div>

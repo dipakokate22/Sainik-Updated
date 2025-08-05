@@ -52,8 +52,8 @@ const TrustedBySection = () => {
   const loopItems = [...logos, ...logos, ...logos]; // Triple the items for better seamless loop
 
   return (
-    <section className="bg-[#F7F1EE] pt-12 pb-16 w-full overflow-hidden">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 text-center">
+    <section className="bg-[#F7F1EE] py-16 w-full overflow-hidden">
+      <div className="max-w-[1440px] mx-auto px-14 text-center">
          <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-8">
           Trusted by top educational <br className="hidden sm:block" />
           institutions worldwide
