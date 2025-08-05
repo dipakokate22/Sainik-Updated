@@ -163,8 +163,8 @@ export default function Navbar() {
             )}
           </div>
 
-          <Link href="/AddSchool">
-            <span className="text-sm lg:text-base cursor-pointer hover:underline">Add Your School</span>
+          <Link href="/CompareSchool">
+            <span className="text-sm lg:text-base cursor-pointer hover:underline">Compare Schools</span>
           </Link>
 
           {isLoggedIn ? (
