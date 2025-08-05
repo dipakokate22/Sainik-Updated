@@ -341,7 +341,7 @@ const SchoolListSection = () => {
                     }}
                     className={`w-10 h-10 rounded-lg border text-sm font-medium transition-colors duration-200 ${
                       currentPage === item
-                        ? 'bg-[#50B848] text-white border-[#50B848]'
+                        ? 'bg-[#10744E] text-white border-[#50B848]'
                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
                     }`}
                   >

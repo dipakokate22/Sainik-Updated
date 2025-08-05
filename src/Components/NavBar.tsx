@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { FaMapMarkerAlt, FaSearch, FaBars, FaTimes, FaHome, FaSchool, FaInfoCircle, FaNewspaper, FaEnvelope, FaPlus } from 'react-icons/fa';
 import { IoIosArrowDown } from 'react-icons/io';
+import { HiOutlineDotsCircleHorizontal } from 'react-icons/hi';
 import ProfileDropdown from './ProfileDropdown';
 
 export default function Navbar() {
@@ -91,7 +92,7 @@ export default function Navbar() {
   </button>
 
   {/* Search Box - Fixed width values to prevent hydration mismatch */}
-  <div className="flex items-center bg-white rounded-full px-3 lg:px-4 h-[40px] w-[200px] lg:w-[250px] xl:w-[320px] lg:h-[48px] mr-2 md:mr-3 lg:mr-4">
+  <div className="flex items-center bg-white rounded-full px-3 lg:px-4 h-[40px] w-[180px] lg:w-[230px] xl:w-[320px] lg:h-[48px] mr-2 md:mr-3 lg:mr-4">
     <FaSearch className="text-[#257B5A]" size={14} />
     <input
       type="text"
@@ -111,10 +112,24 @@ export default function Navbar() {
   className="bg-[#AA0111] text-white text-[14px] lg:text-[16px] font-medium px-4 lg:px-6 py-2 lg:py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2"
 >
   Explore
-  <IoIosArrowDown
-    size={14}
+  {/* 9-dot grid icon */}
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="currentColor"
     className={`transition-transform duration-300 ${isExploreOpen ? 'rotate-180' : ''}`}
-  />
+  >
+    <circle cx="5" cy="5" r="2"/>
+    <circle cx="12" cy="5" r="2"/>
+    <circle cx="19" cy="5" r="2"/>
+    <circle cx="5" cy="12" r="2"/>
+    <circle cx="12" cy="12" r="2"/>
+    <circle cx="19" cy="12" r="2"/>
+    <circle cx="5" cy="19" r="2"/>
+    <circle cx="12" cy="19" r="2"/>
+    <circle cx="19" cy="19" r="2"/>
+  </svg>
 </button>
 
 
