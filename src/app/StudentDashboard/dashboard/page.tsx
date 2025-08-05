@@ -73,13 +73,11 @@ const NoticeItem = ({ icon, bgColor, title, date }: NoticeItemProps) => (
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col md:flex-row bg-[#F7F1EE] min-h-screen font-poppins text-black">
+    <div className="bg-[#F7F1EE] min-h-screen font-poppins text-black">
       <Sidebar activePage="Dashboard" />
 
-      <div className="flex-1 w-full">
+      <div className="md:pl-[270px]">
         <Header />
-
-        <div className="border-t border-[#ACA9A9] mt-4" />
 
         <div className="px-4 md:px-8 py-6 space-y-10">
           <div className="flex flex-col lg:flex-row justify-between gap-6">

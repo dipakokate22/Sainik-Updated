@@ -131,7 +131,7 @@ const NationwideFootprint = () => {
             alt="India Map"
             width={500}
             height={390}
-            className="object-contain w-full max-w-[500px] h-auto ml-20"
+            className="object-contain w-full max-w-[500px] h-auto"
           />
           
         </div>

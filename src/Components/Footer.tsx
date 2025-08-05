@@ -4,7 +4,7 @@ import FooterImg from './FooterImg';
 
 // Custom X Icon
 const XIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 1200 1227" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <svg width="14" height="12" viewBox="0 0 1200 1227" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <path d="M714.664 522.684L1146.5 0H1035.7L660.168 452.7L363.332 0H0L450.432 660.859L0 1226.37H110.832L510.832 740.93L822.668 1226.37H1200L714.664 522.684ZM562.916 687.859L518.432 626.37L136.916 64.3696H320.168L602.416 501.026L646.9 562.51L1042.08 1166.37H858.832L562.916 687.859Z"/>
   </svg>
 );
@@ -21,6 +21,7 @@ const Footer = () => {
             
             {/* Left */}
             <div className="w-full lg:w-[500px]">
+              
               <h2 className="text-white text-4xl sm:text-5xl mb-6 font-cursive font-bold">sainik</h2>
               <p className="text-gray-200 text-base mb-6 leading-relaxed">
                 Subscribe to our newsletter for the latest updates on features and releases.

@@ -55,36 +55,37 @@ export default function Navbar() {
 
       <div className="flex justify-between items-center">
         {/* Left Logo & Search */}
-        <div className="flex items-center gap-4">
-          <span className="text-white text-[28px] font-poppins font-bold">Sainik</span>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <span className="text-white text-[24px] sm:text-[28px] font-poppins font-bold">Sainik</span>
 
          {/* Desktop Only */}
-<div className="hidden md:flex items-center gap-4">
+<div className="hidden md:flex items-center gap-3 lg:gap-4">
   {/* Button */}
-  <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2">
+  <button className="bg-[#10744E] text-white text-[14px] lg:text-[16px] font-medium px-4 lg:px-6 py-2 lg:py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2">
     <FaMapMarkerAlt size={14} />
-    <span>Schools Near You</span>
+    <span className="hidden lg:inline">Schools Near You</span>
+    <span className="lg:hidden">Schools</span>
   </button>
 
   {/* Search Box */}
-  <div className="flex items-center bg-white rounded-full px-4 h-[48px]">
+  <div className="flex items-center bg-white rounded-full px-3 lg:px-4 h-[40px] md:w-[180px] lg:w-[220px] xl:w-[250px] lg:h-[48px] mr-2 md:mr-3 lg:mr-4">
     <FaSearch className="text-[#257B5A]" size={14} />
     <input
       type="text"
       placeholder="Search"
-      className="outline-none text-sm font-normal w-32 bg-transparent placeholder-gray-400 text-[#257B5A] ml-2"
+      className="outline-none text-sm font-normal md:w-12 lg:w-20 xl:w-28 bg-transparent placeholder-gray-400 text-[#257B5A] ml-2"
     />
   </div>
 </div>
 </div>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-4 lg:gap-6">
           {/* Explore Dropdown */}
           <div className="relative" ref={exploreDropdownRef}>
             <button
   onClick={() => setIsExploreOpen(!isExploreOpen)}
-  className="bg-[#AA0111] text-white text-[16px] font-medium px-6 py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2"
+  className="bg-[#AA0111] text-white text-[14px] lg:text-[16px] font-medium px-4 lg:px-6 py-2 lg:py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2"
 >
   Explore
   <IoIosArrowDown
@@ -96,7 +97,7 @@ export default function Navbar() {
 
             {/* Dropdown Items */}
             {isExploreOpen && (
-              <div className="absolute top-[50px] right-0 w-56 bg-[#1C1F24] text-white rounded-xl shadow-xl p-2 z-50">
+              <div className="absolute top-[70px] right-0 w-56 bg-[#1C1F24] text-white rounded-xl shadow-xl p-2 z-50">
                 <ul className="space-y-1 text-sm">
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/Schools">Recommended Schools</Link>
@@ -117,7 +118,7 @@ export default function Navbar() {
                     <Link href="/NewsUpdates">News & Blogs</Link>
                   </li>
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
-                    <Link href="/contact">Contact Us</Link>
+                    <Link href="/ContactUs">Contact Us</Link>
                   </li>
                 </ul>
               </div>
@@ -125,14 +126,14 @@ export default function Navbar() {
           </div>
 
           <Link href="/AddSchool">
-            <span className="text-base cursor-pointer hover:underline">Add Your School</span>
+            <span className="text-sm lg:text-base cursor-pointer hover:underline">Add Your School</span>
           </Link>
 
           {isLoggedIn ? (
             <ProfileDropdown />
           ) : (
             <Link href="/login">
-              <button className="h-10 px-6 rounded-full bg-[#257B5A] text-white hover:bg-green-800 transition text-sm">
+              <button className="h-8 lg:h-10 px-4 lg:px-6 rounded-full bg-[#257B5A] text-white hover:bg-green-800 transition text-sm">
                 Login
               </button>
             </Link>
@@ -141,12 +142,12 @@ export default function Navbar() {
 
         {/* Mobile Right Side - School Icon + Hamburger */}
         <div className="md:hidden flex items-center gap-3">
-          <FaMapMarkerAlt size={20} className="text-[#257B5A]" />
+          <FaMapMarkerAlt size={18} className="text-[#257B5A]" />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="focus:outline-none mobile-menu-container"
           >
-            {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
+            {mobileMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
           </button>
         </div>
       </div>
@@ -230,7 +231,7 @@ export default function Navbar() {
                       <Link href="/NewsUpdates" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
                         News & Blogs
                       </Link>
-                      <Link href="/contact" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
+                      <Link href="/ContactUs" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
                         Contact Us
                       </Link>
                     </div>
@@ -261,7 +262,7 @@ export default function Navbar() {
           </div>
 
           {/* Footer */}
-          <div className="p-6 border-t border-gray-700 flex-shrink-0">
+<div className="p-6 border-t border-gray-700 flex-shrink-0">
             {isLoggedIn ? (
               // Mobile Profile Section
               <div className="flex flex-col items-center gap-2">

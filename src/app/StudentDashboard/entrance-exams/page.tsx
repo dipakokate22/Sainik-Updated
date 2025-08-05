@@ -1,3 +1,4 @@
+'use client';
 import Sidebar from '../Sidebar';
 import Header from '../Header';
 import Link from 'next/link';
@@ -19,13 +20,13 @@ const EntranceExamsPage = () => {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row w-full min-h-screen bg-[#F7F7F7] font-sans">
-      <Sidebar height="100vh" activePage="Entrance Exams" />
+    <div className="bg-[#F7F7F7] min-h-screen font-sans">
+      <Sidebar activePage="Entrance Exams" />
+      <Header />
+      <main className="flex-grow pt-[50px] md:ml-[270px]">
+      
 
-      <main className="flex-1 w-full">
-        <Header />
-
-        <div className="relative top-[64px] px-4 md:px-8 pt-8 pb-16 w-full max-w-screen-xl mx-auto">
+        <div className="w-full px-4 md:px-8 xl:px-12 pb-16 max-w-screen-xl mx-auto">
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-gray-800">Entrance Exam</h1>
             <p className="text-sm text-gray-500">Track your upcoming exams & registered exams</p>
@@ -33,15 +34,15 @@ const EntranceExamsPage = () => {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <div className="relative w-full h-[140px] bg-[#46B495] rounded-xl shadow-md p-6 text-white">
+            <div className="w-full h-[140px] bg-[#46B495] rounded-xl shadow-md p-6 text-white">
               <p className="text-4xl font-bold">12</p>
               <p className="text-lg">Upcoming Exams</p>
             </div>
-            <div className="relative w-full h-[140px] bg-[#5B63B7] rounded-xl shadow-md p-6 text-white">
+            <div className="w-full h-[140px] bg-[#5B63B7] rounded-xl shadow-md p-6 text-white">
               <p className="text-4xl font-bold">15</p>
               <p className="text-lg">Registered Exams</p>
             </div>
-            <div className="relative w-full h-[140px] bg-[#B959C9] rounded-xl shadow-md p-6 text-white">
+            <div className="w-full h-[140px] bg-[#B959C9] rounded-xl shadow-md p-6 text-white">
               <p className="text-4xl font-bold">23</p>
               <p className="text-lg">Completed Exams</p>
             </div>
@@ -55,7 +56,12 @@ const EntranceExamsPage = () => {
             </div>
             <div className="space-y-4">
               {upcomingExams.map((exam, index) => (
-                <div key={index} className={`flex flex-col md:flex-row justify-between md:items-center gap-3 ${index < upcomingExams.length - 1 ? 'border-b pb-4' : ''}`}>
+                <div
+                  key={index}
+                  className={`flex flex-col md:flex-row justify-between md:items-center gap-3 ${
+                    index < upcomingExams.length - 1 ? 'border-b pb-4' : ''
+                  }`}
+                >
                   <div>
                     <h3 className="font-medium text-gray-800">{exam.name}</h3>
                     <p className="text-sm text-gray-500">Date: {exam.date}</p>
@@ -76,7 +82,12 @@ const EntranceExamsPage = () => {
             </div>
             <div className="space-y-4">
               {registeredExams.map((exam, index) => (
-                <div key={index} className={`flex flex-col md:flex-row justify-between md:items-center gap-3 ${index < registeredExams.length - 1 ? 'border-b pb-4' : ''}`}>
+                <div
+                  key={index}
+                  className={`flex flex-col md:flex-row justify-between md:items-center gap-3 ${
+                    index < registeredExams.length - 1 ? 'border-b pb-4' : ''
+                  }`}
+                >
                   <div>
                     <h3 className="font-medium text-gray-800">{exam.name}</h3>
                     <p className="text-sm text-gray-500">Date: {exam.date}</p>
@@ -101,7 +112,12 @@ const EntranceExamsPage = () => {
             </div>
             <div className="space-y-4">
               {completedExams.map((exam, index) => (
-                <div key={index} className={`flex flex-col md:flex-row justify-between md:items-center gap-3 ${index < completedExams.length - 1 ? 'border-b pb-4' : ''}`}>
+                <div
+                  key={index}
+                  className={`flex flex-col md:flex-row justify-between md:items-center gap-3 ${
+                    index < completedExams.length - 1 ? 'border-b pb-4' : ''
+                  }`}
+                >
                   <div>
                     <h3 className="font-medium text-gray-800">{exam.name}</h3>
                     <p className="text-sm text-gray-500">Date: {exam.date}</p>

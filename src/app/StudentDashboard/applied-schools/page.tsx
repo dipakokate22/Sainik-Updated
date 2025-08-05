@@ -17,13 +17,12 @@ const AppliedSchoolsPage = () => {
   ];
 
   return (
-    <div className={`flex flex-col md:flex-row bg-white min-h-screen ${poppins.className}`}>
-      <Sidebar height="auto" activePage="Applied Schools" />
+    <div className={`relative bg-white min-h-screen ${poppins.className}`}>
+      <Sidebar activePage="Applied Schools" />
+      <main className="md:ml-[270px]  flex flex-col min-h-screen">
+        <Header />
+        <div className="w-full pt-[50px] px-4 md:px-8 xl:px-12">
 
-      <main className="flex-grow h-screen overflow-y-auto">
-      <Header />
-
-        <div className="max-w-screen-lg mx-auto">
           {/* Top Section */}
           <div className="mb-8">
             <h1 className="text-3xl font-semibold text-black mb-2">Applied Schools</h1>
@@ -62,7 +61,8 @@ const AppliedSchoolsPage = () => {
               <button className="text-sm font-medium text-[#5346DC]">View All</button>
             </div>
 
-            <table className="min-w-full text-center border-collapse">
+            <table className="w-full text-center border-collapse">
+
               <thead>
                 <tr className="bg-[#EAF1FF] h-14 divide-x divide-black">
                   <th className="font-medium text-sm text-left pl-4 text-black border-b border-black">School</th>

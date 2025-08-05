@@ -140,12 +140,12 @@ const CareerCounselling = () => {
       {/* Hero Section */}
       <section 
         ref={heroRef}
-        className="bg-[#F5F1ED] py-16 px-8"
+        className="bg-[#F5F1ED] pb-16 pt-14 px-8"
       >
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="max-w-lg">
-              <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
+              <h1 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
                 Shape Your Future with Expert Career Guidance
               </h1>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed">
@@ -172,7 +172,7 @@ const CareerCounselling = () => {
       <section className="pb-16 pt-14 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
               Discover Your Path
             </h2>
           </div>
@@ -202,7 +202,7 @@ const CareerCounselling = () => {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
               Our Career Guidance Services
             </h2>
           </div>
@@ -229,7 +229,7 @@ const CareerCounselling = () => {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-8">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
               Student Success Stories
             </h2>
           </div>
@@ -263,7 +263,7 @@ const CareerCounselling = () => {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
               Career Counselling Process
             </h2>
           </div>
@@ -333,7 +333,7 @@ const CareerCounselling = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             {/* Left Column - Contact Form */}
             <div className="bg-white">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-8">
+              <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-8">
                 Book Your Free Career Consultation
               </h2>
               
@@ -373,7 +373,7 @@ const CareerCounselling = () => {
             
             {/* Right Column - Benefits List */}
             <div className="bg-white">
-              <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-8">
+              <h3 className="text-3xl md:text-[32px] font-poppins font-medium text-black mb-8">
                 Why Choose Our Career Guidance?
               </h3>
               

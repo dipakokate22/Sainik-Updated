@@ -158,7 +158,7 @@ const SchoolListSection = () => {
                 placeholder={`Search ${title}...`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm placeholder-gray-400 text-[#257B5A] border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
           )}
@@ -175,7 +175,7 @@ const SchoolListSection = () => {
                     type="checkbox"
                     checked={selectedItems.includes(item)}
                     onChange={() => handleCheckboxChange(item, selectedItems, setSelectedItems)}
-                    className="h-3 w-3 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="h-3 w-3 text-blue-600 placeholder-gray-400 text-[#257B5A] border-gray-300 rounded focus:ring-blue-500"
                   />
                   <span className="text-gray-700">{item}</span>
                 </div>
@@ -190,7 +190,7 @@ const SchoolListSection = () => {
 
   return (
     <section className="w-full bg-[#F7F1EE] pt-8 pb-16">
-      <div className="mx-auto flex w-full max-w-[1380px] flex-col lg:flex-row gap-6 px-4 sm:px-6 lg:px-8 mt-4">
+      <div className="mx-auto flex w-full max-w-[1380px] flex-col lg:flex-row gap-6 px-4 sm:px-6 lg:px-8 mt-2">
         
         {/* Sidebar Filters */}
         <aside className="w-full lg:w-[280px] h-fit bg-white rounded-lg shadow-sm border border-gray-200">
@@ -207,7 +207,7 @@ const SchoolListSection = () => {
                 placeholder="Search schools..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm placeholder-gray-400 text-[#257B5A] border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
           </div>

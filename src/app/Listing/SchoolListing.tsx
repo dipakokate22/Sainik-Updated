@@ -315,8 +315,8 @@ const SchoolListingPage = () => {
     return (
         <div className="bg-[#F7F1EE] font-sans min-h-screen">
             <main>
-                <section className="max-w-[1380px] mx-auto py-8 px-4 sm:px-6 lg:px-8 mt-4 mb-16">
-                    <h1 className="text-2xl sm:text-3xl md:text-[32px] font-medium text-[#333333] mb-6">School Listing</h1>
+                <section className="max-w-[1380px] mx-auto py-6 px-4 sm:px-6 lg:px-8 mt-2 mb-16">
+                    <h1 className="text-[48px] sm:text-[26px] md:text-[30px] lg:text-[32px] font-medium text-[#333333] mb-6">School Listing</h1>
                     
                     {/* Search and Filters Row */}
                     <div className="flex flex-col lg:flex-row gap-4 mb-6">
@@ -330,7 +330,7 @@ const SchoolListingPage = () => {
                                 placeholder="Search school" 
                                 value={searchTerm} 
                                 onChange={(e) => setSearchTerm(e.target.value)} 
-                                className="w-full h-[51px] pl-12 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A91D3A] text-[15px] font-light text-gray-900" 
+                                className="w-120 h-[51px] pl-12 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A91D3A] text-[15px] font-light text-gray-900" 
                             />
                         </div>
                         
@@ -396,7 +396,7 @@ const SchoolListingPage = () => {
                             </button>
                         )}
                     </div>
-                    {/* School Cards */}
+                     {/* School Cards */}
                     {displayedSchools.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {displayedSchools.map((school) => (

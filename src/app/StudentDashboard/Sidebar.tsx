@@ -1,3 +1,4 @@
+// Sidebar.jsx
 'use client';
 
 import { useState } from 'react';
@@ -24,14 +25,10 @@ const poppins = Poppins({
 });
 
 interface SidebarProps {
-  height?: string;
   activePage: string;
-  isOpen?: boolean;
-  setIsOpen?: (val: boolean) => void;
 }
 
-
-const Sidebar = ({ height, activePage }: SidebarProps) => {
+const Sidebar = ({ activePage }: SidebarProps) => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -60,52 +57,46 @@ const Sidebar = ({ height, activePage }: SidebarProps) => {
 
       {/* Mobile Overlay */}
       {isOpen && (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-20 z-40 md:hidden"
-    onClick={() => setIsOpen?.(false)}
-  />
-)}
+        <div
+          className="fixed inset-0  bg-opacity-20 z-40 md:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
 
-<div
-  className={`
-    fixed top-0 left-0 z-50 md:relative 
-    transition-transform duration-300 ease-in-out 
-    ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
-    w-[270px] bg-[#257B5A] text-white flex flex-col p-6 space-y-4 h-screen ${poppins.className}
-  `}
->
+      {/* Sidebar */}
+      <div
+        className={`
+          fixed top-0 left-0 z-50
+          transition-transform duration-300 ease-in-out 
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
+          w-[270px] bg-[#257B5A] text-white flex flex-col p-6 space-y-4 min-h-screen overflow-y-auto
+          ${poppins.className}
+        `}
+      >
         {/* Close button for mobile */}
         <div className="md:hidden flex justify-end mb-2">
           <button onClick={() => setIsOpen(false)}>
             <X size={24} />
           </button>
         </div>
-
-        {/* Back to Website */}
         <Link href="/" className="flex items-center gap-2 text-sm hover:underline">
           <ChevronLeft size={24} />
           <span>Back to Website</span>
         </Link>
-
-        {/* Logo */}
         <div className="flex justify-center py-4">
-          <img src="/images/sainik-logo.png" alt="Logo" className="w-[127px] h-[130px] rounded-[5px]" />
+          <img src="/Image/Sainik-logo.jpg" alt="Logo" className="w-[127px] h-[130px] rounded-[5px]" />
         </div>
-
-        {/* User Info */}
         <div className="text-sm space-y-1">
           <h2 className="font-medium text-lg">Hello, Dipali Kokate</h2>
           <p>Student ID: 2025</p>
           <p>Activation Date: 12-06-2025</p>
         </div>
-
-        {/* Navigation */}
         <nav className="flex flex-col gap-1 mt-4">
           {navItems.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              onClick={() => setIsOpen(false)} // close sidebar on nav click (mobile)
+              onClick={() => setIsOpen(false)}
               className={`flex items-center gap-3 py-2 px-4 rounded-r-[15px] transition-colors ${
                 isActive(item.href)
                   ? 'bg-[#AA0111] font-medium text-white shadow-inner_custom'
@@ -117,8 +108,6 @@ const Sidebar = ({ height, activePage }: SidebarProps) => {
             </Link>
           ))}
         </nav>
-
-        {/* Logout */}
         <div className="mt-auto border-t border-[#979797] pt-3">
           <button className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#2a8a63] w-full text-left">
             <LogOut size={20} />

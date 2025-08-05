@@ -9,13 +9,13 @@ export const metadata: Metadata = {
 
 const AddSchoolPage = () => {
   return (
-    <main className="bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-[120px] py-10 lg:py-[80px] min-h-screen flex flex-col items-center mb-[80px]">
+    <main className="bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-[120px] lg:pt-[50px] pb-[80px] min-h-screen flex flex-col items-center">
       {/* Header */}
       <header className="text-center mb-10 px-2">
-        <h1 className="text-[22px] sm:text-[26px] md:text-[30px] lg:text-[32px] font-medium text-gray-800">
+        <h1 className="text-[48px] sm:text-[26px] md:text-[30px] lg:text-[32px] font-medium text-gray-800">
           Be a part of Our Site
         </h1>
-        <h2 className="text-[22px] sm:text-[26px] md:text-[30px] lg:text-[32px] font-medium text-gray-800">
+        <h2 className="text-[48px] sm:text-[26px] md:text-[30px] lg:text-[32px] font-medium text-gray-800">
           Add Your School For Free!!
         </h2>
       </header>
@@ -135,7 +135,7 @@ const AddSchoolPage = () => {
 
           {/* Terms & Submit */}
           <div>
-            <div className="flex items-start mb-8 sm:mb-10">
+            <div className="flex items-start mb-6 sm:mb-10">
               <input
                 type="checkbox"
                 id="terms"
