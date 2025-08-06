@@ -49,9 +49,8 @@ export default function HeroSection() {
 
 
   return (
-<section className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-30 pb-16 font-poppins overflow-hidden">
-
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
+    <section className="max-w-[1440px] w-full mx-auto px-14 pt-12 pb-16 font-poppins overflow-hidden">
+      <div className="flex flex-col lg:flex-row items-start justify-between gap-8 lg:gap-10">
         {/* Left Column */}
         <div className="w-full lg:w-1/2 flex flex-col justify-start gap-6 text-center lg:text-left lg:-mt-80">
           <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
@@ -182,8 +181,8 @@ export default function HeroSection() {
       </div>
 
       {/* Mobile CTA Button */}
-      <div className="flex lg:hidden justify-center mt-8">
-        <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full hover:bg-green-800 transition">
+      <div className="flex lg:hidden justify-center mt-6 lg:mt-8">
+        <button className="bg-[#10744E] text-white text-white text-[16px] font-medium px-6 py-3 rounded-full hover:bg-green-800 transition">
           Take Admission
         </button>
       </div>

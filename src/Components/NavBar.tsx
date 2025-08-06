@@ -4,13 +4,20 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { FaMapMarkerAlt, FaSearch, FaBars, FaTimes, FaHome, FaSchool, FaInfoCircle, FaNewspaper, FaEnvelope, FaPlus } from 'react-icons/fa';
 import { IoIosArrowDown } from 'react-icons/io';
+import { HiOutlineDotsCircleHorizontal } from 'react-icons/hi';
 import ProfileDropdown from './ProfileDropdown';
 
 export default function Navbar() {
   const [isExploreOpen, setIsExploreOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const exploreDropdownRef = useRef<HTMLDivElement>(null);
   const [isLoggedIn] = useState(true); // Assume true for demo
+
+  // Ensure client-side rendering consistency
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -48,6 +55,23 @@ export default function Navbar() {
     };
   }, [mobileMenuOpen]);
 
+  // Prevent hydration mismatch by not rendering until client-side
+  if (!isClient) {
+    return (
+      <div className="fixed top-0 left-0 w-full z-50 bg-transparent">
+        <div className="px-3 sm:px-4 md:px-6 lg:px-8 xl:px-0">
+          <div className="bg-[#1C1F24] w-full rounded-[16px] md:rounded-[20px] max-w-[1380px] mx-auto mt-4 mb-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white py-[18px] relative">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <span className="text-white text-[24px] sm:text-[28px] font-poppins font-bold">Sainik</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
    <div className="fixed top-0 left-0 w-full z-50 bg-transparent">
   <div className="px-3 sm:px-0">
@@ -60,20 +84,20 @@ export default function Navbar() {
 
          {/* Desktop Only */}
 <div className="hidden md:flex items-center gap-3 lg:gap-4">
-  {/* Button */}
-  <button className="bg-[#10744E] text-white text-[14px] lg:text-[16px] font-medium px-4 lg:px-6 py-2 lg:py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2">
+  {/* Button - Fixed height, responsive width */}
+  <button className="bg-[#10744E] text-white text-[14px] lg:text-[16px] font-medium px-3 md:px-4 lg:px-6 py-2 h-[40px] lg:h-[48px] rounded-full hover:bg-[#0d6342] transition flex items-center gap-2 whitespace-nowrap">
     <FaMapMarkerAlt size={14} />
     <span className="hidden lg:inline">Schools Near You</span>
     <span className="lg:hidden">Schools</span>
   </button>
 
-  {/* Search Box */}
-  <div className="flex items-center bg-white rounded-full px-3 lg:px-4 h-[40px] md:w-[180px] lg:w-[220px] xl:w-[250px] lg:h-[48px] mr-2 md:mr-3 lg:mr-4">
+  {/* Search Box - Fixed width values to prevent hydration mismatch */}
+  <div className="flex items-center bg-white rounded-full px-3 lg:px-4 h-[40px] w-[180px] lg:w-[230px] xl:w-[320px] lg:h-[48px] mr-2 md:mr-3 lg:mr-4">
     <FaSearch className="text-[#257B5A]" size={14} />
     <input
       type="text"
       placeholder="Search"
-      className="outline-none text-sm font-normal md:w-12 lg:w-20 xl:w-28 bg-transparent placeholder-gray-400 text-[#257B5A] ml-2"
+      className="outline-none text-sm font-normal w-12 lg:w-20 xl:w-28 bg-transparent placeholder-gray-400 text-[#257B5A] ml-2"
     />
   </div>
 </div>
@@ -88,10 +112,24 @@ export default function Navbar() {
   className="bg-[#AA0111] text-white text-[14px] lg:text-[16px] font-medium px-4 lg:px-6 py-2 lg:py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2"
 >
   Explore
-  <IoIosArrowDown
-    size={14}
+  {/* 9-dot grid icon */}
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="currentColor"
     className={`transition-transform duration-300 ${isExploreOpen ? 'rotate-180' : ''}`}
-  />
+  >
+    <circle cx="5" cy="5" r="2"/>
+    <circle cx="12" cy="5" r="2"/>
+    <circle cx="19" cy="5" r="2"/>
+    <circle cx="5" cy="12" r="2"/>
+    <circle cx="12" cy="12" r="2"/>
+    <circle cx="19" cy="12" r="2"/>
+    <circle cx="5" cy="19" r="2"/>
+    <circle cx="12" cy="19" r="2"/>
+    <circle cx="19" cy="19" r="2"/>
+  </svg>
 </button>
 
 
@@ -128,15 +166,25 @@ export default function Navbar() {
           <Link href="/AddSchool">
             <span className="text-sm lg:text-base cursor-pointer hover:underline">Add Your School</span>
           </Link>
+          <Link href="/CompareSchools">
+            <span className="text-sm lg:text-base cursor-pointer hover:underline">Compare</span>
+          </Link>
 
           {isLoggedIn ? (
             <ProfileDropdown />
           ) : (
-            <Link href="/login">
-              <button className="h-8 lg:h-10 px-4 lg:px-6 rounded-full bg-[#257B5A] text-white hover:bg-green-800 transition text-sm">
-                Login
-              </button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/login">
+                <button className="h-8 lg:h-10 px-4 lg:px-6 rounded-full bg-transparent border border-[#257B5A] text-[#257B5A] hover:bg-[#257B5A] hover:text-white transition text-sm">
+                  Login
+                </button>
+              </Link>
+              <Link href="/signup">
+                <button className="h-8 lg:h-10 px-4 lg:px-6 rounded-full bg-[#257B5A] text-white hover:bg-green-800 transition text-sm">
+                  Sign Up
+                </button>
+              </Link>
+            </div>
           )}
         </div>
 

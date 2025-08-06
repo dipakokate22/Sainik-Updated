@@ -57,11 +57,11 @@ const Sidebar = ({ activePage }: SidebarProps) => {
 
       {/* Mobile Overlay */}
       {isOpen && (
-        <div
-          className="fixed inset-0  bg-opacity-20 z-40 md:hidden"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+  <div
+    className="fixed inset-0 bg-opacity-20 z-40 md:hidden"
+    onClick={() => setIsOpen?.(false)}
+  />
+)}
 
       {/* Sidebar */}
       <div

@@ -20,9 +20,10 @@ const schools = [
 
 export default function SchoolsSection() {
   return (
-    <section className="w-full bg-white flex flex-col items-center pt-12 pb-16 px-6 md:px-12">
+    <section className="bg-white py-16">
+      <div className="max-w-[1440px] mx-auto px-14">
   {/* Title */}
-  <div className="text-center max-w-3xl">
+  <div className="text-center max-w-3xl mx-auto">
     <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
       Explore Best Schools Near You
     </h2>
@@ -49,9 +50,12 @@ export default function SchoolsSection() {
   </div>
 
   {/* View All Button */}
-  <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full mt-10 hover:bg-green-800 transition">
-    View all
-  </button>
+  <div className="flex justify-center">
+    <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full mt-10 hover:bg-green-800 transition">
+      View all
+    </button>
+  </div>
+  </div>
 </section>
 
   );

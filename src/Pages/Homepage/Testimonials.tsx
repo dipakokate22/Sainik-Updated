@@ -92,8 +92,8 @@ const Testimonials = () => {
   const activeTestimonial = testimonialsData[currentIndex];
 
   return (
-    <section className="w-full bg-[#F7F1EE] pt-14 pb-16">
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-8 xl:px-[250px]">
+    <section className="w-full bg-[#F7F1EE] py-16">
+      <div className="mx-auto max-w-[1440px] px-14">
         <div className="text-center">
            <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
             Testimonials
