@@ -52,11 +52,11 @@ export default function HeroSection() {
     <section className="max-w-[1440px] w-full mx-auto px-14 pt-12 pb-16 font-poppins overflow-hidden">
       <div className="flex flex-col lg:flex-row items-start justify-between gap-8 lg:gap-10">
         {/* Left Column */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-start gap-6 text-center lg:text-left lg:-mt-80">
+        <div className="w-full lg:w-1/2 flex flex-col justify-start gap-6 text-center lg:text-left lg:mt-8">
           <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
             We are proud to help <br className="hidden sm:inline" />
             students find the right <br className="hidden sm:inline" />
-            path to success. Here iss <br className="hidden sm:inline" />
+            path to success. Here is <br className="hidden sm:inline" />
             how far we have come:
           </h2>
 
