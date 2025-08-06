@@ -30,9 +30,7 @@ const iconMap = {
   Billing: BadgeDollarSign,
 };
 
-interface HeaderProps {}
-
-const Header = ({}: HeaderProps) => {
+const Header = () => {
   const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
