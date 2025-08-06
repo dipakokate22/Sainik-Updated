@@ -116,7 +116,7 @@ const NationwideFootprint = () => {
              Nationwide Footprint
         </h2>
 
-          <p className="text-[16px] sm:text-[18px] lg:text-[20px] text-white mb-2 max-w-[100%]">
+          <p className="text-sm sm:text-[16px] lg:text-[18px] xl:text-[20px] leading-relaxed text-white mb-2 max-w-[100%]">
             Sainik Schools are strategically located across states to provide equal opportunity
             and access to disciplined, defense-oriented education.
           </p>

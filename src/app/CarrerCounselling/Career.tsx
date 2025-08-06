@@ -145,13 +145,13 @@ const CareerCounselling = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="max-w-lg">
-              <h1 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-black mb-2 lg:mb-4 leading-tight">
                 Shape Your Future with Expert Career Guidance
               </h1>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+              <p className="text-sm text-gray-600 sm:text-[16px] lg:text-[18px] xl:text-[20px] font-poppins leading-relaxed mb-8">
                 Discover your potential and make informed career decisions with our expert guidance and comprehensive career planning services.
               </p>
-              <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full mt-6 hover:bg-green-800 transition">
+              <button className="bg-[#10744E] text-white text-[16px] font-medium font-poppins px-6 py-3 rounded-full mt-6 hover:bg-green-800 transition">
                 Get Free Consultation
               </button>
             </div>
@@ -172,7 +172,7 @@ const CareerCounselling = () => {
       <section className="pb-16 pt-14 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-black mb-2 lg:mb-4 leading-tight">
               Discover Your Path
             </h2>
           </div>
@@ -180,13 +180,13 @@ const CareerCounselling = () => {
             {pathOptions.map((option, index) => (
               <div key={index} className="bg-white border border-gray-200 rounded-lg p-8 text-center hover:shadow-lg transition-shadow duration-300">
                 <div className="text-4xl mb-4">{option.icon}</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                <h3 className="text-xl font-medium font-poppins text-gray-900 mb-4">
                   {option.title}
                 </h3>
-                <p className="text-gray-600 mb-2 leading-relaxed">
+                <p className="text-gray-600 mb-2 font-poppins leading-relaxed">
                   {option.description}
                 </p>
-                <button className="bg-[#10744E] text-white text-[16px] font-medium px-6 py-3 rounded-full mt-4 hover:bg-green-800 transition">
+                <button className="bg-[#10744E] text-white text-[16px] font-poppins font-medium px-6 py-3 rounded-full mt-4 hover:bg-green-800 transition">
                   {option.buttonText}
                 </button>
               </div>
@@ -202,7 +202,7 @@ const CareerCounselling = () => {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-black mb-2 lg:mb-4 leading-tight">
               Our Career Guidance Services
             </h2>
           </div>
@@ -210,10 +210,10 @@ const CareerCounselling = () => {
             {services.map((service, index) => (
               <div key={index} className="service-card bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
                 <div className="text-3xl mb-4">{service.icon}</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-medium font-poppins text-gray-900 mb-3">
                   {service.title}
                 </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <p className="text-gray-600 text-sm font-poppins leading-relaxed">
                   {service.description}
                 </p>
               </div>
@@ -227,15 +227,15 @@ const CareerCounselling = () => {
         ref={storiesRef}
         className="pb-14 pt-14 bg-white"
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-8 lg:px-8">
           <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-black mb-2 lg:mb-4 leading-tight">
               Student Success Stories
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {successStories.map((story, index) => (
-              <div key={index} className="bg-gray-50 rounded-lg px-6 py-4 text-center">
+              <div key={index} className="bg-gray-50 rounded-lg px-10 py-4 text-center">
                 <Image
                   src={story.image}
                   alt={story.name}
@@ -243,11 +243,11 @@ const CareerCounselling = () => {
                   height={80}
                   className="rounded-full mx-auto mb-4"
                 />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-medium font-poppins text-gray-900 mb-2">
                   {story.name}
                 </h3>
                 <p className="text-green-600 font-medium mb-4">{story.role}</p>
-                <p className="text-gray-600 text-sm leading-relaxed italic">
+                <p className="text-gray-600 text-sm  font-poppins leading-relaxed italic">
                   "{story.story}"
                 </p>
               </div>
@@ -263,7 +263,7 @@ const CareerCounselling = () => {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-black mb-2 lg:mb-4 leading-tight">
               Career Counselling Process
             </h2>
           </div>
@@ -274,7 +274,7 @@ const CareerCounselling = () => {
               <div className="w-16 h-16 bg-[#10744E] rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-white font-bold text-lg">01</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+              <h3 className="text-xl font-medium font-poppins text-gray-900 mb-3">
                 Register & Assessment
               </h3>
               <p className="text-gray-600 text-sm leading-relaxed">
@@ -287,7 +287,7 @@ const CareerCounselling = () => {
               <div className="w-16 h-16 bg-[#10744E] rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-white font-bold text-lg">02</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+              <h3 className="text-xl font-medium font-poppins text-gray-900 mb-3">
                 Analysis Report
               </h3>
               <p className="text-gray-600 text-sm leading-relaxed">
@@ -300,7 +300,7 @@ const CareerCounselling = () => {
               <div className="w-16 h-16 bg-[#10744E] rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-white font-bold text-lg">03</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+              <h3 className="text-xl font-medium font-poppins text-gray-900 mb-3">
                 Counselling Session
               </h3>
               <p className="text-gray-600 text-sm leading-relaxed">
@@ -313,7 +313,7 @@ const CareerCounselling = () => {
               <div className="w-16 h-16 bg-[#10744E] rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-white font-bold text-lg">04</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+              <h3 className="text-xl font-medium font-poppins text-gray-900 mb-3">
                 Action Plan
               </h3>
               <p className="text-gray-600 text-sm leading-relaxed">
@@ -333,7 +333,7 @@ const CareerCounselling = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             {/* Left Column - Contact Form */}
             <div className="bg-white">
-              <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-8">
+              <h2 className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-black mb-2 lg:mb-4 leading-tight">
                 Book Your Free Career Consultation
               </h2>
               
@@ -364,7 +364,7 @@ const CareerCounselling = () => {
                 
                 <button
                   type="submit"
-                  className="bg-[#10744E] ml-50 text-white text-[16px] font-medium px-6 py-3 rounded-full mt-2 hover:bg-green-800 transition"
+                  className="bg-[#10744E]  text-white text-[16px] font-medium px-6 py-3 rounded-full mt-2 hover:bg-green-800 transition"
                 >
                   Book Consultation
                 </button>
@@ -373,39 +373,45 @@ const CareerCounselling = () => {
             
             {/* Right Column - Benefits List */}
             <div className="bg-white">
-              <h3 className="text-3xl md:text-[32px] font-poppins font-medium text-black mb-8">
+              <h3 className="text-2xl sm:text-3xl md:text-[32px] font-poppins font-medium text-black mb-2 lg:mb-4 leading-tight">
                 Why Choose Our Career Guidance?
               </h3>
               
               <ul className="space-y-4">
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-red-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                  <span className="text-gray-700 text-lg">Expert career counsellors with industry experience</span>
+                  <span className="text-gray-700 text-lg font-poppins">Expert career counsellors with industry experience</span>
+
                 </li>
                 
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-red-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                  <span className="text-gray-700 text-lg">Personalized career path recommendations</span>
+                  <span className="text-gray-700 text-lg font-poppins">Personalized career path recommendations</span>
+
                 </li>
                 
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                  <span className="text-gray-700 text-lg">Comprehensive assessment tools</span>
+                  <span className="text-gray-700 text-lg font-poppins">Comprehensive assessment tools</span>
+
                 </li>
                 
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                  <span className="text-gray-700 text-lg">Regular follow-ups and progress tracking</span>
+                  <span className="text-gray-700 text-lg font-poppins">Regular follow-ups and progress tracking</span>
+
                 </li>
                 
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                  <span className="text-gray-700 text-lg">Access to industry insights and resources</span>
+                  <span className="text-gray-700 text-lg font-poppins">Access to industry insights and resources</span>
+
                 </li>
                 
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                  <span className="text-gray-700 text-lg">Support for college applications</span>
+                  <span className="text-gray-700 text-lg font-poppins">Support for college applications</span>
+
                 </li>
               </ul>
             </div>

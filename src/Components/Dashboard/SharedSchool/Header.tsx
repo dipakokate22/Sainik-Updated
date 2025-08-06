@@ -81,7 +81,7 @@ const Header = ({}: HeaderProps) => {
           <nav className="lg:hidden bg-white border-t border-gray-200 px-4 pb-4">
             <ul className="flex flex-col gap-2">
               {menuItems.map((item) => {
-                const Icon = iconMap[item.name];
+                const Icon = iconMap[item.name as keyof typeof iconMap];
                 const isActive = item.href === '/SchoolDashboard'
                   ? pathname === '/SchoolDashboard'
                   : pathname === item.href || pathname?.startsWith(item.href + '/');

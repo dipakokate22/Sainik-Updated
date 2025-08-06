@@ -98,12 +98,12 @@ const Testimonials = () => {
            <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
             Testimonials
           </h2>
-          <p className="mt-3 text-[16px] sm:text-[18px] md:text-[20px] text-gray-700 max-w-4xl mx-auto">
+          <p className="text-gray-600 text-sm sm:text-[16px] lg:text-[18px] xl:text-[20px] leading-relaxed">
             Hear what our students and parents say about their journey at Sainik School.
           </p>
         </div>
 
-        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8">
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8">
           {/* Left Arrow (Hidden on Mobile) */}
           <button
             onClick={handlePrev}

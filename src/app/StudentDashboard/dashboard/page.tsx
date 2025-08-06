@@ -110,7 +110,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="bg-white rounded-md shadow-md p-4 flex-1">
-              <div className="flex justify-between items-center mb-2">
+              <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-medium">Exam Result</h2>
                 <div className="flex items-center space-x-2 text-sm">
                   <Image src="/student_dashboard/small-calendar.png" alt="calendar" width={20} height={20} />
@@ -118,14 +118,14 @@ export default function DashboardPage() {
                   <Image src="/student_dashboard/down-arrow.png" alt="dropdown" width={16} height={16} />
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2 mb-4 text-xs">
+              <div className="flex flex-wrap gap-4 mb-8 text-xs">
                 <div className="px-2 py-1 bg-[#F0BEE0] text-[#CD02FF] rounded">Math : 100</div>
                 <div className="px-2 py-1 bg-[#D0F0D2] text-[#4AF600] rounded">Phy : 92</div>
                 <div className="px-2 py-1 bg-[#FEE8B6] text-[#FF7100] rounded">Che : 90</div>
                 <div className="px-2 py-1 bg-[#D5E7FD] text-[#0030FC] rounded">Eng : 82</div>
                 <div className="px-2 py-1 bg-[#F7CCD0] text-[#FA0040] rounded">Sci : 90</div>
               </div>
-              <div className="h-60">
+              <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={examData} margin={{ top: 20, right: 30, left: -20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />

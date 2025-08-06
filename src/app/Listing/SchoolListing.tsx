@@ -206,7 +206,7 @@ const FilterDropdown = ({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={onToggle}
-        className={`flex items-center justify-between w-full px-4 py-3 text-left border rounded-lg transition-all duration-200 ${
+        className={`flex items-center justify-between w-full px-4 py-3 text-left border rounded-lg transition-all duration-200 gap-3 ${
           selectedValue 
             ? 'border-[#A91D3A] bg-[#A91D3A]/5 text-[#A91D3A]' 
             : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
@@ -308,7 +308,7 @@ const SchoolListingPage = () => {
         }
         return pageNumbers.map((num, index) =>
             typeof num === 'string' ? (<span key={`ellipsis-${index}`} className="text-gray-500 px-2">...</span>) :
-            (<button key={num} onClick={() => setCurrentPage(num)} className={`w-9 h-9 flex items-center justify-center rounded-md text-[16px] font-normal transition-colors ${currentPage === num ? 'bg-[#A91D3A] text-white' : 'text-gray-600 hover:bg-red-100'}`}>{num}</button>)
+            (<button key={num} onClick={() => setCurrentPage(num)} className={`w-9 h-9 flex items-center justify-center rounded-md text-[16px] font-normal transition-colors ${currentPage === num ? 'bg-[#AA0111] text-white' : 'text-gray-600 hover:bg-red-100'}`}>{num}</button>)
         );
     };
 
@@ -316,7 +316,7 @@ const SchoolListingPage = () => {
         <div className="bg-[#F7F1EE] font-sans min-h-screen">
             <main>
                 <section className="max-w-[1380px] mx-auto py-6 px-4 sm:px-6 lg:px-8 mt-2 mb-16">
-                    <h1 className="text-[48px] sm:text-[26px] md:text-[30px] lg:text-[32px] font-medium text-[#333333] mb-6">School Listing</h1>
+                    <h1 className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-black mb-2 lg:mb-4 leading-tight">School Listing</h1>
                     
                     {/* Search and Filters Row */}
                     <div className="flex flex-col lg:flex-row gap-4 mb-6">
@@ -330,7 +330,7 @@ const SchoolListingPage = () => {
                                 placeholder="Search school" 
                                 value={searchTerm} 
                                 onChange={(e) => setSearchTerm(e.target.value)} 
-                                className="w-120 h-[51px] pl-12 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A91D3A] text-[15px] font-light text-gray-900" 
+                                className="w-120 h-[51px] pl-12 pr-4 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A91D3A] text-[15px] font-light text-gray-900" 
                             />
                         </div>
                         

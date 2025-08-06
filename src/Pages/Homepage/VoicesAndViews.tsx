@@ -76,7 +76,7 @@ const VoicesAndViews = () => {
         {/* Header */}
         <div className="text-center">
            <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">Voices & Views</h2>
-          <p className="mt-4 text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
+          <p className="text-gray-600 text-sm sm:text-[16px] lg:text-[18px] xl:text-[20px] leading-relaxed">
             Explore inspiring vlogs and the latest news from our Sainik School community.
           </p>
         </div>

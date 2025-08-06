@@ -41,7 +41,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
       )}
       aria-label="Sidebar navigation"
     >
-      <div className="flex items-center justify-between px-4 py-4 md:px-6 2xl:px-11">
+      <div className="flex items-center justify-start px-4 py-4 md:px-6 2xl:px-11">
         <Link
           href="/"
           className="flex items-center gap-2 text-base font-bold text-gray-800 hover:text-gray-900"
