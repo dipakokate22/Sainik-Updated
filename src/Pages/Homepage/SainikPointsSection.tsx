@@ -29,11 +29,11 @@ const SainikPointsSection = () => {
               where every dawn begins with purpose and every night ends with the satisfaction of serving the 
               nation with pride, honor, and relentless commitment.
             </p>
+            <br />
             <p>  
               From braving the harshest terrains to standing guard during moments of national celebration, 
               a soldier's life is built on resilience, physical endurance, mental strength, and an unbreakable 
               bond of brotherhood that goes beyond caste, religion, and region.
-              <br />
               It is a life of purpose and pride, where selfless service to the motherland becomes the highest duty.
             </p>
             </div>
@@ -52,8 +52,8 @@ const SainikPointsSection = () => {
               Healthcare is offered through the ECHS (Ex-Servicemen Contributory Health Scheme).
               Pension benefits ensure financial stability after retirement.
               <br />
+              <br />
               Affordable housing schemes make living easier for service members.
-              Welfare programs ensure dignity, security, and peace of mind.
               These benefits reflect the nation’s gratitude and aim to empower every soldier and 
               their family even beyond active service.
               
@@ -96,10 +96,11 @@ const SainikPointsSection = () => {
               Every heartbeat echoes “Bharat Mata Ki Jai,” and every action—be it a salute, a march, or a rescue—is 
               a reflection of deep love for the nation.
             </p>
+            <br />
+
             <p>
               This spirit pushes every soldier to rise above personal interest and serve with unmatched dedication.
               Their courage and sacrifice inspire generations and uphold the pride of the tricolour.
-              <br />
               It is this unwavering patriotism that strengthens the very soul of the nation.
               Through their daily acts of duty, they remind us what it truly means to serve with honor.
             </p>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { FaGlobe, FaUsers, FaBook } from 'react-icons/fa';
 
 gsap.registerPlugin(ScrollTrigger);
  
@@ -98,36 +99,36 @@ const AboutUsSection = () => {
   }, []);
 
   return (
-    <section className="w-full pb-16">
+    <section className="w-full pb-8 sm:pb-10 md:pb-16 px-4 sm:px-6 md:px-8 lg:px-14">
       {/* Breadcrumb + Content */}
-      <div className="w-full px-4 sm:px-6 lg:px-0 max-w-[1135px] mx-auto pt-10 pb-10">
-        <p className="text-sm sm:text-base text-black font-light font-poppins mb-8">
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-14 py-4 sm:py-6 md:py-8 lg:py-12">
+        <p className="text-sm sm:text-base text-black font-light font-poppins mb-4 sm:mb-6 md:mb-10">
           <Link href="/" className="text-[#10744E] hover:underline">Home</Link> / About Us
         </p>
 
-        <h1 className="text-2xl text-[48px] sm:text-3xl md:text-4xl text-black text-center font-semibold font-poppins mt-2 leading-snug">
+        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-[42px] font-poppins font-medium text-center text-black mb-2 lg:mb-4 leading-tight px-2">
           Shaping minds. Building futures. <br className="hidden sm:block" /> Empowering generations.
         </h1>
 
-        <div className="mt-6 space-y-4 text-justify sm:text-left">
-          <p className="text-base sm:text-lg text-[#595858] font-light font-poppins">
+        <div className="mt-4 sm:mt-6 space-y-3 sm:space-y-4 text-justify sm:text-left px-2">
+          <p className="text-sm sm:text-base md:text-lg lg:text-[20px] text-[#595858] font-light font-poppins leading-relaxed">
             At Sainik School, we believe every child deserves a school where they can grow with discipline,
             courage, and a strong foundation for the future. We are Indias first search engine dedicated to
             school admissions — including special focus on schools that prepare students for careers in the
             armed forces.
           </p>
-          <p className="text-base sm:text-lg text-[#595858] font-light font-poppins">
+          <p className="text-sm sm:text-base md:text-lg lg:text-[20px] text-[#595858] font-light font-poppins leading-relaxed">
             Sainik School started in 2021 with a clear mission — to help parents explore and choose the best
             schools from the comfort of their homes, without stress or confusion. We understand that finding
             the right Sainik or military-preparatory school can be challenging, especially for parents who want
             the best training and discipline for their children.
           </p>
-          <p className="text-base sm:text-lg text-[#595858] font-light font-poppins">
+          <p className="text-sm sm:text-base md:text-lg lg:text-[20px] text-[#595858] font-light font-poppins leading-relaxed">
             With Sainik School, you do more than just search — you experience. We offer 360° virtual tours and
             detailed insights into academics, hostels, sports, and training programs that build leadership and
             discipline.
           </p>
-          <p className="text-base sm:text-lg text-[#595858] font-light font-poppins">
+          <p className="text-sm sm:text-base md:text-lg lg:text-[20px] text-[#595858] font-light font-poppins leading-relaxed">
             Sainik School is not just a website — we are your partner in guiding your child toward a
             disciplined and successful future. Whether your dream is a career in the armed forces or building
             strength in character, we help you find the school that fits your childs goals.
@@ -140,40 +141,28 @@ const AboutUsSection = () => {
         <div className="max-w-[1100px] pt-16 pb-16 mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
           {/* Stat Card 1 */}
           <div className="flex flex-col items-center text-center p-6 border rounded-2xl shadow-sm hover:shadow-md transition duration-300 bg-white">
-            <Image
-              src="/images/school-icon.png"
-              alt="Listed Schools"
-              width={64}
-              height={64}
-              className="mb-4"
-            />
-            <p className="text-2xl font-semibold text-[#10744E] font-poppins">14,434+</p>
+            <div className="mb-4 p-4 bg-[#10744E]/10 rounded-full">
+              <FaGlobe className="w-8 h-8 text-[#10744E]" />
+            </div>
+            <p className="text-2xl font-semibold text-black font-poppins">14,434+</p>
             <p className="text-base text-gray-700 font-poppins mt-1">Listed Schools</p>
           </div>
 
           {/* Stat Card 2 */}
           <div className="flex flex-col items-center text-center p-6 border rounded-2xl shadow-sm hover:shadow-md transition duration-300 bg-white">
-            <Image
-              src="/images/parent-icon.png"
-              alt="Parent Enquiries"
-              width={64}
-              height={64}
-              className="mb-4"
-            />
-            <p className="text-2xl font-semibold text-[#10744E] font-poppins">14,434+</p>
+            <div className="mb-4 p-4 bg-[#10744E]/10 rounded-full">
+              <FaUsers className="w-8 h-8 text-[#10744E]" />
+            </div>
+            <p className="text-2xl font-semibold text-black font-poppins">14,434+</p>
             <p className="text-base text-gray-700 font-poppins mt-1">Parent Enquiries</p>
           </div>
 
           {/* Stat Card 3 */}
           <div className="flex flex-col items-center text-center p-6 border rounded-2xl shadow-sm hover:shadow-md transition duration-300 bg-white">
-            <Image
-              src="/images/counselling-icon.png"
-              alt="Parents Counselled"
-              width={64}
-              height={64}
-              className="mb-4"
-            />
-            <p className="text-2xl font-semibold text-[#10744E] font-poppins">14,434+</p>
+            <div className="mb-4 p-4 bg-[#10744E]/10 rounded-full">
+              <FaBook className="w-8 h-8 text-[#10744E]" />
+            </div>
+            <p className="text-2xl font-semibold text-black font-poppins">14,434+</p>
             <p className="text-base text-gray-700 font-poppins mt-1">Parents Counselled</p>
           </div>
         </div>
@@ -181,7 +170,7 @@ const AboutUsSection = () => {
 
       {/* Associated Partners Section - Subtle Animations Only */}
       <section 
-        className="w-full bg-[#F7F1EE] from-slate-50 to-blue-50 pt-16 pb-18 px-4 sm:px-6 lg:px-8 overflow-hidden"
+        className="w-full bg-[#F7F1EE] from-slate-50 to-blue-50 pt-14 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden"
         
       >
         <div className="max-w-7xl mx-auto">
@@ -189,7 +178,7 @@ const AboutUsSection = () => {
           <div className="text-center mb-16">
             <h2 
               ref={titleRef}
-              className="text-4xl lg:text-5xl xl:text-6xl font-semibold text-gray-900 mb-4"
+              className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-center text-black mb-2 lg:mb-4 leading-tight"
               style={{ fontSize: '36px', fontFamily: 'Poppins, sans-serif' }}
             >
               Our Associated Partners

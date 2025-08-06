@@ -314,8 +314,8 @@ const SchoolListSection = () => {
         </aside>
 
         {/* School Cards */}
-        <div className="w-full lg:w-[calc(100%-296px)] flex flex-col gap-6">
-          <h2 className="text-2xl md:text-3xl font-semibold text-[#1E1E1E] mb-2">Schools Near You</h2>
+        <div className="w-full lg:w-[calc(100%-296px)] flex flex-col gap-3">
+          <h2 className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-black mb-2 lg:mb-4 leading-tight">Schools Near You</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {paginatedSchools.map(school => (
@@ -341,7 +341,7 @@ const SchoolListSection = () => {
                     }}
                     className={`w-10 h-10 rounded-lg border text-sm font-medium transition-colors duration-200 ${
                       currentPage === item
-                        ? 'bg-[#10744E] text-white border-[#50B848]'
+                        ? 'bg-[#AA0111] text-white border-[#AA0111]'
                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
                     }`}
                   >

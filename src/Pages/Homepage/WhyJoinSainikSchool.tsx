@@ -74,7 +74,7 @@ const WhyJoinSainikSchool = () => {
             <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
               Why Join <br /> Sainik School?
             </h2>
-            <p className="text-base sm:text-lg mb-4 leading-relaxed">
+            <p className="text-sm text-black sm:text-[16px] lg:text-[18px] xl:text-[20px] leading-relaxed">
               Where courage meets discipline, and education <br />
               shapes future defense leaders. <br />
               Sainik Schools are more than institutions — they <br />

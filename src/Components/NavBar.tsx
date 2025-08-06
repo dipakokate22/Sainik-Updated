@@ -108,30 +108,30 @@ export default function Navbar() {
           {/* Explore Dropdown */}
           <div className="relative" ref={exploreDropdownRef}>
             <button
-  onClick={() => setIsExploreOpen(!isExploreOpen)}
-  className="bg-[#AA0111] text-white text-[14px] lg:text-[16px] font-medium px-4 lg:px-6 py-2 lg:py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2"
->
-  Explore
-  {/* 9-dot grid icon */}
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    className={`transition-transform duration-300 ${isExploreOpen ? 'rotate-180' : ''}`}
-  >
-    <circle cx="5" cy="5" r="2"/>
-    <circle cx="12" cy="5" r="2"/>
-    <circle cx="19" cy="5" r="2"/>
-    <circle cx="5" cy="12" r="2"/>
-    <circle cx="12" cy="12" r="2"/>
-    <circle cx="19" cy="12" r="2"/>
-    <circle cx="5" cy="19" r="2"/>
-    <circle cx="12" cy="19" r="2"/>
-    <circle cx="19" cy="19" r="2"/>
-  </svg>
-</button>
-
+              onClick={() => setIsExploreOpen(!isExploreOpen)}
+              className="bg-[#AA0111] text-white text-[14px] lg:text-[16px] font-medium px-3 xl:px-6 py-2 lg:py-3 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2"
+            >
+              {/* Show text only on screens 1440px and larger */}
+              <span className="hidden xl:inline">Explore</span>
+              {/* 9-dot grid icon */}
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className={`transition-transform duration-300 ${isExploreOpen ? 'rotate-180' : ''}`}
+              >
+                <circle cx="5" cy="5" r="2"/>
+                <circle cx="12" cy="5" r="2"/>
+                <circle cx="19" cy="5" r="2"/>
+                <circle cx="5" cy="12" r="2"/>
+                <circle cx="12" cy="12" r="2"/>
+                <circle cx="19" cy="12" r="2"/>
+                <circle cx="5" cy="19" r="2"/>
+                <circle cx="12" cy="19" r="2"/>
+                <circle cx="19" cy="19" r="2"/>
+              </svg>
+            </button>
 
             {/* Dropdown Items */}
             {isExploreOpen && (
@@ -236,6 +236,10 @@ export default function Navbar() {
                     <FaPlus className="text-[#257B5A] mr-3" size={18} />
                     <span className="text-white font-medium">Add Your School</span>
                   </Link>
+                  <Link href="/CompareSchools" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group">
+                    <FaPlus className="text-[#257B5A] mr-3" size={18} />
+                    <span className="text-white font-medium">Compare Schools</span>
+                  </Link>
                 </div>
               </div>
 
@@ -300,48 +304,6 @@ export default function Navbar() {
                 </div>
               </div>
             </nav>
-          </div>
-
-          {/* Footer */}
-<div className="p-6 border-t border-gray-700 flex-shrink-0">
-            {isLoggedIn ? (
-              // Mobile Profile Section
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-14 h-14 rounded-full bg-[#257B5A] flex items-center justify-center text-white text-xl font-bold mb-2">
-                  {/* Placeholder avatar, replace with user image if available */}
-                  <span>A</span>
-                </div>
-                <div className="text-white text-base font-semibold">Ayush Kumar</div>
-                <div className="text-gray-400 text-xs mb-2">ayush@email.com</div>
-                <div className="flex flex-col gap-2 w-full mt-2">
-                  <Link href="/profile" className="w-full">
-                    <button className="w-full bg-[#257B5A] text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors text-sm mb-1">Profile</button>
-                  </Link>
-                  <Link href="/SchoolDashboard" className="w-full">
-                    <button className="w-full bg-[#257B5A] text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors text-sm mb-1">Dashboard</button>
-                  </Link>
-                  <Link href="/StudentDashboard" className="w-full">
-                    <button className="w-full bg-[#257B5A] text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors text-sm mb-1">Student Dashboard</button>
-                  </Link>
-                  <Link href="/logout" className="w-full">
-                    <button className="w-full bg-transparent border border-[#257B5A] text-[#257B5A] py-2 rounded-lg font-medium hover:bg-[#257B5A] hover:text-white transition-colors text-sm">Logout</button>
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <Link href="/login" className="block w-full">
-                  <button className="w-full bg-[#257B5A] text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors">
-                    Login
-                  </button>
-                </Link>
-                <Link href="/signup" className="block w-full">
-                  <button className="w-full bg-transparent border border-[#257B5A] text-[#257B5A] py-3 px-4 rounded-lg font-semibold hover:bg-[#257B5A] hover:text-white transition-colors">
-                    Sign Up
-                  </button>
-                </Link>
-              </div>
-            )}
           </div>
         </div>
       )}

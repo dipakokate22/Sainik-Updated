@@ -18,7 +18,8 @@ import {
   FaPalette,
   FaWifi,
   FaBus,
-  FaArrowLeft
+  FaArrowLeft,
+  FaPlus
 } from 'react-icons/fa';
 import { PiCertificateFill } from 'react-icons/pi';
 import { FiArrowRight } from "react-icons/fi";
@@ -108,36 +109,36 @@ export default function SchoolDetailSection({
           <div className="space-y-6 ">
             {/* School Details */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">School Information</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">School Information</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Ownership */}
                 <div className="flex items-center gap-3">
-                  <FaSchool className="text-xl " />
-                  <span>
+                  <FaSchool className="text-xl text-black" />
+                  <span className="text-black">
                     Ownership : <span className="text-[#257B5A] ">Private</span>
                   </span>
                 </div>
 
                 {/* Medium */}
                 <div className="flex items-center gap-3">
-                  <FaLanguage className="text-xl" />
-                  <span>
+                  <FaLanguage className="text-xl text-black" />
+                  <span className="text-black">
                     Medium : <span className="text-[#257B5A]">English</span>
                   </span>
                 </div>
 
                 {/* Board */}
                 <div className="flex items-center gap-3">
-                  <PiCertificateFill className="text-xl" />
-                  <span>
+                  <PiCertificateFill className="text-xl text-black" />
+                  <span className="text-black">
                     Board : <span className="text-[#257B5A]">CBSE</span>
                   </span>
                 </div>
 
                 {/* Category */}
                 <div className="flex items-center gap-3">
-                  <FaThLarge className="text-xl" />
-                  <span>
+                  <FaThLarge className="text-xl text-black" />
+                  <span className="text-black">
                     Category : <span className="text-[#257B5A]">Co-ed</span>
                   </span>
                 </div>
@@ -146,14 +147,14 @@ export default function SchoolDetailSection({
 
             {/* Description Section */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-2">🏫 Welcome to Sainik School, Pune</h4>
-              <p className="text-[17px] font-regular font-poppins text-black mb-4">
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🏫 Welcome to Sainik School, Pune</h4>
+              <p className="text-[16px] font-regular font-poppins text-black mb-4">
                 Established in 1961, Sainik School Pune is one of India's premier military schools,
                 committed to preparing young students for leadership roles in the Indian Armed
                 Forces and beyond. The school operates under the Ministry of Defence and is part
                 of a prestigious chain of Sainik Schools across the country.
               </p>
-              <p className='text-[17px] font-regular font-poppins text-black'>With a legacy of excellence spanning over 60 years, the school has proudly
+              <p className='text-[16px] font-regular font-poppins text-black'>With a legacy of excellence spanning over 60 years, the school has proudly
                 produced more than 1,000 defense officers through rigorous academic training,
                 disciplined routines, and character-building programs. Students receive a
                 holistic education combining academics, military ethos, sports, and life skills
@@ -162,8 +163,8 @@ export default function SchoolDetailSection({
 
             {/* Key Highlights */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-2">🌟 Key Highlights</h4>
-              <ul className="list-disc pl-6 text-[17px] font-regular font-poppins text-black space-y-1">
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🌟 Key Highlights</h4>
+              <ul className="list-disc pl-6 text-[16px] font-regular font-poppins text-black space-y-1">
                 <li>🎯 Focused NDA Preparation:
                   <br /> Dedicated NDA coaching integrated into the school curriculum to help
                 </li>
@@ -181,7 +182,7 @@ export default function SchoolDetailSection({
 
             {/* Admission Dates */}
             <div className="bg-white border rounded-lg  px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-semibold mb-2">Admission Criteria & Eligibility</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">Admission Criteria & Eligibility</h4>
               <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Class I - Class I</span>
@@ -234,7 +235,7 @@ export default function SchoolDetailSection({
 
             {/* School Hours */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-semibold mb-2">School Hours</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">School Hours</h4>
               <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
                 <span>Monday : 10 AM - 4 PM</span>
@@ -272,7 +273,7 @@ export default function SchoolDetailSection({
           <div className="space-y-6">
             {/* Academic Facilities */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">📚 Academic Facilities</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">📚 Academic Facilities</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
                   <FaBook className="text-xl text-[#257B5A]" />
@@ -295,7 +296,7 @@ export default function SchoolDetailSection({
 
             {/* Sports & Recreation */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">🏃‍♂️ Sports & Recreation</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🏃‍♂️ Sports & Recreation</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
                   <FaFootballBall className="text-xl text-[#257B5A]" />
@@ -318,7 +319,7 @@ export default function SchoolDetailSection({
 
             {/* Infrastructure */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">🏢 Infrastructure</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🏢 Infrastructure</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
                   <MdAir className="text-xl text-[#257B5A]" />
@@ -354,7 +355,7 @@ export default function SchoolDetailSection({
           <div className="space-y-6">
             {/* Fee Structure */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">💰 Fee Structure (Annual)</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">💰 Fee Structure (Annual)</h4>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300">
                   <thead>
@@ -366,29 +367,29 @@ export default function SchoolDetailSection({
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                    <tr className="text-black">
                       <td className="border border-gray-300 px-4 py-2">Class I - III</td>
                       <td className="border border-gray-300 px-4 py-2">₹85,000</td>
                       <td className="border border-gray-300 px-4 py-2">₹15,000</td>
-                      <td className="border border-gray-300 px-4 py-2 font-semibold text-[#257B5A]">₹1,00,000</td>
+                      <td className="border border-gray-300 px-4 py-2 font-semibold">₹1,00,000</td>
                     </tr>
-                    <tr className="bg-gray-50">
+                    <tr className="text-black">
                       <td className="border border-gray-300 px-4 py-2">Class IV - VI</td>
                       <td className="border border-gray-300 px-4 py-2">₹95,000</td>
                       <td className="border border-gray-300 px-4 py-2">₹20,000</td>
-                      <td className="border border-gray-300 px-4 py-2 font-semibold text-[#257B5A]">₹1,15,000</td>
+                      <td className="border border-gray-300 px-4 py-2 font-semibold">₹1,15,000</td>
                     </tr>
-                    <tr>
+                    <tr className="text-black">
                       <td className="border border-gray-300 px-4 py-2">Class VII - IX</td>
                       <td className="border border-gray-300 px-4 py-2">₹1,10,000</td>
                       <td className="border border-gray-300 px-4 py-2">₹25,000</td>
-                      <td className="border border-gray-300 px-4 py-2 font-semibold text-[#257B5A]">₹1,35,000</td>
+                      <td className="border border-gray-300 px-4 py-2 font-semibold">₹1,35,000</td>
                     </tr>
-                    <tr className="bg-gray-50">
+                    <tr className="text-black">
                       <td className="border border-gray-300 px-4 py-2">Class X - XII</td>
                       <td className="border border-gray-300 px-4 py-2">₹1,25,000</td>
                       <td className="border border-gray-300 px-4 py-2">₹30,000</td>
-                      <td className="border border-gray-300 px-4 py-2 font-semibold text-[#257B5A]">₹1,55,000</td>
+                      <td className="border border-gray-300 px-4 py-2 font-semibold">₹1,55,000</td>
                     </tr>
                   </tbody>
                 </table>
@@ -397,7 +398,7 @@ export default function SchoolDetailSection({
 
             {/* Additional Fees */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">📋 Additional Fees</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">📋 Additional Fees</h4>
               <div className="space-y-3">
                 <div className="flex justify-between items-center border-b pb-2">
                   <span className="text-[16px] text-black">Admission Fee (One-time)</span>
@@ -424,7 +425,7 @@ export default function SchoolDetailSection({
 
             {/* Payment Information */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">💳 Payment Information</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">💳 Payment Information</h4>
               <ul className="space-y-2">
                 <li className="flex items-start gap-2 text-[16px] text-black">
                   <IoMdCheckmarkCircle className="text-[#257B5A] mt-1" />
@@ -452,7 +453,7 @@ export default function SchoolDetailSection({
           <div className="space-y-6">
             {/* Campus Images */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">🏫 Campus Gallery</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🏫 Campus Gallery</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="relative group cursor-pointer">
@@ -471,7 +472,7 @@ export default function SchoolDetailSection({
 
             {/* Facilities Images */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">🏃‍♂️ Sports & Activities</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🏃‍♂️ Sports & Activities</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="relative group cursor-pointer">
@@ -490,7 +491,7 @@ export default function SchoolDetailSection({
 
             {/* Events & Celebrations */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">🎉 Events & Celebrations</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🎉 Events & Celebrations</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="relative group cursor-pointer">
@@ -514,7 +515,7 @@ export default function SchoolDetailSection({
           <div className="space-y-6">
             {/* Overall Rating */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">⭐ Overall Rating</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">⭐ Overall Rating</h4>
               <div className="flex items-center gap-4 mb-4">
                 <div className="text-4xl font-bold text-[#257B5A]">4.2</div>
                 <div>
@@ -546,7 +547,7 @@ export default function SchoolDetailSection({
 
             {/* Individual Reviews */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">💬 Student & Parent Reviews</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">💬 Student & Parent Reviews</h4>
               <div className="space-y-6">
                 {[
                   {
@@ -597,8 +598,9 @@ export default function SchoolDetailSection({
 
             {/* Write Review */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">✍️ Write a Review</h4>
-              <button className="bg-[#257B5A] text-white px-6 py-3 rounded-lg hover:bg-[#1e6b4a] transition-colors duration-300">
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">✍️ Write a Review</h4>
+              <button className="bg-[#257B5A] text-[16px] text-white px-6 py-3 rounded-full hover:bg-[#1e6b4a] transition-colors duration-300">
+
                 📝 Share Your Experience
               </button>
             </div>
@@ -610,7 +612,7 @@ export default function SchoolDetailSection({
           <div className="space-y-6">
             {/* Admission FAQs */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">🎓 Admission FAQs</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🎓 Admission FAQs</h4>
               <div className="space-y-4">
                 {[
                   {
@@ -636,7 +638,7 @@ export default function SchoolDetailSection({
 
             {/* Academic FAQs */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">📚 Academic FAQs</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">📚 Academic FAQs</h4>
               <div className="space-y-4">
                 {[
                   {
@@ -662,7 +664,7 @@ export default function SchoolDetailSection({
 
             {/* General FAQs */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="text-[20px] text-black font-poppins font-semibold mb-4">❓ General FAQs</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">❓ General FAQs</h4>
               <div className="space-y-4">
                 {[
                   {
@@ -698,27 +700,27 @@ export default function SchoolDetailSection({
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F1EE]">
+    <div className="min-h-screen bg-[#F7F1EE]" >
       {/* Header Section - Matching the uploaded image */}
-      <div className="bg-[#F7F1EE] px-4 md:px-6 lg:px-8 py-6">
-        <div className="max-w-[1380px] mx-auto">
+      <div className="max-w-[1440px] w-full mx-auto bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-14 py-4 sm:pt-6 md:pt-10 lg:pt-12">
+        <div className="max-w-[1440px] w-full mx-auto">
           {/* Back Button */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <button className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors">
-              <FaArrowLeft className="text-lg" />
-              <span className="text-lg font-medium">Back</span>
+              <FaArrowLeft className="text-sm sm:text-base lg:text-lg" />
+              <span className="text-sm sm:text-base lg:text-lg font-medium">Back</span>
             </button>
           </div>
 
           {/* School Header Card */}
-          <div className="flex items-start gap-6">
+          <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 lg:gap-6">
             {/* School Logo */}
-            <div className="w-32 h-32 bg-white rounded-2xl p-4 flex-shrink-0 shadow-sm">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 bg-white rounded-2xl p-2 flex-shrink-0 shadow-sm">
               <Image
                 src="/Listing/Logo.png"
                 alt={schoolName}
-                width={96}
-                height={96}
+                width={120}
+                height={120}
                 className="w-full h-full object-contain"
               />
             </div>
@@ -726,20 +728,14 @@ export default function SchoolDetailSection({
             {/* School Information */}
             <div className="flex-1">
               {/* School Name */}
-              <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-2">
+              <h1 className="text-lg sm:text-xl md:text-2xl lg:text-[32px] font-poppins font-medium text-black mb-2 lg:mb-2 leading-tight">
                 {schoolName}
               </h1>
 
-              {/* Location with Pin Icon */}
-               <div className="flex items-center gap-2 mb-1">
-                <FaMapMarkerAlt className="text-[#257B5A] text-lg" />
-                <span className="text-lg text-[#257B5A] font-medium">{location}</span>
-              </div>
-              
-
               {/* Distance and Rating */}
-              <div className="flex items-center gap-4 mb-2">
+              <div className="flex items-center gap-4 mb-4">
                 <span className="text-gray-600 font-medium">2.3 Km Away</span>
+
                 <span className="text-gray-400">|</span>
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
@@ -756,60 +752,53 @@ export default function SchoolDetailSection({
                 </div>
               </div>
 
-              {/* Basic Details Badges */}
-              <div className="flex items-center gap-3">
-                <span className="bg-[#257B5A] text-white px-4 py-2 rounded-full text-sm font-medium">
-                  CBSE
-                </span>
-                <span className="bg-[#257B5A] text-white px-4 py-2 rounded-full text-sm font-medium">
-                  English
-                </span>
-                <span className="bg-[#257B5A] text-white px-4 py-2 rounded-full text-sm font-medium">
-                  Co-ed
-                </span>
-              </div>
+              {/* Add to Compare Button */}
+              <button className="flex items-center gap-2 border border-[#10744E] text-[#10744E] px-4 py-2 rounded-full hover:bg-[#10744E] hover:text-white transition-colors duration-300 font-medium">
+                <FaPlus className="w-4 h-4" />
+                <span>Add to Compare</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
 
         {/* Main Content Section */}
-      <section className="bg-[#F7F1EE] px-4 pb-16 md:px-6 lg:px-8 min-h-screen ">
-        <div className="max-w-[1380px] mx-auto pt-6 ">
+      <section className="max-w-[1440px] w-full mx-auto bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-14 pb-8 sm:pb-12 md:pb-16">
+        <div className="max-w-[1440px] w-full mx-auto pt-4 sm:pt-6">
           {/* Top Bar with Contact Info and Register Button */}
-          <div className="border border-[#257B5A] rounded-lg px-4 md:px-[26px] py-[25px] mb-6">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="border border-[#257B5A] rounded-lg px-3 sm:px-4 md:px-6 lg:px-[26px] py-3 sm:py-4 lg:py-[25px] mb-4 sm:mb-6">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
               {/* School Info */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <FaMapMarkerAlt className="text-[#257B5A] text-lg" />
-                  <span className="text-[16px] text-gray-700">{location}</span>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 lg:gap-6">
+                <div className="flex items-center gap-1">
+                  <FaMapMarkerAlt className="text-[#257B5A] text-sm sm:text-base" />
+                  <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{location}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <FaPhone className="text-[#257B5A] text-lg" />
-                  <span className="text-[16px] text-gray-700">{phone}</span>
+                <div className="flex items-center gap-1">
+                  <FaPhone className="text-[#257B5A] text-sm sm:text-base" />
+                  <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700">{phone}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <FaEnvelope className="text-[#257B5A] text-lg" />
-                  <span className="text-[16px] text-gray-700">{email}</span>
+                <div className="flex items-center gap-1">
+                  <FaEnvelope className="text-[#257B5A] text-sm sm:text-base" />
+                  <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{email}</span>
                 </div>
               </div>
 
               {/* Register Button */}
-              <button className="bg-[#257B5A] text-white px-6 py-3 rounded-lg hover:bg-[#1e6b4a] transition-colors duration-300 font-medium">
+              <button className="bg-[#257B5A] text-white px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full hover:bg-[#1e6b4a] transition-colors duration-300 font-medium text-xs sm:text-sm lg:text-base whitespace-nowrap">
                 📝 Register for Admission
               </button>
             </div>
           </div>
 
           {/* Tab Navigation */}
-          <div className="bg-white border rounded-lg mb-6">
-            <div className="flex flex-wrap border-b">
+          <div className="bg-white border rounded-lg mb-4 sm:mb-6 overflow-x-auto">
+            <div className="flex border-b min-w-max sm:min-w-0">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 md:px-6 py-3 text-[14px] md:text-[16px] font-medium transition-colors duration-300 border-b-2 ${
+                  className={`px-2 sm:px-3 md:px-4 lg:px-6 py-2 sm:py-3 text-[11px] sm:text-[12px] md:text-[14px] lg:text-[16px] font-medium transition-colors duration-300 border-b-2 whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'border-[#257B5A] text-[#257B5A] bg-green-50'
                       : 'border-transparent text-gray-600 hover:text-[#257B5A] hover:bg-gray-50'
@@ -822,18 +811,18 @@ export default function SchoolDetailSection({
           </div>
 
           {/* Main Content Area */}
-          <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
             {/* Left Column - Tab Content */}
-            <div className="w-full lg:w-[65%]">
+            <div className="w-full lg:w-[65%] min-w-0">
               {renderTabContent()}
             </div>
 
             {/* Right Column */}
-            <div className="w-full lg:w-[35%] flex flex-col gap-6 mt-8 lg:mt-0">
+            <div className="w-full lg:w-[35%] flex flex-col gap-4 sm:gap-6 mt-4 sm:mt-6 lg:mt-0">
               {/* Nearby Schools - Horizontal Cards */}
-              <div className="w-full bg-white border rounded-lg font-poppins pt-[25px] pb-[25px] px-4 md:px-6">
-                <h2 className="text-[20px] sm:text-[22px] md:text-[24px] text-black font-poppins font-semibold mb-4">Nearby Schools</h2>
-                <div className="flex flex-col gap-3">
+              <div className="w-full bg-white border rounded-lg font-poppins pt-3 sm:pt-4 lg:pt-[25px] pb-3 sm:pb-4 lg:pb-[25px] px-3 sm:px-4 lg:px-6">
+                <h2 className="font-semibold font-poppins text-[13px] sm:text-[14px] md:text-[16px] lg:text-[20px] text-black mb-2 sm:mb-3 lg:mb-4">Nearby Schools</h2>
+                <div className="flex flex-col gap-2 sm:gap-3">
                   {[...Array(6)].map((_, i) => (
                     <HorizontalSchoolCard
                       key={i}
@@ -848,22 +837,22 @@ export default function SchoolDetailSection({
               </div>
 
               {/* Review Section */}
-              <div className="w-full bg-white border rounded-lg pt-[25px] pb-[25px] px-4 md:pl-[23px]">
-                <h4 className="font-semibold text-[20px] sm:text-[22px] md:text-[24px] text-black font-poppins mb-2">Get More Reviews</h4>
-                <button className="bg-[#d3e7dc] text-green-700 font-medium py-2 px-4 rounded-md text-[16px] md:text-[20px]">
+              <div className="w-full bg-white border rounded-lg pt-3 sm:pt-4 lg:pt-[25px] pb-3 sm:pb-4 lg:pb-[25px] px-3 sm:px-4 lg:pl-[23px]">
+                <h4 className="font-semibold font-poppins text-[13px] sm:text-[14px] md:text-[16px] lg:text-[20px] text-black mb-2 sm:mb-3 lg:mb-4">Get More Reviews</h4>
+                <button className="bg-[#d3e7dc] text-green-700 font-medium py-1.5 sm:py-2 px-2 sm:px-3 lg:px-4 rounded-full text-[11px] sm:text-[12px] md:text-[14px] lg:text-[16px]">
                   📩 Ask for Reviews
                 </button>
               </div>
 
               {/* Embedded Map */}
-              <div className="w-full bg-white rounded-lg border pt-[25px] pb-[25px] px-4 md:pl-[23px] md:pr-[23px]">
-                <h4 className="font-semibold font-poppins text-[20px] text-black sm:text-[22px] md:text-[24px] mb-2">Explore Location</h4>
+              <div className="w-full bg-white rounded-lg border pt-3 sm:pt-4 lg:pt-[25px] pb-3 sm:pb-4 lg:pb-[25px] px-3 sm:px-4 lg:px-[23px]">
+                <h4 className="font-medium font-poppins text-[14px] sm:text-[16px] md:text-[18px] lg:text-[24px] text-black mb-2 sm:mb-3 lg:mb-4">Explore Location</h4>
                 <iframe
                   title="School Location"
                   src="https://maps.google.com/maps?q=Sainik%20School,%20Pune&t=&z=13&ie=UTF8&iwloc=&output=embed"
                   width="100%"
-                  height="200"
-                  className="rounded-lg border"
+                  height="120"
+                  className="rounded-lg border sm:h-[150px] lg:h-[200px]"
                   loading="lazy"
                 />
               </div>
