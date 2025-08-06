@@ -405,7 +405,7 @@ const SchoolListingPage = () => {
                                 name={school.name}
                                 image={school.imageUrl}
                                 desc={school.location + ' | ' + school.board + ' | ' + school.medium + ' | ' + school.category}
-                                logoUrl={school.logoUrl}
+                                logo={school.logoUrl}
                               />
                             ))}
                         </div>
