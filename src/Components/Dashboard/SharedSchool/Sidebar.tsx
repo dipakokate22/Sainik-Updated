@@ -10,16 +10,16 @@ import Image from 'next/image';
 import {
   LayoutDashboard,
   GraduationCap,
-  Receipt,
-  BadgeDollarSign,
+  TrendingUp,
+  IndianRupee,
   ArrowLeft,
 } from 'lucide-react';
 
 const menuItems = [
   { name: 'Dashboard', icon: LayoutDashboard, href: '/SchoolDashboard' },
   { name: 'My School', icon: GraduationCap, href: '/SchoolDashboard/MySchool' },
-  { name: 'Subscription', icon: Receipt, href: '/SchoolDashboard/Subscription' },
-  { name: 'Billing', icon: BadgeDollarSign, href: '/SchoolDashboard/Billing' },
+  { name: 'Subscription', icon: TrendingUp, href: '/SchoolDashboard/Subscription' },
+  { name: 'Billing', icon: IndianRupee, href: '/SchoolDashboard/Billing' },
 ];
 
 interface SidebarProps {
@@ -33,7 +33,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
   return (
     <aside
       className={clsx(
-        'fixed top-0 left-0 h-full w-64 bg-white shadow-lg border-r border-gray-200 z-50 flex flex-col overflow-y-auto transition-opacity duration-200 ease-in-out',
+        'fixed top-0 left-0 h-full w-64 bg-white shadow-lg border-r border-gray-200 z-50 flex flex-col overflow-y-auto font-poppins',
         {
           'opacity-100 pointer-events-auto': sidebarOpen,
           'opacity-0 pointer-events-none': !sidebarOpen,
@@ -72,7 +72,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                 <Link
                   href={item.href}
                   className={clsx(
-                    'flex items-center gap-2 rounded-sm py-2 px-3 font-medium transition-colors duration-300 ease-in-out',
+                    'flex items-center gap-2 rounded-sm py-2 px-3 font-medium',
                     isActive
                       ? 'bg-blue-100 text-blue-700 border-r-4 border-blue-500 shadow-sm'
                       : 'text-gray-600 hover:bg-active-menu'

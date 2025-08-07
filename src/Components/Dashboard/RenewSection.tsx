@@ -13,7 +13,7 @@ const RenewSection = () => {
         <hr/>
         <div className="flex justify-between items-center text-sm sm:text-base">
           <span className="text-gray-600">Renewal Cost</span>
-          <span className="font-medium text-gray-800">$ 6000</span>
+          <span className="font-medium text-gray-800">₹ 6000</span>
         </div>
       </div>
       <button className="mt-6 w-full py-2 px-4 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-100 transition-colors text-sm sm:text-base">

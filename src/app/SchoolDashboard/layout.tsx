@@ -16,18 +16,18 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
-    <div className="flex h-screen bg-brand-background relative">
+    <div className="flex h-screen bg-brand-background relative font-poppins">
       {isDesktop && (
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       )}
 
       <div
-        className={`flex flex-1 flex-col relative transition-margin duration-300 ease-in-out ${
+        className={`flex flex-1 flex-col relative ${
           isDesktop && sidebarOpen ? 'ml-64' : 'ml-0'
         }`}
       >
         <Header />
-        <main className="flex-1 overflow-auto p-4">{children}</main>
+        <main className="flex-1 overflow-auto px-6 py-8">{children}</main>
       </div>
     </div>
   );

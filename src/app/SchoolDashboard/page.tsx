@@ -4,7 +4,7 @@ import StatCard from '@/Components/Dashboard/StatCard';
 import RenewSection from '@/Components/Dashboard/RenewSection';
 import StudentListTable from '@/Components/Dashboard/StudentListTable';
 import EarningsChart from '@/Components/Dashboard/EarningsChart';
-import { Users, UserPlus, GraduationCap, DollarSign } from 'lucide-react';
+import { Users, UserPlus, GraduationCap, IndianRupee } from 'lucide-react';
 
 const DashboardHomePage = () => {
   return (
@@ -36,8 +36,8 @@ const DashboardHomePage = () => {
         />
         <StatCard 
           title="Payment" 
-          value="$2000" 
-          icon={DollarSign}
+          value="₹2000" 
+          icon={IndianRupee}
           color="bg-red-100"
           iconBgColor="bg-red-400"
         />
