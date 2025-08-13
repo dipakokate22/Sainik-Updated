@@ -129,10 +129,9 @@ const CompareSchools = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <NavBar />
+    <div className="min-h-screen bg-[#F7F1EE]">
       
-      <div className="pt-34 pb-12">
+      <div className="pt-12 pb-16">
         <div className="max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-12">
@@ -145,7 +144,7 @@ const CompareSchools = () => {
           </div>
 
           {/* Comparison Table */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-16">
             {/* School Headers */}
             <div className="grid grid-cols-3 bg-[#1C1F24]">
               <div className="p-6">
@@ -254,8 +253,6 @@ const CompareSchools = () => {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 };

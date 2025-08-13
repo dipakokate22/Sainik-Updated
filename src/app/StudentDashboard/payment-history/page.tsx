@@ -28,18 +28,18 @@ const PaymentHistoryPage = () => {
       nextAttempt: '15-01-2025'
     },
     { 
-      paymentFor: 'Sainik School Entrance Exam 2024', 
+      paymentFor: 'Sainik School Entrance Exam 2025', 
       examType: 'Main Entrance', 
-      paymentDate: '10-11-2023', 
+      paymentDate: '10-11-2024', 
       amount: 'Rs. 2,000', 
       status: 'Completed',
       attempts: '3/3 Used',
       nextAttempt: 'Expired'
     },
     { 
-      paymentFor: 'Additional Entrance Exam 2024', 
+      paymentFor: 'Additional Entrance Exam 2025', 
       examType: 'Additional', 
-      paymentDate: '25-02-2024', 
+      paymentDate: '25-02-2025', 
       amount: 'Rs. 2,000', 
       status: 'Failed',
       attempts: '2/3 Used',

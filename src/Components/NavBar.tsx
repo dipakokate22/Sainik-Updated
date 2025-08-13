@@ -2,9 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FaMapMarkerAlt, FaSearch, FaBars, FaTimes, FaHome, FaSchool, FaInfoCircle, FaNewspaper, FaEnvelope, FaPlus } from 'react-icons/fa';
 import { IoIosArrowDown } from 'react-icons/io';
-import { HiOutlineDotsCircleHorizontal } from 'react-icons/hi';
 import ProfileDropdown from './ProfileDropdown';
 
 export default function Navbar() {
@@ -63,7 +63,13 @@ export default function Navbar() {
           <div className="bg-[#1C1F24] w-full rounded-[16px] md:rounded-[20px] max-w-[1380px] mx-auto mt-4 mb-4 px-4 sm:px-6 lg:px-8 shadow-lg text-white py-[18px] relative">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2 sm:gap-4">
-                <span className="text-white text-[24px] sm:text-[28px] font-poppins font-bold">Sainik</span>
+                <Image
+                  src="/Image/Sainik-logo.png" 
+                  alt="Sainik Logo" 
+                  width={120} 
+                  height={60} 
+                  className="h-8 sm:h-10 w-auto"
+                />
               </div>
             </div>
           </div>

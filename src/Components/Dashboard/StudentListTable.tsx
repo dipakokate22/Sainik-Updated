@@ -1,24 +1,39 @@
 import React from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 
-// Sample data
+// Sample data with different statuses
 const students = [
-  { no: '01', name: 'Dipali', adminDate: '12 may 2025', status: 'Checkin', subject: 'Science', fees: '1234$' },
-  { no: '01', name: 'Dipali', adminDate: '12 may 2025', status: 'Checkin', subject: 'Science', fees: '1234$' },
-  { no: '01', name: 'Dipali', adminDate: '12 may 2025', status: 'Checkin', subject: 'Science', fees: '1234$' },
-  { no: '01', name: 'Dipali', adminDate: '12 may 2025', status: 'Checkin', subject: 'Science', fees: '1234$' },
-  // Add more students here to test scrolling
+  { no: '01', name: 'Dipali', adminDate: '12 may 2025', status: 'done', subject: 'Science', fees: '₹1234' },
+  { no: '02', name: 'Rahul', adminDate: '15 may 2025', status: 'pending', subject: 'Math', fees: '₹1500' },
+  { no: '03', name: 'Priya', adminDate: '18 may 2025', status: 'failed', subject: 'English', fees: '₹1200' },
+  { no: '04', name: 'Amit', adminDate: '20 may 2025', status: 'done', subject: 'Physics', fees: '₹1800' },
+  { no: '05', name: 'Sneha', adminDate: '22 may 2025', status: 'pending', subject: 'Chemistry', fees: '₹1600' },
 ];
+
+// Function to get status styling
+const getStatusStyle = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'done':
+      return 'bg-green-100 text-green-800 border border-green-200';
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+    case 'failed':
+      return 'bg-red-100 text-red-800 border border-red-200';
+    default:
+      return 'bg-gray-100 text-gray-800 border border-gray-200';
+  }
+};
 
 const StudentListTable = () => {
   return (
     <div className="bg-white p-3 sm:p-6 rounded-lg shadow-md col-span-1 lg:col-span-2 w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2 sm:gap-0">
-        <h3 className="text-lg sm:text-xl font-semibold text-gray-800">New Student List</h3>
+        <h3 className="text-lg sm:text-xl font-semibold text-black">New Student List</h3>
         <input 
           type="text" 
           placeholder="Search Student" 
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base w-full sm:w-auto"
+          className="px-3 py-2 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base w-full sm:w-auto text-black placeholder-gray-300"
+
         />
       </div>
       {/* Responsive Table: horizontal scroll on mobile */}
@@ -42,7 +57,7 @@ const StudentListTable = () => {
                 <td className="py-2 sm:py-4 px-2 sm:px-4 text-gray-700">{student.name}</td>
                 <td className="py-2 sm:py-4 px-2 sm:px-4 text-gray-700">{student.adminDate}</td>
                 <td className="py-2 sm:py-4 px-2 sm:px-4">
-                  <span className="bg-badge-green text-white text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-full">
+                  <span className={`text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-full capitalize ${getStatusStyle(student.status)}`}>
                     {student.status}
                   </span>
                 </td>
@@ -50,10 +65,16 @@ const StudentListTable = () => {
                 <td className="py-2 sm:py-4 px-2 sm:px-4 text-gray-700">{student.fees}</td>
                 <td className="py-2 sm:py-4 px-2 sm:px-4">
                   <div className="flex justify-center items-center gap-2">
-                    <button className="p-2 rounded-md bg-badge-green text-white hover:opacity-90 transition-opacity">
+                    <button 
+                      className="p-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200 shadow-sm"
+                      title="Edit Student"
+                    >
                       <Pencil size={16} />
                     </button>
-                    <button className="p-2 rounded-md bg-delete-red text-white hover:opacity-90 transition-opacity">
+                    <button 
+                      className="p-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors duration-200 shadow-sm"
+                      title="Delete Student"
+                    >
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -70,14 +91,25 @@ const StudentListTable = () => {
             <div className="flex justify-between"><span className="font-semibold">No.</span><span>{student.no}</span></div>
             <div className="flex justify-between"><span className="font-semibold">Name</span><span>{student.name}</span></div>
             <div className="flex justify-between"><span className="font-semibold">Date Of Admin</span><span>{student.adminDate}</span></div>
-            <div className="flex justify-between"><span className="font-semibold">Status</span><span className="bg-badge-green text-white text-xs font-semibold px-3 py-1.5 rounded-full">{student.status}</span></div>
+            <div className="flex justify-between">
+              <span className="font-semibold">Status</span>
+              <span className={`text-xs font-semibold px-3 py-1.5 rounded-full capitalize ${getStatusStyle(student.status)}`}>
+                {student.status}
+              </span>
+            </div>
             <div className="flex justify-between"><span className="font-semibold">Subject</span><span>{student.subject}</span></div>
             <div className="flex justify-between"><span className="font-semibold">Fees</span><span>{student.fees}</span></div>
             <div className="flex justify-end gap-2 mt-2">
-              <button className="p-2 rounded-md bg-badge-green text-white hover:opacity-90 transition-opacity">
+              <button 
+                className="p-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200 shadow-sm"
+                title="Edit Student"
+              >
                 <Pencil size={16} />
               </button>
-              <button className="p-2 rounded-md bg-delete-red text-white hover:opacity-90 transition-opacity">
+              <button 
+                className="p-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors duration-200 shadow-sm"
+                title="Delete Student"
+              >
                 <Trash2 size={16} />
               </button>
             </div>

@@ -44,11 +44,11 @@ const CustomTooltip = ({ active, payload }: TooltipProps) => {
         <div className="mt-2 space-y-1">
             <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-income-green"></div>
-                <p className="text-sm text-gray-600">Income: <span className="font-bold">${payload[0].value.toLocaleString()}</span></p>
+                <p className="text-sm text-gray-600">Income: <span className="font-bold">₹{payload[0].value.toLocaleString()}</span></p>
             </div>
             <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-expense-red"></div>
-                <p className="text-sm text-gray-600">Expense: <span className="font-bold">${payload[1].value.toLocaleString()}</span></p>
+                <p className="text-sm text-gray-600">Expense: <span className="font-bold">₹{payload[1].value.toLocaleString()}</span></p>
             </div>
         </div>
       </div>
