@@ -19,9 +19,6 @@ const ExamResultsPage = () => {
     const daysUntilEnd = Math.floor((endDate.getTime() - regDate.getTime()) / (1000 * 60 * 60 * 24));
     // Line 21 - change let to const
     const attempts = [];
-    
-    // Line 55 - change let to const  
-    const totalQuestions = 100;
     let gapDays = 0;
     let possibleAttempts = 0;
     
@@ -55,7 +52,7 @@ const ExamResultsPage = () => {
       let score = null;
       let percentage = null;
       let result = null;
-      let totalQuestions = 100;
+      const totalQuestions = 100;
       let answered = 0;
       let notAnswered = 0;
       let totalMarks = 0;
