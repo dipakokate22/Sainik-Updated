@@ -9,6 +9,7 @@ import {
   FaMapMarkerAlt, 
   FaPhone, 
   FaEnvelope,
+  FaGlobe,
   FaBook,
   FaFlask,
   FaDesktop,
@@ -83,13 +84,15 @@ export default function SchoolDetailSection({
   location = "Pune, Maharashtra – 411030", 
   rating = 4,
   phone = "+91 98765 43210",
-  email = "info@sainikschoolpune.edu.in"
+  email = "info@sainikschoolpune.edu.in",
+  website = "www.sainikschoolpune.edu.in"
 }: {
   schoolName?: string;
   location?: string;
   rating?: number;
   phone?: string;
   email?: string;
+  website?: string;
 }) {
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -781,6 +784,10 @@ export default function SchoolDetailSection({
                 <div className="flex items-center gap-1">
                   <FaEnvelope className="text-[#257B5A] text-sm sm:text-base" />
                   <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{email}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <FaGlobe className="text-[#257B5A] text-sm sm:text-base" />
+                  <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{website}</span>
                 </div>
               </div>
 

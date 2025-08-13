@@ -89,7 +89,7 @@ const Sidebar = ({ activePage }: SidebarProps) => {
         <div className="text-sm space-y-1">
           <h2 className="font-medium text-lg">Hello, Dipali Kokate</h2>
           <p>Student ID: 2025</p>
-          <p>Activation Date: 12-06-2025</p>
+          <p>Signup Date: 12-06-2025</p>
         </div>
         <nav className="flex flex-col gap-1 mt-4">
           {navItems.map((item) => (

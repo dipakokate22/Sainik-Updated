@@ -24,13 +24,12 @@ const SainikPointsSection = () => {
               Life of a Sainik
             </h2>
             <div className="text-base md:text-[20px] font-poppins text-gray-700 leading-relaxed">
-            <p>
+            <p className="mb-4 text-justify">
               The life of a Sainik is a noble journey of discipline, sacrifice, and unwavering dedication, 
               where every dawn begins with purpose and every night ends with the satisfaction of serving the 
               nation with pride, honor, and relentless commitment.
             </p>
-            <br />
-            <p>  
+            <p className="text-justify">  
               From braving the harshest terrains to standing guard during moments of national celebration, 
               a soldier's life is built on resilience, physical endurance, mental strength, and an unbreakable 
               bond of brotherhood that goes beyond caste, religion, and region.
@@ -47,17 +46,18 @@ const SainikPointsSection = () => {
             <h2 className="text-3xl md:text-[42px] font-poppins font-medium mb-4">
               Government Facilities
             </h2>
-            <p className="text-base md:text-[20px] font-poppins leading-relaxed">
+            <div className="text-base md:text-[20px] font-poppins text-white leading-relaxed">
+            <p className="mb-4 text-justify">
               The Government of India provides strong support to soldiers and their families.
               Healthcare is offered through the ECHS (Ex-Servicemen Contributory Health Scheme).
               Pension benefits ensure financial stability after retirement.
-              <br />
-              <br />
-              Affordable housing schemes make living easier for service members.
-              These benefits reflect the nation’s gratitude and aim to empower every soldier and 
-              their family even beyond active service.
-              
             </p>
+            <p className="text-justify">
+              Affordable housing schemes make living easier for service members.
+              These benefits reflect the nation's gratitude and aim to empower every soldier and 
+              their family even beyond active service.
+            </p>
+            </div>
           </div>
 
           {/* Right Image */}
@@ -91,14 +91,12 @@ const SainikPointsSection = () => {
               Patriotism Driven
             </h2>
             <div className="text-base md:text-[20px] font-poppins text-gray-700 leading-relaxed">
-            <p>
-              In the Armed Forces, patriotism is not just an emotion—it’s a way of life.
-              Every heartbeat echoes “Bharat Mata Ki Jai,” and every action—be it a salute, a march, or a rescue—is 
+            <p className="mb-4 text-justify">
+              In the Armed Forces, patriotism is not just an emotion—it's a way of life.
+              Every heartbeat echoes \"Bharat Mata Ki Jai,\" and every action—be it a salute, a march, or a rescue—is 
               a reflection of deep love for the nation.
             </p>
-            <br />
-
-            <p>
+            <p className="text-justify">
               This spirit pushes every soldier to rise above personal interest and serve with unmatched dedication.
               Their courage and sacrifice inspire generations and uphold the pride of the tricolour.
               It is this unwavering patriotism that strengthens the very soul of the nation.

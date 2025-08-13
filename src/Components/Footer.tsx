@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
 import FooterImg from './FooterImg';
 
@@ -22,7 +23,13 @@ const Footer = () => {
             {/* Left */}
             <div className="w-full lg:w-[500px]">
               
-              <h2 className="text-white text-4xl sm:text-5xl mb-6 font-cursive font-bold">sainik</h2>
+              <Image 
+                src="/Image/Sainik-logo.png" 
+                alt="Sainik Logo" 
+                width={200} 
+                height={80} 
+                className="mb-6 h-16 sm:h-20 w-auto"
+              />
               <p className="text-gray-200 text-base mb-6 leading-relaxed">
                 Subscribe to our newsletter for the latest updates on features and releases.
               </p>

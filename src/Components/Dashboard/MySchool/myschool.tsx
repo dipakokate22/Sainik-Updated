@@ -246,13 +246,13 @@ const FeesTable = () => {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-md font-bold text-gray-700 uppercase tracking-wider">
                   Fee Type
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-md font-bold text-gray-700 uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">
+                <th className="px-6 py-4 text-center text-md font-bold text-gray-700 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -261,10 +261,11 @@ const FeesTable = () => {
               {fees.map((fee, index) => (
                 <tr key={index} className="hover:bg-gray-50 transition-colors duration-150">
                   <td className="px-6 py-5">
-                    <div className="text-base font-semibold text-black" >{fee.type}</div>
+                    <div className="text-base font-medium text-black" >{fee.type}</div>
+
                   </td>
                   <td className="px-6 py-5">
-                    <div className="text-lg font-bold text-black">{formatCurrency(fee.amount)}</div>
+                    <div className="text-lg font-medium text-black">{formatCurrency(fee.amount)}</div>
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex justify-center items-center gap-3">
