@@ -104,9 +104,9 @@ const CompareSchools = () => {
 
   const renderFacilityIcon = (hasFeature: boolean) => {
     return hasFeature ? (
-      <FaCheck className="text-green-500 text-lg" />
+      <FaCheck className="text-[#257B5A] text-lg" />
     ) : (
-      <FaTimes className="text-red-500 text-lg" />
+      <FaTimes className="text-[#257B5A] text-lg opacity-50" />
     );
   };
 
@@ -128,11 +128,18 @@ const CompareSchools = () => {
     },
   };
 
+  const statsLabels = {
+    totalStudents: "Total Students",
+    teacherRatio: "Teacher-Student Ratio",
+    establishedYear: "Established Year",
+    campusSize: "Campus Size",
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F7F1EE]">
       <NavBar />
       
-      <div className="pt-34 pb-12">
+      <div className="pt-36 pb-24">
         <div className="max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-12">
@@ -145,10 +152,10 @@ const CompareSchools = () => {
           </div>
 
           {/* Comparison Table */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-16">
             {/* School Headers */}
             <div className="grid grid-cols-3 bg-[#1C1F24]">
-              <div className="p-6">
+              <div className="p-6 flex items-center justify-center">
                 <h3 className="text-xl font-semibold text-white">Features</h3>
               </div>
               {selectedSchools.map((school) => (
@@ -173,23 +180,49 @@ const CompareSchools = () => {
               ))}
             </div>
 
+            {/* School Statistics */}
+            <div className="bg-white">
+              <div className="grid grid-cols-3 bg-[#257B5A] text-white">
+                <div className="p-4 text-center">
+                  <h4 className="text-lg font-semibold">School Statistics</h4>
+                </div>
+                <div className="p-4 border-l border-[#257B5A]"></div>
+                <div className="p-4 border-l border-[#257B5A]"></div>
+              </div>
+              
+              {Object.entries(statsLabels).map(([key, label]) => (
+                <div key={key} className="grid grid-cols-3 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <div className="p-4 flex items-center justify-center">
+                    <span className="text-gray-900 font-medium">{label}</span>
+                  </div>
+                  {selectedSchools.map((school) => (
+                    <div key={`${school.id}-${key}`} className="p-4 border-l border-gray-200 flex items-center justify-center">
+                      <span className="text-[#257B5A] font-semibold">
+                        {school.stats[key as keyof typeof school.stats]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+
             {/* Educational Facilities */}
             <div className="bg-white">
               <div className="grid grid-cols-3 bg-[#257B5A] text-white">
-                <div className="p-4">
+                <div className="p-4 text-center">
                   <h4 className="text-lg font-semibold">Educational Facilities</h4>
                 </div>
-                <div className="p-4 border-l border-green-400"></div>
-                <div className="p-4 border-l border-green-400"></div>
+                <div className="p-4 border-l border-[#257B5A]"></div>
+                <div className="p-4 border-l border-[#257B5A]"></div>
               </div>
               
               {Object.entries(facilityLabels.educational).map(([key, label]) => (
                 <div key={key} className="grid grid-cols-3 border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                  <div className="p-4">
+                  <div className="p-4 flex items-center justify-center">
                     <span className="text-gray-900 font-medium">{label}</span>
                   </div>
                   {selectedSchools.map((school) => (
-                    <div key={`${school.id}-${key}`} className="p-4 border-l border-gray-200 text-center">
+                    <div key={`${school.id}-${key}`} className="p-4 border-l border-gray-200 flex items-center justify-center">
                       {renderFacilityIcon(school.facilities.educational[key as keyof typeof school.facilities.educational])}
                     </div>
                   ))}
@@ -199,21 +232,21 @@ const CompareSchools = () => {
 
             {/* Extra Facilities */}
             <div className="bg-white">
-              <div className="grid grid-cols-3 bg-[#AA0111] text-white">
-                <div className="p-4">
+              <div className="grid grid-cols-3 bg-[#257B5A] text-white">
+                <div className="p-4 text-center">
                   <h4 className="text-lg font-semibold">Extra Facilities</h4>
                 </div>
-                <div className="p-4 border-l border-red-400"></div>
-                <div className="p-4 border-l border-red-400"></div>
+                <div className="p-4 border-l border-[#257B5A]"></div>
+                <div className="p-4 border-l border-[#257B5A]"></div>
               </div>
               
               {Object.entries(facilityLabels.extraFacilities).map(([key, label]) => (
                 <div key={key} className="grid grid-cols-3 border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                  <div className="p-4">
+                  <div className="p-4 flex items-center justify-center">
                     <span className="text-gray-900 font-medium">{label}</span>
                   </div>
                   {selectedSchools.map((school) => (
-                    <div key={`${school.id}-${key}`} className="p-4 border-l border-gray-200 text-center">
+                    <div key={`${school.id}-${key}`} className="p-4 border-l border-gray-200 flex items-center justify-center">
                       {renderFacilityIcon(school.facilities.extraFacilities[key as keyof typeof school.facilities.extraFacilities])}
                     </div>
                   ))}
@@ -227,10 +260,10 @@ const CompareSchools = () => {
                 <div></div>
                 {selectedSchools.map((school) => (
                   <div key={`action-${school.id}`} className="text-center">
-                    <button className="w-full bg-[#257B5A] text-white py-3 px-6 rounded-full font-semibold hover:bg-green-700 transition-colors mb-3">
+                    <button className="bg-[#257B5A] text-white py-2 px-4 rounded-full font-semibold hover:bg-[#1e6b4a] transition-colors mb-3 mx-auto block">
                       View Details
                     </button>
-                    <button className="w-full border-2 border-[#257B5A] text-[#257B5A] py-3 px-6 rounded-full font-semibold hover:bg-[#257B5A] hover:text-white transition-colors">
+                    <button className="border-2 border-[#257B5A] text-[#257B5A] py-2 px-4 rounded-full font-semibold hover:bg-[#257B5A] hover:text-white transition-colors mx-auto block">
                       Apply Now
                     </button>
                   </div>
@@ -247,7 +280,7 @@ const CompareSchools = () => {
                 Our education counselors are here to help you make the best decision for your child's future. 
                 Get personalized recommendations based on your preferences and requirements.
               </p>
-              <button className="bg-[#257B5A] text-white py-3 px-8 rounded-full font-semibold hover:bg-green-700 transition-colors">
+              <button className="bg-[#257B5A] text-white py-3 px-8 rounded-full font-semibold hover:bg-[#1e6b4a] transition-colors">
                 Get Expert Guidance
               </button>
             </div>
