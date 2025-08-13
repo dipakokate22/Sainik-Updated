@@ -132,7 +132,7 @@ const CompareSchools = () => {
     <div className="min-h-screen bg-gray-50">
       <NavBar />
       
-      <div className="pt-28 pb-12">
+      <div className="pt-34 pb-12">
         <div className="max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-12">
