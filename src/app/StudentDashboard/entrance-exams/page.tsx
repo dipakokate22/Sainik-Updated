@@ -13,7 +13,7 @@ const registrationDate = new Date('2025-05-01');
 const calculateExamSchedule = (regDate: Date, endDate: Date) => {
   const daysUntilEnd = Math.floor((endDate.getTime() - regDate.getTime()) / (1000 * 60 * 60 * 24));
   
-  let attempts = [];
+  const attempts = [];
   let gapDays = 0;
   let possibleAttempts = 0;
   

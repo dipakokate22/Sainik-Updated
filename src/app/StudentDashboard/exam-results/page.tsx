@@ -17,8 +17,11 @@ const ExamResultsPage = () => {
   // Calculate exam scheduling logic (same as dashboard)
   const calculateExamSchedule = (regDate: Date, endDate: Date) => {
     const daysUntilEnd = Math.floor((endDate.getTime() - regDate.getTime()) / (1000 * 60 * 60 * 24));
+    // Line 21 - change let to const
+    const attempts = [];
     
-    let attempts = [];
+    // Line 55 - change let to const  
+    const totalQuestions = 100;
     let gapDays = 0;
     let possibleAttempts = 0;
     

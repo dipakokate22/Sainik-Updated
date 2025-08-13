@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell } from 'recharts';
 import Sidebar from '../Sidebar';
 import Header from '../Header';
-import { Calendar, Clock, Award, TrendingUp, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, Award, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
 // Fixed exam end date (example: June 30, 2025)
@@ -16,7 +16,7 @@ const registrationDate = new Date('2025-05-01');
 const calculateExamSchedule = (regDate: Date, endDate: Date) => {
   const daysUntilEnd = Math.floor((endDate.getTime() - regDate.getTime()) / (1000 * 60 * 60 * 24));
   
-  let attempts = [];
+  const attempts = [];
   let gapDays = 0;
   let possibleAttempts = 0;
   
