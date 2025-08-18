@@ -146,9 +146,9 @@ export default function Navbar() {
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/Schools">Recommended Schools</Link>
                   </li>
-                  <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
+                  {/* <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/Listing">School List</Link>
-                  </li>
+                  </li> */}
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/About">About Us</Link>
                   </li>
@@ -279,9 +279,9 @@ export default function Navbar() {
                       <Link href="/Schools" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
                         Recommended Schools
                       </Link>
-                      <Link href="/Listing" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
+                      {/* <Link href="/Listing" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
                         School List
-                      </Link>
+                      </Link> */}
                       
                       <Link href="/SchoolDetails" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
                         Career Counselling

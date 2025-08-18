@@ -2,11 +2,16 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash, FaUser, FaSchool } from 'react-icons/fa';
+import { schoolLogin, studentLogin } from '../../../services/authServices';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [isStudent, setIsStudent] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -17,12 +22,41 @@ export default function LoginPage() {
       ...formData,
       [e.target.name]: e.target.value
     });
+    // Clear error when user starts typing
+    if (error) setError('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login attempt:', { ...formData, userType: isStudent ? 'student' : 'school' });
+    setIsLoading(true);
+    setError('');
+
+    try {
+      let response;
+      
+      if (isStudent) {
+        response = await studentLogin({
+          email: formData.email,
+          password: formData.password
+        });
+      } else {
+        response = await schoolLogin({
+          email: formData.email,
+          password: formData.password
+        });
+      }
+
+      // Redirect based on user type
+       if (isStudent) {
+         router.push('/');
+       } else {
+         router.push('/SchoolDashboard');
+       }
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -65,6 +99,13 @@ export default function LoginPage() {
               </button>
             </div>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+              <p className="text-sm">{error}</p>
+            </div>
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -128,9 +169,21 @@ export default function LoginPage() {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full bg-[#257B5A] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#1e6347] transition-colors focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:ring-offset-2"
+              disabled={isLoading}
+              className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:ring-offset-2 ${
+                isLoading
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-[#257B5A] text-white hover:bg-[#1e6347]'
+              }`}
             >
-              Sign In as {isStudent ? 'Student' : 'School'}
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Signing In...</span>
+                </div>
+              ) : (
+                `Sign In as ${isStudent ? 'Student' : 'School'}`
+              )}
             </button>
           </form>
 

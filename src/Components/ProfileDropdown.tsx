@@ -1,11 +1,15 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { User, LayoutDashboard, LogOut } from 'lucide-react';
+import { getUserRole, logout } from '../../services/authServices';
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const userRole = getUserRole();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -19,8 +23,13 @@ const ProfileDropdown = () => {
   }, []);
 
   const handleLogout = () => {
-    console.log('Logging out...');
+    logout();
     setIsOpen(false);
+    router.push('/login');
+  };
+
+  const getDashboardRoute = () => {
+    return userRole === 'school' ? '/SchoolDashboard' : '/StudentDashboard';
   };
 
   return (
@@ -36,13 +45,8 @@ const ProfileDropdown = () => {
         <div className="absolute top-[70px] right-0 w-56 bg-[#1C1F24] text-white rounded-xl shadow-xl p-2 z-50">
           <ul className="space-y-1 text-sm">
             <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
-              <Link href="/SchoolDashboard" onClick={() => setIsOpen(false)} className="flex items-center gap-3">
+              <Link href={getDashboardRoute()} onClick={() => setIsOpen(false)} className="flex items-center gap-3">
                 <LayoutDashboard size={16} /> Dashboard
-              </Link>
-            </li>
-            <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
-              <Link href="/StudentDashboard" onClick={() => setIsOpen(false)} className="flex items-center gap-3">
-                <LayoutDashboard size={16} /> Student Dashboard
               </Link>
             </li>
             <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
