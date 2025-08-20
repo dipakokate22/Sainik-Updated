@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { 
   FaSchool, 
@@ -32,6 +33,10 @@ import {
   MdRestaurant, 
   MdMedicalServices 
 } from 'react-icons/md';
+import Navbar from '../../../Components/NavBar';
+import Footer from '../../../Components/Footer';
+import { getSchoolById } from '../../../../services/schoolServices';
+import { searchSchoolsByCoordinates } from '../../../../services/schoolServices';
 
 // Horizontal School Card Component
 const HorizontalSchoolCard = ({ name, image, location, distance, rating }: { 
@@ -79,22 +84,56 @@ const HorizontalSchoolCard = ({ name, image, location, distance, rating }: {
   );
 };
 
-export default function SchoolDetailSection({
-  schoolName = "Sainik School, Pune",
-  location = "Pune, Maharashtra – 411030", 
-  rating = 4,
-  phone = "+91 98765 43210",
-  email = "info@sainikschoolpune.edu.in",
-  website = "www.sainikschoolpune.edu.in"
-}: {
-  schoolName?: string;
-  location?: string;
-  rating?: number;
-  phone?: string;
-  email?: string;
-  website?: string;
-}) {
+export default function SchoolDetailSection() {
+  const { id } = useParams() as { id: string };
+  const router = useRouter();
+  const [school, setSchool] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [nearbySchools, setNearbySchools] = useState<any[]>([]);
+  const [nearbyLoading, setNearbyLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchSchool() {
+      setLoading(true);
+      try {
+        const data = await getSchoolById(id);
+        setSchool(data?.data || null);
+      } catch (err) {
+        setSchool(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (id) fetchSchool();
+  }, [id]);
+
+  useEffect(() => {
+    async function fetchNearbySchools() {
+      if (school?.location?.latitude && school?.location?.longitude) {
+        setNearbyLoading(true);
+        try {
+          const res = await searchSchoolsByCoordinates(
+            school.location.latitude,
+            school.location.longitude
+          );
+          setNearbySchools(res?.data?.filter((s: any) => s.id !== school.id).slice(0, 6) || []);
+        } catch (err) {
+          setNearbySchools([]);
+        } finally {
+          setNearbyLoading(false);
+        }
+      }
+    }
+    fetchNearbySchools();
+  }, [school]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-lg text-gray-600">Loading...</div>;
+  }
+  if (!school) {
+    return <div className="min-h-screen flex items-center justify-center text-lg text-red-600">School not found.</div>;
+  }
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
@@ -114,35 +153,28 @@ export default function SchoolDetailSection({
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
               <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">School Information</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Ownership */}
                 <div className="flex items-center gap-3">
                   <FaSchool className="text-xl text-black" />
                   <span className="text-black">
-                    Ownership : <span className="text-[#257B5A] ">Private</span>
+                    Ownership : <span className="text-[#257B5A] ">{school.overview?.schoolInformation?.ownership}</span>
                   </span>
                 </div>
-
-                {/* Medium */}
                 <div className="flex items-center gap-3">
                   <FaLanguage className="text-xl text-black" />
                   <span className="text-black">
-                    Medium : <span className="text-[#257B5A]">English</span>
+                    Medium : <span className="text-[#257B5A]">{school.overview?.schoolInformation?.medium}</span>
                   </span>
                 </div>
-
-                {/* Board */}
                 <div className="flex items-center gap-3">
                   <PiCertificateFill className="text-xl text-black" />
                   <span className="text-black">
-                    Board : <span className="text-[#257B5A]">CBSE</span>
+                    Board : <span className="text-[#257B5A]">{school.overview?.schoolInformation?.board}</span>
                   </span>
                 </div>
-
-                {/* Category */}
                 <div className="flex items-center gap-3">
                   <FaThLarge className="text-xl text-black" />
                   <span className="text-black">
-                    Category : <span className="text-[#257B5A]">Co-ed</span>
+                    Category : <span className="text-[#257B5A]">{school.overview?.schoolInformation?.category}</span>
                   </span>
                 </div>
               </div>
@@ -150,7 +182,7 @@ export default function SchoolDetailSection({
 
             {/* Description Section */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🏫 Welcome to Sainik School, Pune</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">{school.overview?.welcomeNote}</h4>
               <p className="text-[16px] font-regular font-poppins text-black mb-4">
                 Established in 1961, Sainik School Pune is one of India's premier military schools,
                 committed to preparing young students for leadership roles in the Indian Armed
@@ -168,72 +200,21 @@ export default function SchoolDetailSection({
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
               <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🌟 Key Highlights</h4>
               <ul className="list-disc pl-6 text-[16px] font-regular font-poppins text-black space-y-1">
-                <li>🎯 Focused NDA Preparation:
-                  <br /> Dedicated NDA coaching integrated into the school curriculum to help
-                </li>
-                <li>🎓 40+ Highly Qualified Faculty: <br /> Experienced teachers trained in CBSE pedagogy and military-style discipline</li>
-                <li>💯 Consistent Academic Excellence: <br /> Over 95% of our students pass their CBSE board exams with distinction,
-                  year after year.</li>
-                <li>🪖 Mandatory Military Training: <br /> Includes daily drills, obstacle training, physical fitness sessions, and leadership
-                  activities to build stamina, courage, and discipline.</li>
-                <li>👨‍🏫 Character & Leadership Programs: <br /> Morning assemblies, team-based house competitions, and value education 
-                                  classes are designed to shape confident, ethical individuals.</li>
-                <li>🏆 State-of-the-Art Sports Infrastructure: <br /> Regular coaching in football, basketball, boxing, shooting, and athletics with 
-                                  inter-school competitions and camps.</li>
+                {school.overview?.keyHighlights?.map((highlight: string, idx: number) => (
+                  <li key={idx}>{highlight}</li>
+                ))}
               </ul>
             </div>
 
-            {/* Admission Dates */}
+            {/* Admission Criteria */}
             <div className="bg-white border rounded-lg  px-4 md:px-[26px] py-[25px]">
               <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">Admission Criteria & Eligibility</h4>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Class I - Class I</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Class I - Class II</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Class I - Class III</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Class I - Class VI</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Class I - Class V</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Class I - Class VI</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Class I - Class VII</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Class I - Class VIII</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Class I - Class X</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Class I - Class X</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Class I - Class XI</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Class I - Class XII</span>
-              </li>
+              {school.overview?.admissionCriteriaEligibility?.map((criteria: string, idx: number) => (
+                <li key={idx} className="flex items-start gap-2 text-[16px] text-black">
+                  <FiArrowRight className="text-black mt-[3px]" />
+                  <span>{criteria}</span>
+                </li>
+              ))}
             </div>
 
             {/* School Hours */}
@@ -241,31 +222,11 @@ export default function SchoolDetailSection({
               <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">School Hours</h4>
               <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
-                <span>Monday : 10 AM - 4 PM</span>
+                <span>Monday : {school.overview?.schoolHours?.monday}</span>
               </li>
               <li className="flex items-start gap-2 text-[16px] text-black">
                 <FiArrowRight className="text-black mt-[3px]" />
-                <span>Tuesday : 10 AM - 4 PM</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Wednesday : 10 AM - 4 PM</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Thursday : 10 AM - 4 PM</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Friday : 10 AM - 4 PM</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Saturday : 10 AM - 4 PM</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Sunday : Holiday</span>
+                <span>Sunday : {school.overview?.schoolHours?.sunday}</span>
               </li>
             </div>
           </div>
@@ -703,170 +664,183 @@ export default function SchoolDetailSection({
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F1EE]" >
-      {/* Header Section - Matching the uploaded image */}
-      <div className="max-w-[1440px] w-full mx-auto bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-14 py-4 sm:pt-6 md:pt-10 lg:pt-12">
-        <div className="max-w-[1440px] w-full mx-auto">
-          {/* Back Button */}
-          <div className="mb-4 sm:mb-6">
-            <button className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors">
-              <FaArrowLeft className="text-sm sm:text-base lg:text-lg" />
-              <span className="text-sm sm:text-base lg:text-lg font-medium">Back</span>
-            </button>
-          </div>
-
-          {/* School Header Card */}
-          <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 lg:gap-6">
-            {/* School Logo */}
-            <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 bg-white rounded-2xl p-2 flex-shrink-0 shadow-sm">
-              <Image
-                src="/Listing/Logo.png"
-                alt={schoolName}
-                width={120}
-                height={120}
-                className="w-full h-full object-contain"
-              />
-            </div>
-
-            {/* School Information */}
-            <div className="flex-1">
-              {/* School Name */}
-              <h1 className="text-lg sm:text-xl md:text-2xl lg:text-[32px] font-poppins font-medium text-black mb-2 lg:mb-2 leading-tight">
-                {schoolName}
-              </h1>
-
-              {/* Distance and Rating */}
-              <div className="flex items-center gap-4 mb-4">
-                <span className="text-gray-600 font-medium">2.3 Km Away</span>
-
-                <span className="text-gray-400">|</span>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <FaStar 
-                        key={i} 
-                        className={`w-4 h-4 ${
-                          i < rating ? 'text-yellow-400' : 'text-gray-300'
-                        }`} 
-                      />
-                    ))}
-                  </div>
-                  <span className="text-gray-600 font-medium">({rating}.0)</span>
-                </div>
-              </div>
-
-              {/* Add to Compare Button */}
-              <button className="flex items-center gap-2 border border-[#10744E] text-[#10744E] px-4 py-2 rounded-full hover:bg-[#10744E] hover:text-white transition-colors duration-300 font-medium">
-                <FaPlus className="w-4 h-4" />
-                <span>Add to Compare</span>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-[#F7F1EE] mt-6"> {/* Added mt-6 for spacing below Navbar */}
+        {/* Header Section - Matching the uploaded image */}
+        <div className="max-w-[1440px] w-full mx-auto bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-14 py-4 sm:pt-6 md:pt-10 lg:pt-12">
+          <div className="max-w-[1440px] w-full mx-auto">
+            {/* Back Button */}
+            <div className="mb-4 sm:mb-6">
+              <button
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors"
+                onClick={() => router.back()}
+              >
+                <FaArrowLeft className="text-sm sm:text-base lg:text-lg" />
+                <span className="text-sm sm:text-base lg:text-lg font-medium">Back</span>
               </button>
             </div>
-          </div>
-        </div>
-      </div>
 
-        {/* Main Content Section */}
-      <section className="max-w-[1440px] w-full mx-auto bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-14 pb-8 sm:pb-12 md:pb-16">
-        <div className="max-w-[1440px] w-full mx-auto pt-4 sm:pt-6">
-          {/* Top Bar with Contact Info and Register Button */}
-          <div className="border border-[#257B5A] rounded-lg px-3 sm:px-4 md:px-6 lg:px-[26px] py-3 sm:py-4 lg:py-[25px] mb-4 sm:mb-6">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
-              {/* School Info */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 lg:gap-6">
-                <div className="flex items-center gap-1">
-                  <FaMapMarkerAlt className="text-[#257B5A] text-sm sm:text-base" />
-                  <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{location}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <FaPhone className="text-[#257B5A] text-sm sm:text-base" />
-                  <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700">{phone}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <FaEnvelope className="text-[#257B5A] text-sm sm:text-base" />
-                  <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{email}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <FaGlobe className="text-[#257B5A] text-sm sm:text-base" />
-                  <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{website}</span>
-                </div>
-              </div>
-
-              {/* Register Button */}
-              <button className="bg-[#257B5A] text-white px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full hover:bg-[#1e6b4a] transition-colors duration-300 font-medium text-xs sm:text-sm lg:text-base whitespace-nowrap">
-                📝 Register for Admission
-              </button>
-            </div>
-          </div>
-
-          {/* Tab Navigation */}
-          <div className="bg-white border rounded-lg mb-4 sm:mb-6 overflow-x-auto">
-            <div className="flex border-b min-w-max sm:min-w-0">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-2 sm:px-3 md:px-4 lg:px-6 py-2 sm:py-3 text-[11px] sm:text-[12px] md:text-[14px] lg:text-[16px] font-medium transition-colors duration-300 border-b-2 whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'border-[#257B5A] text-[#257B5A] bg-green-50'
-                      : 'border-transparent text-gray-600 hover:text-[#257B5A] hover:bg-gray-50'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Main Content Area */}
-          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
-            {/* Left Column - Tab Content */}
-            <div className="w-full lg:w-[65%] min-w-0">
-              {renderTabContent()}
-            </div>
-
-            {/* Right Column */}
-            <div className="w-full lg:w-[35%] flex flex-col gap-4 sm:gap-6 mt-4 sm:mt-6 lg:mt-0">
-              {/* Nearby Schools - Horizontal Cards */}
-              <div className="w-full bg-white border rounded-lg font-poppins pt-3 sm:pt-4 lg:pt-[25px] pb-3 sm:pb-4 lg:pb-[25px] px-3 sm:px-4 lg:px-6">
-                <h2 className="font-semibold font-poppins text-[13px] sm:text-[14px] md:text-[16px] lg:text-[20px] text-black mb-2 sm:mb-3 lg:mb-4">Nearby Schools</h2>
-                <div className="flex flex-col gap-2 sm:gap-3">
-                  {[...Array(6)].map((_, i) => (
-                    <HorizontalSchoolCard
-                      key={i}
-                      name="Sainik School, Pune"
-                      image="/Listing/Logo.png"
-                      location="Pune, Maharashtra – 411030"
-                      distance="2.3 Km Away"
-                      rating={4}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Review Section */}
-              <div className="w-full bg-white border rounded-lg pt-3 sm:pt-4 lg:pt-[25px] pb-3 sm:pb-4 lg:pb-[25px] px-3 sm:px-4 lg:pl-[23px]">
-                <h4 className="font-semibold font-poppins text-[13px] sm:text-[14px] md:text-[16px] lg:text-[20px] text-black mb-2 sm:mb-3 lg:mb-4">Get More Reviews</h4>
-                <button className="bg-[#d3e7dc] text-green-700 font-medium py-1.5 sm:py-2 px-2 sm:px-3 lg:px-4 rounded-full text-[11px] sm:text-[12px] md:text-[14px] lg:text-[16px]">
-                  📩 Ask for Reviews
-                </button>
-              </div>
-
-              {/* Embedded Map */}
-              <div className="w-full bg-white rounded-lg border pt-3 sm:pt-4 lg:pt-[25px] pb-3 sm:pb-4 lg:pb-[25px] px-3 sm:px-4 lg:px-[23px]">
-                <h4 className="font-medium font-poppins text-[14px] sm:text-[16px] md:text-[18px] lg:text-[24px] text-black mb-2 sm:mb-3 lg:mb-4">Explore Location</h4>
-                <iframe
-                  title="School Location"
-                  src="https://maps.google.com/maps?q=Sainik%20School,%20Pune&t=&z=13&ie=UTF8&iwloc=&output=embed"
-                  width="100%"
-                  height="120"
-                  className="rounded-lg border sm:h-[150px] lg:h-[200px]"
-                  loading="lazy"
+            {/* School Header Card */}
+            <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 lg:gap-6">
+              {/* School Logo */}
+              <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 bg-white rounded-2xl p-2 flex-shrink-0 shadow-sm">
+                <Image
+                  src={school.profileImage || "/Listing/Logo.png"}
+                  alt={school.name}
+                  width={120}
+                  height={120}
+                  className="w-full h-full object-contain"
                 />
               </div>
+
+              {/* School Information */}
+              <div className="flex-1">
+                <h1 className="text-lg sm:text-xl md:text-2xl lg:text-[32px] font-poppins font-medium text-black mb-2 lg:mb-2 leading-tight">
+                  {school.name}
+                </h1>
+
+                {/* Distance and Rating */}
+                <div className="flex items-center gap-4 mb-4">
+                  <span className="text-gray-600 font-medium">{school.address?.city}</span>
+                  <span className="text-gray-400">|</span>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <FaStar
+                          key={i}
+                          className={`w-4 h-4 ${
+                            school.reviews?.[0]?.rating && i < school.reviews[0].rating ? 'text-yellow-400' : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-gray-600 font-medium">
+                      ({school.reviews?.[0]?.rating || 0}.0)
+                    </span>
+                  </div>
+                </div>
+
+                {/* Add to Compare Button */}
+                <button className="flex items-center gap-2 border border-[#10744E] text-[#10744E] px-4 py-2 rounded-full hover:bg-[#10744E] hover:text-white transition-colors duration-300 font-medium">
+                  <FaPlus className="w-4 h-4" />
+                  <span>Add to Compare</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </section>
-    </div>
+
+        {/* Main Content Section */}
+        <section className="max-w-[1440px] w-full mx-auto bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-14 pb-8 sm:pb-12 md:pb-16">
+          <div className="max-w-[1440px] w-full mx-auto pt-4 sm:pt-6">
+            {/* Top Bar with Contact Info and Register Button */}
+            <div className="border border-[#257B5A] rounded-lg px-3 sm:px-4 md:px-6 lg:px-[26px] py-3 sm:py-4 lg:py-[25px] mb-4 sm:mb-6">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
+                {/* School Info */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 lg:gap-6">
+                  <div className="flex items-center gap-1">
+                    <FaMapMarkerAlt className="text-[#257B5A] text-sm sm:text-base" />
+                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{school.address?.fullAddress}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <FaPhone className="text-[#257B5A] text-sm sm:text-base" />
+                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700">{school.contact?.phone}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <FaEnvelope className="text-[#257B5A] text-sm sm:text-base" />
+                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{school.contact?.email}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <FaGlobe className="text-[#257B5A] text-sm sm:text-base" />
+                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{school.contact?.website}</span>
+                  </div>
+                </div>
+
+                {/* Register Button */}
+                <button className="bg-[#257B5A] text-white px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full hover:bg-[#1e6b4a] transition-colors duration-300 font-medium text-xs sm:text-sm lg:text-base whitespace-nowrap">
+                  📝 Register for Admission
+                </button>
+              </div>
+            </div>
+
+            {/* Tab Navigation */}
+            <div className="bg-white border rounded-lg mb-4 sm:mb-6 overflow-x-auto">
+              <div className="flex border-b min-w-max sm:min-w-0">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`px-2 sm:px-3 md:px-4 lg:px-6 py-2 sm:py-3 text-[11px] sm:text-[12px] md:text-[14px] lg:text-[16px] font-medium transition-colors duration-300 border-b-2 whitespace-nowrap ${
+                      activeTab === tab.id
+                        ? 'border-[#257B5A] text-[#257B5A] bg-green-50'
+                        : 'border-transparent text-gray-600 hover:text-[#257B5A] hover:bg-gray-50'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Main Content Area */}
+            <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+              {/* Left Column - Tab Content */}
+              <div className="w-full lg:w-[65%] min-w-0">
+                {renderTabContent()}
+              </div>
+
+              {/* Right Column */}
+              <div className="w-full lg:w-[35%] flex flex-col gap-4 sm:gap-6 mt-4 sm:mt-6 lg:mt-0">
+                {/* Nearby Schools - Horizontal Cards */}
+                <div className="w-full bg-white border rounded-lg font-poppins pt-3 sm:pt-4 lg:pt-[25px] pb-3 sm:pb-4 lg:pb-[25px] px-3 sm:px-4 lg:px-6">
+                  <h2 className="font-semibold font-poppins text-[13px] sm:text-[14px] md:text-[16px] lg:text-[20px] text-black mb-2 sm:mb-3 lg:mb-4">Nearby Schools</h2>
+                  <div className="flex flex-col gap-2 sm:gap-3">
+                    {nearbyLoading ? (
+                      <div className="text-gray-500 text-center py-4">Loading nearby schools...</div>
+                    ) : nearbySchools.length === 0 ? (
+                      <div className="text-gray-500 text-center py-4">No nearby schools found.</div>
+                    ) : (
+                      nearbySchools.map((s) => (
+                        <HorizontalSchoolCard
+                          key={s.id}
+                          name={s.name}
+                          image={s.profileImage || s.gallery?.[0] || "/Listing/Logo.png"}
+                          location={s.address?.city || ""}
+                          distance="" // You can calculate distance if needed
+                          rating={s.reviews?.[0]?.rating || 0}
+                        />
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Review Section */}
+                <div className="w-full bg-white border rounded-lg pt-3 sm:pt-4 lg:pt-[25px] pb-3 sm:pb-4 lg:pb-[25px] px-3 sm:px-4 lg:pl-[23px]">
+                  <h4 className="font-semibold font-poppins text-[13px] sm:text-[14px] md:text-[16px] lg:text-[20px] text-black mb-2 sm:mb-3 lg:mb-4">Get More Reviews</h4>
+                  <button className="bg-[#d3e7dc] text-green-700 font-medium py-1.5 sm:py-2 px-2 sm:px-3 lg:px-4 rounded-full text-[11px] sm:text-[12px] md:text-[14px] lg:text-[16px]">
+                    📩 Ask for Reviews
+                  </button>
+                </div>
+
+                {/* Embedded Map */}
+                <div className="w-full bg-white rounded-lg border pt-3 sm:pt-4 lg:pt-[25px] pb-3 sm:pb-4 lg:pb-[25px] px-3 sm:px-4 lg:px-[23px]">
+                  <h4 className="font-medium font-poppins text-[14px] sm:text-[16px] md:text-[18px] lg:text-[24px] text-black mb-2 sm:mb-3 lg:mb-4">Explore Location</h4>
+                  <iframe
+                    title="School Location"
+                    src="https://maps.google.com/maps?q=Sainik%20School,%20Pune&t=&z=13&ie=UTF8&iwloc=&output=embed"
+                    width="100%"
+                    height="120"
+                    className="rounded-lg border sm:h-[150px] lg:h-[200px]"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <Footer />
+    </>
   );
 }

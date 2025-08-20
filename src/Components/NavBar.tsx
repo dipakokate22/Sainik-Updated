@@ -6,8 +6,10 @@ import Image from 'next/image';
 import { FaMapMarkerAlt, FaSearch, FaBars, FaTimes, FaHome, FaSchool, FaInfoCircle, FaNewspaper, FaEnvelope, FaPlus } from 'react-icons/fa';
 import { IoIosArrowDown } from 'react-icons/io';
 import ProfileDropdown from './ProfileDropdown';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
+  const router = useRouter();
   const [isExploreOpen, setIsExploreOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -91,7 +93,12 @@ export default function Navbar() {
          {/* Desktop Only */}
 <div className="hidden md:flex items-center gap-3 lg:gap-4">
   {/* Button - Fixed height, responsive width */}
-  <button className="bg-[#10744E] text-white text-[14px] lg:text-[16px] font-medium px-3 md:px-4 lg:px-6 py-2 h-[40px] lg:h-[48px] rounded-full hover:bg-[#0d6342] transition flex items-center gap-2 whitespace-nowrap">
+  <button
+    onClick={() => {
+      router.push('/Schools?nearMe=true');
+    }}
+    className="bg-[#10744E] text-white text-[14px] lg:text-[16px] font-medium px-3 md:px-4 lg:px-6 py-2 h-[40px] lg:h-[48px] rounded-full hover:bg-[#0d6342] transition flex items-center gap-2 whitespace-nowrap"
+  >
     <FaMapMarkerAlt size={14} />
     <span className="hidden lg:inline">Schools Near You</span>
     <span className="lg:hidden">Schools</span>

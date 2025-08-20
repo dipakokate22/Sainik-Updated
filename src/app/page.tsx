@@ -7,21 +7,18 @@ import WhyJoinSainikSchool from "@/Pages/Homepage/WhyJoinSainikSchool";
 import StateMap from "@/Pages/Homepage/StateMap";
 import Card from "@/Pages/Homepage/Card";
 import Hero from "@/Pages/Homepage/Hero";
-import AuthGuard from "@/Components/AuthGuard";
 
 export default function Home() {
   return (
-    <AuthGuard>
-      <Layout>
-        <Hero />
-        <Card />
-        <StateMap />
-        <SainikPointsSection />
-        <WhyJoinSainikSchool />
-        <VoicesAndViews />
-        <TrustedBySection />
-        <Testimonials />
-      </Layout>
-    </AuthGuard>
+    <Layout>
+      <Hero />
+      <Card />
+      <StateMap />
+      <SainikPointsSection />
+      <WhyJoinSainikSchool />
+      <VoicesAndViews />
+      <TrustedBySection />
+      <Testimonials />
+    </Layout>
   );
 }
