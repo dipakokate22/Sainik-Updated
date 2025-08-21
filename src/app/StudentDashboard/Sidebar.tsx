@@ -87,7 +87,7 @@ const Sidebar = ({ activePage }: SidebarProps) => {
           <img src="/Image/Sainik-logo.jpg" alt="Logo" className="w-[127px] h-[130px] rounded-[5px]" />
         </div>
         <div className="text-sm space-y-1">
-          <h2 className="font-medium text-lg">Hello, Dipali Kokate</h2>
+          <h2 className="font-medium text-lg">Hello, Krishna Kumar</h2>
           <p>Student ID: 2025</p>
           <p>Signup Date: 12-06-2025</p>
         </div>
