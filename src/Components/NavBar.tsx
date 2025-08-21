@@ -88,7 +88,13 @@ export default function Navbar() {
       <div className="flex justify-between items-center">
         {/* Left Logo & Search */}
         <div className="flex items-center gap-2 sm:gap-4">
-          <span className="text-white text-[24px] sm:text-[28px] font-poppins font-bold">Sainik</span>
+          <Image 
+  src="/Image/Sainik-logo.png" 
+  alt="Sainik Logo" 
+  width={120} 
+  height={40} 
+  className="sm:w-[50px] w-[15px]" 
+/>
 
          {/* Desktop Only */}
 <div className="hidden md:flex items-center gap-3 lg:gap-4">
