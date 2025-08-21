@@ -290,7 +290,7 @@ export default function Navbar() {
                         School List
                       </Link> */}
                       
-                      <Link href="/SchoolDetails" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
+                      <Link href="/CarrerCounselling" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
                         Career Counselling
                       </Link>
                       <Link href="/NewsUpdates" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
