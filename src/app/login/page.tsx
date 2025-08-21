@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -65,7 +66,13 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
-            <span className="text-[#1C1F24] text-[32px] font-poppins font-bold">Sainik</span>
+            <Image 
+            src="/Image/Sainik-logo.png" 
+            alt="Sainik Logo" 
+            width={120} 
+            height={40} 
+            className="sm:w-[50px] w-[15px]" 
+          />
           </Link>
           <p className="text-gray-600 mt-2">Welcome back! Please sign in to your account.</p>
         </div>

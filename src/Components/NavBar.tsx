@@ -194,9 +194,9 @@ export default function Navbar() {
             )}
           </div>
 
-          <Link href="/AddSchool">
+          {/* <Link href="/AddSchool">
             <span className="text-sm lg:text-base cursor-pointer hover:underline">Add Your School</span>
-          </Link>
+          </Link> */}
           <Link href="/CompareSchools">
             <span className="text-sm lg:text-base cursor-pointer hover:underline">Compare</span>
           </Link>
@@ -282,10 +282,10 @@ export default function Navbar() {
                     <FaSchool className="text-[#257B5A] mr-3" size={18} />
                     <span className="text-white font-medium">Find Schools</span>
                   </Link>
-                  <Link href="/AddSchool" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group">
+                  {/* <Link href="/AddSchool" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group">
                     <FaPlus className="text-[#257B5A] mr-3" size={18} />
                     <span className="text-white font-medium">Add Your School</span>
-                  </Link>
+                  </Link> */}
                   <Link href="/CompareSchools" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group">
                     <FaPlus className="text-[#257B5A] mr-3" size={18} />
                     <span className="text-white font-medium">Compare Schools</span>
