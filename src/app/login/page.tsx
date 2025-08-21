@@ -48,11 +48,7 @@ export default function LoginPage() {
       }
 
       // Redirect based on user type
-       if (isStudent) {
-         router.push('/');
-       } else {
-         router.push('/SchoolDashboard');
-       }
+      router.push('/');
     } catch (err: any) {
       setError(err.message || 'Login failed. Please try again.');
     } finally {

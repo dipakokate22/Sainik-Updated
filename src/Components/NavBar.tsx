@@ -7,6 +7,7 @@ import { FaMapMarkerAlt, FaSearch, FaBars, FaTimes, FaHome, FaSchool, FaInfoCirc
 import { IoIosArrowDown } from 'react-icons/io';
 import ProfileDropdown from './ProfileDropdown';
 import { useRouter } from 'next/navigation';
+import { getUserRole, isAuthenticated } from '../../services/authServices';
 
 export default function Navbar() {
   const router = useRouter();
@@ -14,12 +15,16 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const exploreDropdownRef = useRef<HTMLDivElement>(null);
-  const [isLoggedIn] = useState(true); // Assume true for demo
-  const [searchValue, setSearchValue] = useState(""); // Add search state
+  const [searchValue, setSearchValue] = useState("");
+  // Only get role and auth status after client-side hydration
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
 
   // Ensure client-side rendering consistency
   useEffect(() => {
     setIsClient(true);
+    setUserRole(getUserRole());
+    setIsUserAuthenticated(isAuthenticated());
   }, []);
 
   // Close dropdown on outside click
@@ -194,29 +199,14 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* <Link href="/AddSchool">
-            <span className="text-sm lg:text-base cursor-pointer hover:underline">Add Your School</span>
-          </Link> */}
-          <Link href="/CompareSchools">
-            <span className="text-sm lg:text-base cursor-pointer hover:underline">Compare</span>
-          </Link>
-
-          {isLoggedIn ? (
-            <ProfileDropdown />
-          ) : (
-            <div className="flex items-center gap-3">
-              <Link href="/login">
-                <button className="h-8 lg:h-10 px-4 lg:px-6 rounded-full bg-transparent border border-[#257B5A] text-[#257B5A] hover:bg-[#257B5A] hover:text-white transition text-sm">
-                  Login
-                </button>
-              </Link>
-              <Link href="/signup">
-                <button className="h-8 lg:h-10 px-4 lg:px-6 rounded-full bg-[#257B5A] text-white hover:bg-green-800 transition text-sm">
-                  Sign Up
-                </button>
-              </Link>
-            </div>
+          {/* Show Compare button only for authenticated students */}
+          {isUserAuthenticated && userRole === 'student' && (
+            <Link href="/CompareSchools">
+              <span className="text-sm lg:text-base cursor-pointer hover:underline">Compare</span>
+            </Link>
           )}
+
+          <ProfileDropdown />
         </div>
 
         {/* Mobile Right Side - School Icon + Hamburger */}
