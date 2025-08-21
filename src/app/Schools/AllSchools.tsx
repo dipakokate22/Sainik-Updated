@@ -207,48 +207,60 @@ const SchoolListSection = () => {
     fetchSchools();
   }, []);
   
-  // Search functionality with API
+  // Sync searchTerm with URL param on mount and when param changes
   useEffect(() => {
+    if (searchParams) {
+      const searchQuery = searchParams.get('search') || '';
+      setSearchTerm(searchQuery);
+    }
+  }, [searchParams]);
+
+  // Search functionality with API (instant for param change, debounce for typing)
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
     const performSearch = async () => {
       if (searchTerm.trim()) {
         try {
           setLoading(true);
           const response = await searchSchools({ name: searchTerm.trim() });
-          
           if (response.status && response.data) {
             setSchools(response.data);
+          } else {
+            setSchools([]);
           }
         } catch (err) {
-          console.error('Error searching schools:', err);
           setError(err instanceof Error ? err.message : 'Search failed');
+          setSchools([]);
         } finally {
           setLoading(false);
         }
       } else {
         // If search term is empty, fetch all schools again
-        const fetchAllSchools = async () => {
-          try {
-            setLoading(true);
-            const response = await getAllSchools();
-            
-            if (response.status && response.data) {
-              setSchools(response.data);
-            }
-          } catch (err) {
-            console.error('Error fetching schools:', err);
-          } finally {
-            setLoading(false);
+        try {
+          setLoading(true);
+          const response = await getAllSchools();
+          if (response.status && response.data) {
+            setSchools(response.data);
+          } else {
+            setSchools([]);
           }
-        };
-        
-        fetchAllSchools();
+        } catch (err) {
+          setSchools([]);
+        } finally {
+          setLoading(false);
+        }
       }
     };
-    
-    // Debounce search
-    const timeoutId = setTimeout(performSearch, 500);
+
+    // If searchTerm comes from URL param, search instantly
+    if (searchParams && searchParams.get('search') === searchTerm) {
+      performSearch();
+    } else {
+      // Debounce for typing
+      timeoutId = setTimeout(performSearch, 500);
+    }
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+  }, [searchTerm, searchParams]);
   
   // Scroll functions for featured schools (MOVE THESE INSIDE THE COMPONENT)
   // DELETE THESE LINES FROM THE BOTTOM OF THE FILE:
@@ -577,6 +589,15 @@ const SchoolListSection = () => {
                     placeholder="Search schools..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === "Enter") {
+                        const value = e.currentTarget.value.trim();
+                        if (value) {
+                          router.push(`/Schools?search=${encodeURIComponent(value)}`);
+                          e.currentTarget.blur();
+                        }
+                      }
+                    }}
                     className="w-full px-3 py-2 text-sm placeholder-gray-400 text-[#257B5A] border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                 </div>

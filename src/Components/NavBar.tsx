@@ -15,6 +15,7 @@ export default function Navbar() {
   const [isClient, setIsClient] = useState(false);
   const exploreDropdownRef = useRef<HTMLDivElement>(null);
   const [isLoggedIn] = useState(true); // Assume true for demo
+  const [searchValue, setSearchValue] = useState(""); // Add search state
 
   // Ensure client-side rendering consistency
   useEffect(() => {
@@ -89,12 +90,12 @@ export default function Navbar() {
         {/* Left Logo & Search */}
         <div className="flex items-center gap-2 sm:gap-4">
           <Image 
-  src="/Image/Sainik-logo.png" 
-  alt="Sainik Logo" 
-  width={120} 
-  height={40} 
-  className="sm:w-[50px] w-[15px]" 
-/>
+            src="/Image/Sainik-logo.png" 
+            alt="Sainik Logo" 
+            width={120} 
+            height={40} 
+            className="sm:w-[50px] w-[15px]" 
+          />
 
          {/* Desktop Only */}
 <div className="hidden md:flex items-center gap-3 lg:gap-4">
@@ -117,6 +118,17 @@ export default function Navbar() {
       type="text"
       placeholder="Search"
       className="outline-none text-sm font-normal w-12 lg:w-20 xl:w-28 bg-transparent placeholder-gray-400 text-[#257B5A] ml-2"
+      value={searchValue}
+      onChange={e => setSearchValue(e.target.value)}
+      onKeyDown={e => {
+        if (e.key === "Enter") {
+          const value = e.currentTarget.value.trim();
+          if (value) {
+            router.push(`/Schools?search=${encodeURIComponent(value)}`);
+            e.currentTarget.blur();
+          }
+        }
+      }}
     />
   </div>
 </div>
@@ -243,6 +255,18 @@ export default function Navbar() {
                 type="text"
                 placeholder="Search schools..."
                 className="w-full pl-10 pr-4 py-3 bg-[#2A2E34] border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent"
+                value={searchValue}
+                onChange={e => setSearchValue(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    const value = e.currentTarget.value.trim();
+                    if (value) {
+                      router.push(`/Schools?search=${encodeURIComponent(value)}`);
+                      setMobileMenuOpen(false);
+                      e.currentTarget.blur();
+                    }
+                  }
+                }}
               />
             </div>
           </div>
