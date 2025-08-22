@@ -3,26 +3,36 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-
-const statesData = [
-  { name: 'Maharashtra', map: '/homePage/maharashtra.png', schools: [{ name: 'Sainik School Balachadi', logo: '/homePage/school.png' }, { name: 'Rashtriya Military School, Dholpur', logo: '/homePage/school.png' }] },
-  { name: 'Rajasthan', map: '/homePage/maharashtra.png', schools: [{ name: 'Sainik School Balachadi', logo: '/homePage/school.png' }, { name: 'Rashtriya Military School, Dholpur', logo: '/homePage/school.png' }] },
-  { name: 'Gujrat', map: '/homePage/maharashtra.png', schools: [{ name: 'Sainik School Balachadi', logo: '/homePage/school.png' }, { name: 'Rashtriya Military School, Dholpur', logo: '/homePage/school.png' }] },
-  { name: 'Madhya Pradesh', map: '/homePage/maharashtra.png', schools: [{ name: 'Sainik School Balachadi', logo: '/homePage/school.png' }, { name: 'Rashtriya Military School, Dholpur', logo: '/homePage/school.png' }] },
-  { name: 'Arunachal Pradesh', map: '/homePage/maharashtra.png', schools: [{ name: 'Sainik School Balachadi', logo: '/homePage/school.png' }, { name: 'Rashtriya Military School, Dholpur', logo: '/homePage/school.png' }] },
-  { name: 'Punjab', map: '/homePage/maharashtra.png', schools: [{ name: 'Punjab Military School', logo: '/homePage/school.png' }, { name: 'Army Public School', logo: '/homePage/school.png' }] },
-  { name: 'Bihar', map: '/homePage/maharashtra.png', schools: [{ name: 'Sainik School Gopalganj', logo: '/homePage/school.png' }, { name: 'RMS Patna', logo: '/homePage/school.png' }] },
-  { name: 'Uttar Pradesh', map: '/homePage/maharashtra.png', schools: [{ name: 'Sainik School Amethi', logo: '/homePage/school.png' }, { name: 'Sainik School Jhansi', logo: '/homePage/school.png' }] },
-];
+import { getSectionThree } from '../../../services/homeServices';
+import { useRouter } from 'next/navigation';
 
 const NationwideFootprint = () => {
+  interface School {
+    name: string;
+    profileImage: string;
+    id: string;
+  }
+  
+  interface StateData {
+    state: string;
+    schools: School[];
+  }
+  
   const [activeState, setActiveState] = useState<number | null>(null);
+  const [statesData, setStatesData] = useState<StateData[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const tl = useRef<gsap.core.Timeline | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    getSectionThree()
+      .then(res => setStatesData(res.data))
+      .catch(() => setStatesData([]));
+  }, []);
 
   useEffect(() => {
     const list = scrollRef.current;
-    if (!list) return;
+    if (!list || statesData.length === 0) return;
 
     const items = list.children;
     const totalHeight = list.scrollHeight;
@@ -48,7 +58,7 @@ const NationwideFootprint = () => {
       list.removeEventListener('mouseenter', handleMouseEnter);
       list.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, []);
+  }, [statesData]);
 
   return (
     <section className="w-full bg-[#1C1F24] px-14 pt-16 pb-16 overflow-hidden">
@@ -72,11 +82,11 @@ const NationwideFootprint = () => {
                         isActive ? 'text-[28px] sm:text-[32px]' : 'text-[20px] sm:text-[24px]'
                       }`}
                     >
-                      {state.name}
+                      {state.state}
                     </h3>
                     <Image
-                      src={state.map}
-                      alt={state.name}
+                      src="/homePage/maharashtra.png"
+                      alt={state.state}
                       width={isActive ? 64 : 40}
                       height={isActive ? 64 : 40}
                       className="object-contain transition-all duration-300"
@@ -88,10 +98,11 @@ const NationwideFootprint = () => {
                       {state.schools.map((school, sIdx) => (
                         <div
                           key={sIdx}
-                          className="bg-[#1C1C1C] text-white rounded-xl shadow-lg flex items-center px-4 py-3"
+                          className="bg-[#1C1C1C] text-white rounded-xl shadow-lg flex items-center px-4 py-3 cursor-pointer"
+                          onClick={() => router.push(`/SchoolDetails/${school.id}`)}
                         >
                           <Image
-                            src={school.logo}
+                            src={school.profileImage}
                             alt={school.name}
                             width={40}
                             height={40}
@@ -115,12 +126,10 @@ const NationwideFootprint = () => {
          <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-white mb-4">
              Nationwide Footprint
         </h2>
-
           <p className="text-sm sm:text-[16px] lg:text-[18px] xl:text-[20px] leading-relaxed text-white mb-2 max-w-[100%]">
             Sainik Schools are strategically located across states to provide equal opportunity
             and access to disciplined, defense-oriented education.
           </p>
-         
           <Image
             src="/homePage/map.png"
             alt="India Map"
@@ -128,7 +137,6 @@ const NationwideFootprint = () => {
             height={450}
             className="object-contain w-full max-w-[500px] h-[450px]"
           />
-          
         </div>
       </div>
     </section>

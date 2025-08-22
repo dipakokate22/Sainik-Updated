@@ -3,37 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
-
-// --- Testimonials Data ---
-const testimonialsData = [
-  {
-    id: 1,
-    quote:
-      "Our child has thrived in this school environment, where every teacher genuinely cares about their success! We couldn't be happier with the support and resources provided.",
-    name: 'Emily Johnson',
-    desc: 'Parent, Happy Family',
-    imageSrc: '/profile-placeholder-1.png',
-    rating: 3,
-  },
-  {
-    id: 2,
-    quote:
-      'The discipline, academic rigor, and focus on character development at Sainik School are unparalleled. It has prepared our son for a future of leadership and service.',
-    name: 'Rajesh Kumar',
-    desc: 'Parent of a Cadet',
-    imageSrc: '/profile-placeholder-2.png',
-    rating: 5,
-  },
-  {
-    id: 3,
-    quote:
-      "I am grateful for the lifelong friendships and the incredible mentorship I received. Sainik School didn't just educate me; it shaped me into the person I am today.",
-    name: 'Arjun Singh',
-    desc: 'Alumnus, Class of 2015',
-    imageSrc: '/profile-placeholder-3.png',
-    rating: 4,
-  },
-];
+import { getSectionEight } from '../../../services/homeServices';
 
 // --- Star Rating Icons ---
 const StarFilledIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -68,38 +38,82 @@ const StarRating = ({ rating }: { rating: number }) => (
   </div>
 );
 
+const staticData = {
+  title: 'Testimonials',
+  subtitle: 'Hear what our students and parents say about their journey at Sainik School.',
+  testimonials: [
+    {
+      id: 1,
+      name: 'Arjun Singh',
+      batch: 'Alumnus, Class of 2015',
+      rating: 4,
+      review:
+        'I am grateful for the lifelong friendships and the incredible mentorship I received. Sainik School didn’t just educate me; it shaped me into the person I am today.',
+      image: 'https://cdn-icons-png.flaticon.com/512/219/219983.png',
+      school_logo: 'https://sainik-updated.vercel.app/_next/image?url=%2FImage%2FSainik-logo.png&w=640&q=75',
+    },
+    {
+      id: 2,
+      name: 'Priya Sharma',
+      batch: 'Parent, Class of 2020',
+      rating: 5,
+      review:
+        'As a parent, I have seen my son grow into a disciplined, confident leader. Sainik School provides the perfect blend of academics and life skills.',
+      image: 'https://cdn-icons-png.flaticon.com/512/219/219983.png',
+      school_logo: 'https://sainik-updated.vercel.app/_next/image?url=%2FImage%2FSainik-logo.png&w=640&q=75',
+    },
+    {
+      id: 3,
+      name: 'Rahul Kumar',
+      batch: 'Student, Class of 2022',
+      rating: 4,
+      review:
+        'Sainik School provided me with a strong foundation in academics and a life-changing experience. I am highly recommend it!',
+      image: 'https://cdn-icons-png.flaticon.com/512/219/219983.png',
+      school_logo: 'https://sainik-updated.vercel.app/_next/image?url=%2FImage%2FSainik-logo.png&w=640&q=75',
+    },
+  ],
+};
+
 const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [testimonialSection, setTestimonialSection] = useState(staticData);
+
+  useEffect(() => {
+    getSectionEight()
+      .then((res) => {
+        if (res?.data?.testimonials) setTestimonialSection(res.data);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 639px)');
     if (mediaQuery.matches) {
       const interval = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % testimonialsData.length);
+        setCurrentIndex((prev) => (prev + 1) % testimonialSection.testimonials.length);
       }, 5000);
       return () => clearInterval(interval);
     }
-  }, []);
+  }, [testimonialSection]);
 
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + testimonialsData.length) % testimonialsData.length);
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + testimonialSection.testimonials.length) % testimonialSection.testimonials.length);
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonialsData.length);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonialSection.testimonials.length);
   };
 
-  const activeTestimonial = testimonialsData[currentIndex];
+  const activeTestimonial = testimonialSection.testimonials[currentIndex];
 
   return (
     <section className="w-full bg-[#F7F1EE] py-16">
       <div className="mx-auto max-w-[1440px] px-14">
         <div className="text-center">
-           <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">
-            Testimonials
-          </h2>
+          <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-4">{testimonialSection.title}</h2>
           <p className="text-gray-600 text-sm sm:text-[16px] lg:text-[18px] xl:text-[20px] leading-relaxed">
-            Hear what our students and parents say about their journey at Sainik School.
+            {testimonialSection.subtitle}
           </p>
         </div>
 
@@ -127,28 +141,39 @@ const Testimonials = () => {
             >
               <StarRating rating={activeTestimonial.rating} />
               <p className="mt-5 text-center text-[16px] sm:text-[18px] md:text-[20px] leading-relaxed text-gray-800">
-                {activeTestimonial.quote}
+                {activeTestimonial.review}
               </p>
               <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full justify-center">
                 {/* Avatar & Name */}
                 <div className="flex items-center gap-3 sm:gap-4">
-                  <Image
-                    src={activeTestimonial.imageSrc}
-                    alt={activeTestimonial.name}
-                    width={48}
-                    height={48}
-                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gray-200 object-cover"
-                  />
+                  {/* Use <img> for external images */}
+                  {activeTestimonial.image.startsWith('http') ? (
+                    <img
+                      src={activeTestimonial.image}
+                      alt={activeTestimonial.name}
+                      width={48}
+                      height={48}
+                      className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gray-200 object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={activeTestimonial.image}
+                      alt={activeTestimonial.name}
+                      width={48}
+                      height={48}
+                      className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gray-200 object-cover"
+                    />
+                  )}
                   <div>
                     <p className="text-[14px] sm:text-[16px] font-semibold text-gray-900">{activeTestimonial.name}</p>
-                    <p className="text-[14px] sm:text-[16px] text-gray-600">{activeTestimonial.desc}</p>
+                    <p className="text-[14px] sm:text-[16px] text-gray-600">{activeTestimonial.batch}</p>
                   </div>
                 </div>
 
                 {/* Divider + Logo */}
                 <div className="hidden sm:block h-10 w-px bg-gray-300"></div>
                 <Image
-                  src="/sainik-school-logo.svg"
+                  src={activeTestimonial.school_logo}
                   alt="Sainik School Logo"
                   width={100}
                   height={30}

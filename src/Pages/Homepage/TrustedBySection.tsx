@@ -1,34 +1,46 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import Image from 'next/image';
+import { getSectionSeven } from '../../../services/homeServices';
 
-const logos = [
-  { name: 'Aurora International', logo: '/Trusted/aurora.png' },
-  { name: 'Crystal Lake School', logo: '/Trusted/crystal.png' },
-  { name: 'Army Public School', logo: '/Trusted/army.png' },
-  { name: 'Rashtriya Military School', logo: '/Trusted/rashtriya.png' },
-];
+const staticData = {
+  title: 'Trusted by top educational institutions worldwide',
+  schools: [
+    { name: 'Aurora International', logo: '/Trusted/aurora.png' },
+    { name: 'Crystal Lake School', logo: '/Trusted/crystal.png' },
+    { name: 'Army Public School', logo: '/Trusted/army.png' },
+    { name: 'Rashtriya Military School', logo: '/Trusted/rashtriya.png' },
+  ],
+};
 
 const TrustedBySection = () => {
   const row1Ref = useRef<HTMLDivElement>(null);
   const row2Ref = useRef<HTMLDivElement>(null);
+  const [trusted, setTrusted] = useState(staticData);
+
+  useEffect(() => {
+    getSectionSeven()
+      .then((res) => {
+        if (res?.data?.schools) setTrusted(res.data);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       const loopScroll = (target: HTMLDivElement, reverse = false) => {
         const totalWidth = target.scrollWidth / 2;
-gsap.to(target, {
-  x: reverse ? totalWidth : -totalWidth,
-  duration: 30, // slowed down from 20 to 30
-  ease: 'linear',
-  repeat: -1,
-  modifiers: {
-    x: gsap.utils.unitize((x: string) => parseFloat(x) % totalWidth),
-  },
-});
-
+        gsap.to(target, {
+          x: reverse ? totalWidth : -totalWidth,
+          duration: 30, // slowed down from 20 to 30
+          ease: 'linear',
+          repeat: -1,
+          modifiers: {
+            x: gsap.utils.unitize((x: string) => parseFloat(x) % totalWidth),
+          },
+        });
       };
 
       if (row1Ref.current) loopScroll(row1Ref.current, false);
@@ -36,16 +48,15 @@ gsap.to(target, {
     });
 
     return () => ctx.revert();
-  }, []);
+  }, [trusted]);
 
-  const loopItems = [...logos, ...logos, ...logos]; // Triple the items for better seamless loop
+  const loopItems = [...trusted.schools, ...trusted.schools, ...trusted.schools]; // Triple the items for better seamless loop
 
   return (
     <section className="bg-[#F7F1EE] py-16 w-full overflow-hidden">
       <div className="max-w-[1440px] mx-auto px-14 text-center">
-         <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-8">
-          Trusted by top educational <br className="hidden sm:block" />
-          institutions worldwide
+        <h2 className="text-3xl md:text-[42px] font-poppins font-medium text-black mb-8">
+          {trusted.title}
         </h2>
 
         {/* Row 1 - Moving Left */}
