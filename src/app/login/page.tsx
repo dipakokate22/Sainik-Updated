@@ -67,7 +67,7 @@ export default function LoginPage() {
             alt="Sainik Logo" 
             width={120} 
             height={40} 
-            className="sm:w-[50px] w-[15px]" 
+            className="sm:w-[60px] w-[20px]" 
           />
           </Link>
           <p className="text-gray-600 mt-2">Welcome back! Please sign in to your account.</p>

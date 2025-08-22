@@ -666,10 +666,10 @@ export default function SchoolDetailSection() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-[#F7F1EE] mt-6"> {/* Added mt-6 for spacing below Navbar */}
+      <div className="min-h-screen bg-[#F7F1EE] mt-6 "> {/* Added mt-6 for spacing below Navbar */}
         {/* Header Section - Matching the uploaded image */}
         <div className="max-w-[1440px] w-full mx-auto bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-14 py-4 sm:pt-6 md:pt-10 lg:pt-12">
-          <div className="max-w-[1440px] w-full mx-auto">
+          <div className="max-w-[1440px] w-full mx-auto mt-16">
             {/* Back Button */}
             <div className="mb-4 sm:mb-6">
               <button

@@ -343,6 +343,7 @@ export default function Navbar() {
                   </Link>
                 </div>
               </div>
+                <ProfileDropdown />
             </nav>
           </div>
         </div>

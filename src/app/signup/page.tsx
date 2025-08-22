@@ -148,7 +148,7 @@ export default function SignupPage() {
             alt="Sainik Logo" 
             width={120} 
             height={40} 
-            className="sm:w-[50px] w-[15px]" 
+            className="sm:w-[60px] w-[20px]" 
           />
           </Link>
           <p className="text-gray-700 mt-2 font-medium">Create your account and join our community.</p>
