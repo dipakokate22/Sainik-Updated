@@ -1,5 +1,5 @@
 import { getAuthToken } from './authServices';
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://resume.zihcc.in/api';
 
 // Helper to build headers with optional auth
 const buildHeaders = () => {
