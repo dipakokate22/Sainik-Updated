@@ -70,11 +70,11 @@ const ProfileDropdown = () => {
                     <LogIn size={16} /> Sign In
                   </Link>
                 </li>
-                <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
+                {/* <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                   <Link href="/signup" onClick={() => setIsOpen(false)} className="flex items-center gap-3">
                     <UserPlus size={16} /> Sign Up
                   </Link>
-                </li>
+                </li> */}
               </>
             )}
           </ul>
