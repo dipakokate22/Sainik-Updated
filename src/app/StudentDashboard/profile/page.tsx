@@ -128,48 +128,6 @@ const ProfilePage = () => {
               </div>
             </div>
           </div>
-
-          {/* Quick Actions Card */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button className="p-4 border border-gray-200 rounded-lg hover:border-[#257B5A] hover:bg-green-50 transition-colors text-left">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Edit size={18} className="text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-800">Update Profile</p>
-                    <p className="text-sm text-gray-500">Edit personal details</p>
-                  </div>
-                </div>
-              </button>
-              
-              <button className="p-4 border border-gray-200 rounded-lg hover:border-[#257B5A] hover:bg-green-50 transition-colors text-left">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <Phone size={18} className="text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-800">Contact Support</p>
-                    <p className="text-sm text-gray-500">Get help & assistance</p>
-                  </div>
-                </div>
-              </button>
-              
-              <button className="p-4 border border-gray-200 rounded-lg hover:border-[#257B5A] hover:bg-green-50 transition-colors text-left">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <GraduationCap size={18} className="text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-800">Academic Records</p>
-                    <p className="text-sm text-gray-500">View your progress</p>
-                  </div>
-                </div>
-              </button>
-            </div>
-          </div>
         </div>
       </main>
     </div>
