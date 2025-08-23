@@ -1,7 +1,7 @@
 // Sidebar.jsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Poppins } from 'next/font/google';
@@ -31,6 +31,35 @@ interface SidebarProps {
 const Sidebar = ({ activePage }: SidebarProps) => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+
+  // Student info from localStorage
+  const [studentInfo, setStudentInfo] = useState({
+    name: '',
+    studentId: '',
+    signupDate: '',
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const name = localStorage.getItem('firstName') || '';
+      const studentId = localStorage.getItem('studentId') || '';
+      let signupDate = localStorage.getItem('signupDate') || '';
+      // Format signupDate to DD-MM-YYYY if present
+      if (signupDate) {
+        try {
+          const d = new Date(signupDate);
+          if (!isNaN(d.getTime())) {
+            signupDate = `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth()+1).toString().padStart(2, '0')}-${d.getFullYear()}`;
+          }
+        } catch {}
+      }
+      setStudentInfo({
+        name,
+        studentId,
+        signupDate,
+      });
+    }
+  }, []);
 
   const navItems = [
     { name: 'Dashboard', href: '/StudentDashboard/dashboard', icon: <LayoutDashboard size={18} /> },
@@ -87,9 +116,15 @@ const Sidebar = ({ activePage }: SidebarProps) => {
           <img src="/Image/Sainik-logo.jpg" alt="Logo" className="w-[127px] h-[130px] rounded-[5px]" />
         </div>
         <div className="text-sm space-y-1">
-          <h2 className="font-medium text-lg">Hello, Krishna Kumar</h2>
-          <p>Student ID: SK2025001</p>
-          <p>Signup Date: 12-06-2025</p>
+          <h2 className="font-medium text-lg">
+            Hello, {studentInfo.name ? studentInfo.name : 'Krishna Kumar'}
+          </h2>
+          <p>
+            Student ID: {studentInfo.studentId ? studentInfo.studentId : 'SK2025001'}
+          </p>
+          <p>
+            Signup Date: {studentInfo.signupDate ? studentInfo.signupDate : '12-06-2025'}
+          </p>
         </div>
         <nav className="flex flex-col gap-1 mt-4">
           {navItems.map((item) => (

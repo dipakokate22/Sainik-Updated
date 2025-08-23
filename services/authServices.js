@@ -52,11 +52,19 @@ export const schoolLogin = async (loginData) => {
       throw new Error(data.message || 'School login failed');
     }
 
-    // Store JWT token in localStorage if login successful
+    // Store JWT token and user info in localStorage if login successful
     if (data.login && data.jwttoken) {
       localStorage.setItem('authToken', data.jwttoken);
       localStorage.setItem('userRole', data.role);
       localStorage.setItem('userId', data.id);
+      localStorage.setItem('firstName', data.firstName || '');
+      localStorage.setItem('lastName', data.lastName || '');
+      localStorage.setItem('email', data.email || '');
+      localStorage.setItem('mobile', data.mobile || '');
+      // Store school object for sidebar display
+      if (data.school) {
+        localStorage.setItem('school', JSON.stringify(data.school));
+      }
     }
 
     return data;
@@ -92,6 +100,13 @@ export const studentLogin = async (loginData) => {
       localStorage.setItem('authToken', data.jwttoken);
       localStorage.setItem('userRole', data.role);
       localStorage.setItem('userId', data.id);
+      localStorage.setItem('firstName', data.firstName || '');
+      localStorage.setItem('lastName', data.lastName || '');
+      localStorage.setItem('email', data.email || '');
+      localStorage.setItem('mobile', data.mobile || '');
+      // Store studentId and signupDate for sidebar
+      localStorage.setItem('studentId', data.id ? String(data.id) : '');
+      localStorage.setItem('signupDate', data.created_at || '');
     }
 
     return data;

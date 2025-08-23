@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   School,
   MapPin,
@@ -24,78 +24,137 @@ import {
   Heart,
   Zap,
 } from 'lucide-react';
+import { getSchoolInfo, createSchool } from '../../../../services/schoolDashboardServices';
+import { getUserId } from '../../../../services/authServices';
+
+type ProfileDataType = {
+  schoolName: string;
+  ownership: string;
+  board: string;
+  medium: string;
+  category: string;
+  address: string;
+  phone: string;
+  email: string;
+  website: string;
+  principalName: string;
+  classesOffered: string;
+  schoolHours: string;
+  description: string;
+  latitude: string;
+  longitude: string;
+  city: string;
+  state: string;
+  profile_image: File | null;
+};
+
+const defaultProfileData: ProfileDataType = {
+  schoolName: '',
+  ownership: '',
+  board: '',
+  medium: '',
+  category: '',
+  address: '',
+  phone: '',
+  email: '',
+  website: '',
+  principalName: '',
+  classesOffered: '',
+  schoolHours: '',
+  description: '',
+  latitude: '',
+  longitude: '',
+  city: '',
+  state: '',
+  profile_image: null,
+};
 
 const SchoolProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState({
-    schoolName: 'Aurora International Sainik School',
-    ownership: 'Private',
-    board: 'CBSE',
-    medium: 'English',
-    category: 'Co-ed',
-    address: 'Pune, Maharashtra – 411030',
-    phone: '+91 98765 43210',
-    email: 'info@sainikschoolpune.edu.in',
-    website: 'www.sainikschoolpune.edu.in',
-    principalName: 'Dr. Rajesh Kumar',
-    classesOffered: 'Class I to XII',
-    schoolHours: '10:00 AM - 4:00 PM',
-    description: 'Sainik School Pune is one of India\'s premier military schools, committed to preparing young students for leadership roles in the Indian Armed Forces and beyond.',
-  });
+  const [profileData, setProfileData] = useState(defaultProfileData);
+  type FacilityType = {
+    icon: React.ComponentType<{ className?: string; size?: number }>;
+    name: string;
+    description: string;
+  };
+  
+  const [facilities, setFacilities] = useState<FacilityType[]>([]);
+  type AchievementType = {
+    icon: React.ComponentType<{ className?: string; size?: number }>;
+    title: string;
+    description: string;
+  };
+  const [achievements, setAchievements] = useState<AchievementType[]>([]);
+  const [admissionCriteria, setAdmissionCriteria] = useState<string[]>([]);
+  type SchoolHourType = { day: string; hours: string };
+  const [schoolHours, setSchoolHours] = useState<SchoolHourType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    async function fetchSchool() {
+      setLoading(true);
+      try {
+        const res: { data?: any } = await getSchoolInfo();
+        if (res?.data) {
+          const d = res.data;
+          setProfileData({
+            ...defaultProfileData,
+            ...d.profileData,
+            latitude: d.profileData.latitude || '',
+            longitude: d.profileData.longitude || '',
+            city: d.profileData.city || '',
+            state: d.profileData.state || '',
+            profile_image: null,
+          });
+          setFacilities(d.facilities || []);
+          setAchievements(d.achievements || []);
+          setAdmissionCriteria(d.admissionCriteria || []);
+          setSchoolHours(d.schoolHours || []);
+        }
+      } catch (e) {
+        // handle error
+      }
+      setLoading(false);
+    }
+    fetchSchool();
+  }, []);
 
   const handleInputChange = (field: string, value: string) => {
     setProfileData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Here you would typically save to backend
-    console.log('Saving profile data:', profileData);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfileData(prev => ({ ...prev, profile_image: file }));
+      setProfileImagePreview(URL.createObjectURL(file));
+    }
   };
-
-  const [facilities, setFacilities] = useState([
-    { icon: BookOpen, name: 'Well-stocked Library', description: '15,000+ books' },
-    { icon: Target, name: 'Science Laboratories', description: 'Modern equipment' },
-    { icon: Users, name: 'Computer Lab', description: '50+ systems' },
-    { icon: Shield, name: 'Smart Classrooms', description: 'Digital boards' },
-    { icon: Trophy, name: 'Sports Complex', description: 'Multi-purpose grounds' },
-    { icon: Heart, name: 'Medical Facility', description: '24/7 healthcare' },
-  ]);
-
-  const [achievements, setAchievements] = useState([
-    { icon: Award, title: 'Best Military School 2023', description: 'National Education Awards' },
-    { icon: Star, title: '95% Board Results', description: 'CBSE Excellence' },
-    { icon: Trophy, title: '1000+ Defense Officers', description: 'Alumni Achievement' },
-    { icon: Zap, title: 'NDA Preparation', description: 'Specialized Training' },
-  ]);
-
-  const [admissionCriteria, setAdmissionCriteria] = useState([
-    'Class I to Class XII',
-    'Age criteria as per CBSE norms',
-    'Entrance examination required',
-    'Medical fitness certificate',
-    'Character certificate from previous school',
-  ]);
-
-  const [schoolHours, setSchoolHours] = useState([
-    { day: 'Monday', hours: '10:00 AM - 4:00 PM' },
-    { day: 'Tuesday', hours: '10:00 AM - 4:00 PM' },
-    { day: 'Wednesday', hours: '10:00 AM - 4:00 PM' },
-    { day: 'Thursday', hours: '10:00 AM - 4:00 PM' },
-    { day: 'Friday', hours: '10:00 AM - 4:00 PM' },
-    { day: 'Saturday', hours: '10:00 AM - 2:00 PM' },
-    { day: 'Sunday', hours: 'Holiday' },
-  ]);
 
   const handleFacilityChange = (index: number, field: string, value: string) => {
     const updatedFacilities = [...facilities];
-    updatedFacilities[index] = { ...updatedFacilities[index], [field]: value };
+    const currentFacility =
+      typeof updatedFacilities[index] === 'object' &&
+      updatedFacilities[index] !== null &&
+      'icon' in updatedFacilities[index] &&
+      'name' in updatedFacilities[index] &&
+      'description' in updatedFacilities[index]
+        ? updatedFacilities[index]
+        : { icon: BookOpen, name: '', description: '' };
+    updatedFacilities[index] = { ...currentFacility, [field]: value };
     setFacilities(updatedFacilities);
   };
 
   const handleAchievementChange = (index: number, field: string, value: string) => {
     const updatedAchievements = [...achievements];
-    updatedAchievements[index] = { ...updatedAchievements[index], [field]: value };
+    const currentAchievement =
+      typeof updatedAchievements[index] === 'object' &&
+      updatedAchievements[index] !== null
+        ? updatedAchievements[index]
+        : { icon: Award, title: '', description: '' };
+    updatedAchievements[index] = { ...currentAchievement, [field]: value };
     setAchievements(updatedAchievements);
   };
 
@@ -111,6 +170,55 @@ const SchoolProfilePage = () => {
     setSchoolHours(updatedSchedule);
   };
 
+  // Add new items to arrays in edit mode
+  const addFacility = () => setFacilities([...facilities, { icon: BookOpen, name: '', description: '' }]);
+  const addAchievement = () => setAchievements([...achievements, { icon: Award, title: '', description: '' }]);
+  const addAdmissionCriteria = () => setAdmissionCriteria([...admissionCriteria, '']);
+  const addSchoolHour = () => setSchoolHours([...schoolHours, { day: '', hours: '' }]);
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      const user_id = getUserId();
+      // Build payload
+      const payload: any = {
+        name: profileData.schoolName,
+        profile_image: profileData.profile_image,
+        latitude: profileData.latitude,
+        longitude: profileData.longitude,
+        full_address: profileData.address,
+        city: profileData.city,
+        state: profileData.state,
+        mobile: profileData.phone,
+        email: profileData.email,
+        user_id,
+      };
+      // Optional fields
+      if (profileData.website) payload.website = profileData.website;
+      if (profileData.ownership) payload.ownership = profileData.ownership;
+      if (profileData.medium) payload.medium = profileData.medium;
+      if (profileData.board) payload.board = profileData.board;
+      if (profileData.category) payload.category = profileData.category;
+      if (profileData.description) payload.welcome_note = profileData.description;
+      if (facilities.length) payload.academic_facilities = facilities;
+      if (achievements.length) payload.key_highlights = achievements;
+      if (admissionCriteria.length) payload.admission_criteria_eligibility = admissionCriteria;
+      if (schoolHours.length) payload.school_hours = schoolHours;
+      // ...other optional arrays if needed...
+
+      await createSchool(payload);
+      setIsEditing(false);
+      // Optionally, refetch data
+    } catch (e) {
+      // handle error
+    }
+    setLoading(false);
+  };
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
   return (
     <div className="min-h-screen bg-[#FDFDFD] p-3 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
@@ -119,7 +227,11 @@ const SchoolProfilePage = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[#257B5A] rounded-full flex items-center justify-center flex-shrink-0">
-                <School className="text-white" size={24} />
+                {profileImagePreview ? (
+                  <img src={profileImagePreview} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                ) : (
+                  <School className="text-white" size={24} />
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 {isEditing ? (
@@ -137,11 +249,54 @@ const SchoolProfilePage = () => {
             <button
               onClick={() => isEditing ? handleSave() : setIsEditing(true)}
               className="flex items-center gap-2 bg-[#257B5A] text-white px-3 py-2 sm:px-4 rounded-lg hover:bg-[#1e6b4a] transition-colors text-sm sm:text-base w-full sm:w-auto justify-center"
+              disabled={loading}
             >
               {isEditing ? <Save size={16} /> : <Edit3 size={16} />}
               {isEditing ? 'Save Changes' : 'Edit Profile'}
             </button>
           </div>
+          {isEditing && (
+            <div className="mt-4 flex flex-col gap-2">
+              <label className="font-medium text-gray-700">Profile Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                className="border border-gray-300 rounded px-2 py-1"
+              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Latitude"
+                  value={profileData.latitude}
+                  onChange={e => handleInputChange('latitude', e.target.value)}
+                  className="border border-gray-300 rounded px-2 py-1 w-32"
+                />
+                <input
+                  type="text"
+                  placeholder="Longitude"
+                  value={profileData.longitude}
+                  onChange={e => handleInputChange('longitude', e.target.value)}
+                  className="border border-gray-300 rounded px-2 py-1 w-32"
+                />
+                <input
+                  type="text"
+                  placeholder="City"
+                  value={profileData.city}
+                  onChange={e => handleInputChange('city', e.target.value)}
+                  className="border border-gray-300 rounded px-2 py-1 w-32"
+                />
+                <input
+                  type="text"
+                  placeholder="State"
+                  value={profileData.state}
+                  onChange={e => handleInputChange('state', e.target.value)}
+                  className="border border-gray-300 rounded px-2 py-1 w-32"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
@@ -305,6 +460,15 @@ const SchoolProfilePage = () => {
                   </div>
                 ))}
               </div>
+              {isEditing && (
+                <button
+                  type="button"
+                  className="mt-2 px-3 py-1 bg-[#257B5A] text-white rounded"
+                  onClick={addFacility}
+                >
+                  Add Facility
+                </button>
+              )}
             </div>
 
             {/* Achievements */}
@@ -340,6 +504,15 @@ const SchoolProfilePage = () => {
                   </div>
                 ))}
               </div>
+              {isEditing && (
+                <button
+                  type="button"
+                  className="mt-2 px-3 py-1 bg-[#257B5A] text-white rounded"
+                  onClick={addAchievement}
+                >
+                  Add Achievement
+                </button>
+              )}
             </div>
 
             {/* School Hours */}
@@ -380,6 +553,15 @@ const SchoolProfilePage = () => {
                   </div>
                 ))}
               </div>
+              {isEditing && (
+                <button
+                  type="button"
+                  className="mt-2 px-3 py-1 bg-[#257B5A] text-white rounded"
+                  onClick={addSchoolHour}
+                >
+                  Add School Hour
+                </button>
+              )}
             </div>
 
             {/* Admission Criteria */}
@@ -402,6 +584,15 @@ const SchoolProfilePage = () => {
                   </li>
                 ))}
               </ul>
+              {isEditing && (
+                <button
+                  type="button"
+                  className="mt-2 px-3 py-1 bg-[#257B5A] text-white rounded"
+                  onClick={addAdmissionCriteria}
+                >
+                  Add Criteria
+                </button>
+              )}
             </div>
           </div>
 
