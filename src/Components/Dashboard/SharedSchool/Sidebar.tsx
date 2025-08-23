@@ -59,6 +59,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
           schoolName = schoolObj?.name || '';
         }
       } catch {}
+      // If schoolName is not available, use firstName + lastName
+      if (!schoolName) {
+        schoolName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : '';
+      }
       setUserInfo({
         firstName,
         lastName,
