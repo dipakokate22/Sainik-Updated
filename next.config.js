@@ -2,7 +2,9 @@
 const nextConfig = {
   images: {
     domains: [
-      "sainik-updated.vercel.app"
+      "sainik-updated.vercel.app",
+      "resume.zihcc.in",
+      "sainik.codekrafters.in"
     ]
   }
 }

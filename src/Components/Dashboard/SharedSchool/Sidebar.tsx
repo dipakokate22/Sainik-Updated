@@ -34,42 +34,33 @@ interface SidebarProps {
 export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
   const pathname = usePathname() || '';
 
-  // State for user info and school name
+  // State for user info
   const [userInfo, setUserInfo] = useState({
     firstName: '',
     lastName: '',
     email: '',
     mobile: '',
-    schoolName: '',
   });
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Get user info
+    function updateUserInfo() {
       const firstName = localStorage.getItem('firstName') || '';
       const lastName = localStorage.getItem('lastName') || '';
       const email = localStorage.getItem('email') || '';
       const mobile = localStorage.getItem('mobile') || '';
-      // Get school info from login response (assume stored as 'school' in localStorage)
-      let schoolName = '';
-      try {
-        const schoolStr = localStorage.getItem('school');
-        if (schoolStr) {
-          const schoolObj = JSON.parse(schoolStr);
-          schoolName = schoolObj?.name || '';
-        }
-      } catch {}
-      // If schoolName is not available, use firstName + lastName
-      if (!schoolName) {
-        schoolName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : '';
-      }
       setUserInfo({
         firstName,
         lastName,
         email,
         mobile,
-        schoolName,
       });
+    }
+
+    if (typeof window !== 'undefined') {
+      updateUserInfo();
+      // Listen for localStorage changes (e.g., after login)
+      window.addEventListener('storage', updateUserInfo);
+      return () => window.removeEventListener('storage', updateUserInfo);
     }
   }, [sidebarOpen]);
 
@@ -98,13 +89,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
         <Link href="/SchoolDashboard" className="flex items-center gap-3">
           <Image width={55} height={55} src="/Listing/Logo.png" alt="Logo" className="rounded-md" />
           <span className="text-base sm:text-xl font-semibold text-white leading-tight">
-            {userInfo.schoolName
-              ? userInfo.schoolName
-              : userInfo.firstName || userInfo.lastName
-                ? `${userInfo.firstName} ${userInfo.lastName}`
-                : 'Aurora International'}
+            {(userInfo.firstName || userInfo.lastName)
+              ? `${userInfo.firstName} ${userInfo.lastName}`.trim()
+              : 'Aurora International'}
             <br className="hidden sm:block" />
-            Sainik School
           </span>
         </Link>
       </div>

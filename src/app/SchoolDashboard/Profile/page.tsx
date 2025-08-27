@@ -91,13 +91,20 @@ const SchoolProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  // Dropdown options
+  const ownershipOptions = ['', 'Private', 'Government', 'Aided'];
+  const boardOptions = ['', 'CBSE', 'ICSE', 'State Board', 'IB', 'Other'];
+  const mediumOptions = ['', 'English', 'Hindi', 'Regional', 'Other'];
+  const categoryOptions = ['', 'Day School', 'Boarding', 'Co-ed', 'Girls', 'Boys', 'Other'];
 
   useEffect(() => {
     async function fetchSchool() {
       setLoading(true);
       try {
         const res: { data?: any } = await getSchoolInfo();
-        if (res?.data) {
+        if (res?.data && res.data.profileData) {
           const d = res.data;
           setProfileData({
             ...defaultProfileData,
@@ -112,9 +119,34 @@ const SchoolProfilePage = () => {
           setAchievements(d.achievements || []);
           setAdmissionCriteria(d.admissionCriteria || []);
           setSchoolHours(d.schoolHours || []);
+        } else {
+          // No school info, fill from login response (localStorage)
+          const firstName = localStorage.getItem('firstName') || '';
+          const lastName = localStorage.getItem('lastName') || '';
+          const schoolName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : '';
+          const phone = localStorage.getItem('mobile') || '';
+          const email = localStorage.getItem('email') || '';
+          setProfileData({
+            ...defaultProfileData,
+            schoolName,
+            phone,
+            email,
+          });
         }
       } catch (e) {
         // handle error
+        // fallback to login response
+        const firstName = localStorage.getItem('firstName') || '';
+        const lastName = localStorage.getItem('lastName') || '';
+        const schoolName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : '';
+        const phone = localStorage.getItem('mobile') || '';
+        const email = localStorage.getItem('email') || '';
+        setProfileData({
+          ...defaultProfileData,
+          schoolName,
+          phone,
+          email,
+        });
       }
       setLoading(false);
     }
@@ -215,6 +247,387 @@ const SchoolProfilePage = () => {
     setLoading(false);
   };
 
+  // Modern Attractive Edit Modal
+  const EditModal = () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl p-0 overflow-y-auto max-h-[95vh] relative flex flex-col">
+        {/* Sticky Modal Header */}
+        <div className="sticky top-0 bg-gradient-to-r from-[#257B5A] to-[#1e6b4a] rounded-t-3xl px-6 py-4 flex items-center justify-between shadow">
+          <h2 className="text-xl font-bold text-white">Edit School Profile</h2>
+          <button
+            type="button"
+            className="text-white hover:text-gray-200"
+            onClick={() => setShowEditModal(false)}
+          >
+            <X size={28} />
+          </button>
+        </div>
+        <div className="p-6 space-y-8">
+          {/* Basic Info */}
+          <div className="bg-[#F7F9FA] rounded-xl shadow-sm p-5">
+            <h3 className="text-lg font-semibold text-[#257B5A] mb-3">Basic Information</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">School Name</label>
+                <input
+                  type="text"
+                  value={profileData.schoolName}
+                  onChange={e => handleInputChange('schoolName', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  placeholder="Enter school name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Principal Name</label>
+                <input
+                  type="text"
+                  value={profileData.principalName}
+                  onChange={e => handleInputChange('principalName', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  placeholder="Enter principal name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <input
+                  type="text"
+                  value={profileData.phone}
+                  onChange={e => handleInputChange('phone', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  placeholder="Enter phone number"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={profileData.email}
+                  onChange={e => handleInputChange('email', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  placeholder="Enter email"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                <input
+                  type="text"
+                  value={profileData.website}
+                  onChange={e => handleInputChange('website', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  placeholder="Enter website"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Profile Image</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full"
+                />
+                {profileImagePreview && (
+                  <img src={profileImagePreview} alt="Preview" className="mt-2 w-16 h-16 rounded-full object-cover border-2 border-[#257B5A]" />
+                )}
+              </div>
+            </div>
+          </div>
+          {/* Location */}
+          <div className="bg-[#F7F9FA] rounded-xl shadow-sm p-5">
+            <h3 className="text-lg font-semibold text-[#257B5A] mb-3">Location</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                <input
+                  type="text"
+                  value={profileData.address}
+                  onChange={e => handleInputChange('address', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  placeholder="Enter address"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                <input
+                  type="text"
+                  value={profileData.city}
+                  onChange={e => handleInputChange('city', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  placeholder="Enter city"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                <input
+                  type="text"
+                  value={profileData.state}
+                  onChange={e => handleInputChange('state', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  placeholder="Enter state"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                <input
+                  type="text"
+                  value={profileData.latitude}
+                  onChange={e => handleInputChange('latitude', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  placeholder="Enter latitude"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                <input
+                  type="text"
+                  value={profileData.longitude}
+                  onChange={e => handleInputChange('longitude', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  placeholder="Enter longitude"
+                />
+              </div>
+            </div>
+          </div>
+          {/* School Details */}
+          <div className="bg-[#F7F9FA] rounded-xl shadow-sm p-5">
+            <h3 className="text-lg font-semibold text-[#257B5A] mb-3">School Details</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ownership</label>
+                <select
+                  value={profileData.ownership}
+                  onChange={e => handleInputChange('ownership', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                >
+                  {ownershipOptions.map(opt => <option key={opt} value={opt}>{opt || 'Select Ownership'}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Board</label>
+                <select
+                  value={profileData.board}
+                  onChange={e => handleInputChange('board', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                >
+                  {boardOptions.map(opt => <option key={opt} value={opt}>{opt || 'Select Board'}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Medium</label>
+                <select
+                  value={profileData.medium}
+                  onChange={e => handleInputChange('medium', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                >
+                  {mediumOptions.map(opt => <option key={opt} value={opt}>{opt || 'Select Medium'}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <select
+                  value={profileData.category}
+                  onChange={e => handleInputChange('category', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                >
+                  {categoryOptions.map(opt => <option key={opt} value={opt}>{opt || 'Select Category'}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Classes Offered</label>
+                <input
+                  type="text"
+                  value={profileData.classesOffered}
+                  onChange={e => handleInputChange('classesOffered', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  placeholder="Enter classes offered"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  value={profileData.description}
+                  onChange={e => handleInputChange('description', e.target.value)}
+                  className="border border-[#257B5A] rounded-xl px-4 py-3 w-full text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  rows={2}
+                  placeholder="Enter school description"
+                />
+              </div>
+            </div>
+          </div>
+          {/* School Hours */}
+          <div className="bg-[#F7F9FA] rounded-xl shadow-sm p-5">
+            <h3 className="text-lg font-semibold text-[#257B5A] mb-3">School Hours</h3>
+            <div className="space-y-2">
+              {schoolHours.map((schedule, idx) => (
+                <div key={idx} className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    placeholder="Day"
+                    value={schedule.day}
+                    onChange={e => handleScheduleChange(idx, 'day', e.target.value)}
+                    className="border border-[#257B5A] rounded-xl px-3 py-2 w-24 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Hours"
+                    value={schedule.hours}
+                    onChange={e => handleScheduleChange(idx, 'hours', e.target.value)}
+                    className="border border-[#257B5A] rounded-xl px-3 py-2 w-32 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    className="text-red-500 hover:bg-red-100 rounded-full p-1"
+                    onClick={() => setSchoolHours(schoolHours.filter((_, i) => i !== idx))}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="mt-2 px-4 py-2 bg-gradient-to-r from-[#257B5A] to-[#1e6b4a] text-white rounded-xl shadow hover:scale-105 transition flex items-center gap-2"
+                onClick={addSchoolHour}
+              >
+                <Clock size={18} /> Add School Hour
+              </button>
+            </div>
+          </div>
+          {/* Facilities */}
+          <div className="bg-[#F7F9FA] rounded-xl shadow-sm p-5">
+            <h3 className="text-lg font-semibold text-[#257B5A] mb-3">Facilities</h3>
+            <div className="space-y-2">
+              {facilities.map((facility, idx) => (
+                <div key={idx} className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    placeholder="Facility Name"
+                    value={facility.name}
+                    onChange={e => handleFacilityChange(idx, 'name', e.target.value)}
+                    className="border border-[#257B5A] rounded-xl px-3 py-2 w-32 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Description"
+                    value={facility.description}
+                    onChange={e => handleFacilityChange(idx, 'description', e.target.value)}
+                    className="border border-[#257B5A] rounded-xl px-3 py-2 flex-1 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    className="text-red-500 hover:bg-red-100 rounded-full p-1"
+                    onClick={() => setFacilities(facilities.filter((_, i) => i !== idx))}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="mt-2 px-4 py-2 bg-gradient-to-r from-[#257B5A] to-[#1e6b4a] text-white rounded-xl shadow hover:scale-105 transition flex items-center gap-2"
+                onClick={addFacility}
+              >
+                <BookOpen size={18} /> Add Facility
+              </button>
+            </div>
+          </div>
+          {/* Achievements */}
+          <div className="bg-[#F7F9FA] rounded-xl shadow-sm p-5">
+            <h3 className="text-lg font-semibold text-[#257B5A] mb-3">Achievements</h3>
+            <div className="space-y-2">
+              {achievements.map((achievement, idx) => (
+                <div key={idx} className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    placeholder="Title"
+                    value={achievement.title}
+                    onChange={e => handleAchievementChange(idx, 'title', e.target.value)}
+                    className="border border-[#257B5A] rounded-xl px-3 py-2 w-32 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Description"
+                    value={achievement.description}
+                    onChange={e => handleAchievementChange(idx, 'description', e.target.value)}
+                    className="border border-[#257B5A] rounded-xl px-3 py-2 flex-1 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    className="text-red-500 hover:bg-red-100 rounded-full p-1"
+                    onClick={() => setAchievements(achievements.filter((_, i) => i !== idx))}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="mt-2 px-4 py-2 bg-gradient-to-r from-[#257B5A] to-[#1e6b4a] text-white rounded-xl shadow hover:scale-105 transition flex items-center gap-2"
+                onClick={addAchievement}
+              >
+                <Award size={18} /> Add Achievement
+              </button>
+            </div>
+          </div>
+          {/* Admission Criteria */}
+          <div className="bg-[#F7F9FA] rounded-xl shadow-sm p-5">
+            <h3 className="text-lg font-semibold text-[#257B5A] mb-3">Admission Criteria</h3>
+            <div className="space-y-2">
+              {admissionCriteria.map((criteria, idx) => (
+                <div key={idx} className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    placeholder="Criteria"
+                    value={criteria}
+                    onChange={e => handleCriteriaChange(idx, e.target.value)}
+                    className="border border-[#257B5A] rounded-xl px-3 py-2 flex-1 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    className="text-red-500 hover:bg-red-100 rounded-full p-1"
+                    onClick={() => setAdmissionCriteria(admissionCriteria.filter((_, i) => i !== idx))}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="mt-2 px-4 py-2 bg-gradient-to-r from-[#257B5A] to-[#1e6b4a] text-white rounded-xl shadow hover:scale-105 transition flex items-center gap-2"
+                onClick={addAdmissionCriteria}
+              >
+                <Star size={18} /> Add Criteria
+              </button>
+            </div>
+          </div>
+          {/* Save/Cancel */}
+          <div className="flex gap-4 mt-6">
+            <button
+              className="bg-gradient-to-r from-[#257B5A] to-[#1e6b4a] text-white px-8 py-3 rounded-xl font-semibold flex-1 shadow hover:scale-105 transition flex items-center justify-center gap-2"
+              onClick={async () => {
+                setLoading(true);
+                await handleSave();
+                setShowEditModal(false);
+                setLoading(false);
+              }}
+              disabled={loading}
+              type="button"
+            >
+              <Save size={20} /> Save Changes
+            </button>
+            <button
+              className="bg-gray-200 text-gray-700 px-8 py-3 rounded-xl font-semibold flex-1 shadow hover:bg-gray-300 transition"
+              onClick={() => setShowEditModal(false)}
+              disabled={loading}
+              type="button"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
@@ -247,12 +660,12 @@ const SchoolProfilePage = () => {
               </div>
             </div>
             <button
-              onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+              onClick={() => setShowEditModal(true)}
               className="flex items-center gap-2 bg-[#257B5A] text-white px-3 py-2 sm:px-4 rounded-lg hover:bg-[#1e6b4a] transition-colors text-sm sm:text-base w-full sm:w-auto justify-center"
               disabled={loading}
             >
-              {isEditing ? <Save size={16} /> : <Edit3 size={16} />}
-              {isEditing ? 'Save Changes' : 'Edit Profile'}
+              <Edit3 size={16} />
+              Edit Profile
             </button>
           </div>
           {isEditing && (
@@ -316,12 +729,13 @@ const SchoolProfilePage = () => {
                       <span className="text-sm sm:text-base text-gray-700 font-medium">Ownership:</span>
                     </div>
                     {isEditing ? (
-                      <input
-                        type="text"
+                      <select
                         value={profileData.ownership}
                         onChange={(e) => handleInputChange('ownership', e.target.value)}
                         className="font-medium text-[#257B5A] border border-gray-300 rounded px-2 py-1 text-sm sm:text-base focus:ring-2 focus:ring-[#257B5A] focus:border-transparent flex-1"
-                      />
+                      >
+                        {ownershipOptions.map(opt => <option key={opt} value={opt}>{opt || 'Select Ownership'}</option>)}
+                      </select>
                     ) : (
                       <span className="font-medium text-[#257B5A] text-sm sm:text-base">{profileData.ownership}</span>
                     )}
@@ -332,12 +746,13 @@ const SchoolProfilePage = () => {
                       <span className="text-sm sm:text-base text-gray-700 font-medium">Board:</span>
                     </div>
                     {isEditing ? (
-                      <input
-                        type="text"
+                      <select
                         value={profileData.board}
                         onChange={(e) => handleInputChange('board', e.target.value)}
                         className="font-medium text-[#257B5A] border border-gray-300 rounded px-2 py-1 text-sm sm:text-base focus:ring-2 focus:ring-[#257B5A] focus:border-transparent flex-1"
-                      />
+                      >
+                        {boardOptions.map(opt => <option key={opt} value={opt}>{opt || 'Select Board'}</option>)}
+                      </select>
                     ) : (
                       <span className="font-medium text-[#257B5A] text-sm sm:text-base">{profileData.board}</span>
                     )}
@@ -348,12 +763,13 @@ const SchoolProfilePage = () => {
                       <span className="text-sm sm:text-base text-gray-700 font-medium">Medium:</span>
                     </div>
                     {isEditing ? (
-                      <input
-                        type="text"
+                      <select
                         value={profileData.medium}
                         onChange={(e) => handleInputChange('medium', e.target.value)}
                         className="font-medium text-[#257B5A] border border-gray-300 rounded px-2 py-1 text-sm sm:text-base focus:ring-2 focus:ring-[#257B5A] focus:border-transparent flex-1"
-                      />
+                      >
+                        {mediumOptions.map(opt => <option key={opt} value={opt}>{opt || 'Select Medium'}</option>)}
+                      </select>
                     ) : (
                       <span className="font-medium text-[#257B5A] text-sm sm:text-base">{profileData.medium}</span>
                     )}
@@ -366,12 +782,13 @@ const SchoolProfilePage = () => {
                       <span className="text-sm sm:text-base text-gray-700 font-medium">Category:</span>
                     </div>
                     {isEditing ? (
-                      <input
-                        type="text"
+                      <select
                         value={profileData.category}
                         onChange={(e) => handleInputChange('category', e.target.value)}
                         className="font-medium text-[#257B5A] border border-gray-300 rounded px-2 py-1 text-sm sm:text-base focus:ring-2 focus:ring-[#257B5A] focus:border-transparent flex-1"
-                      />
+                      >
+                        {categoryOptions.map(opt => <option key={opt} value={opt}>{opt || 'Select Category'}</option>)}
+                      </select>
                     ) : (
                       <span className="font-medium text-[#257B5A] text-sm sm:text-base">{profileData.category}</span>
                     )}
@@ -650,49 +1067,11 @@ const SchoolProfilePage = () => {
                     )}
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <Globe className="text-[#257B5A] mt-1 flex-shrink-0" size={16} />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-800 text-sm sm:text-base mb-1">Website</p>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={profileData.website}
-                        onChange={(e) => handleInputChange('website', e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#257B5A] focus:border-transparent text-sm sm:text-base"
-                      />
-                    ) : (
-                      <p className="text-[#257B5A] hover:underline cursor-pointer text-sm sm:text-base break-all">{profileData.website}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Principal Information */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">Administration</h2>
-              <div className="flex items-start gap-3 p-3 sm:p-4 bg-gray-50 rounded-lg">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#257B5A] rounded-full flex items-center justify-center flex-shrink-0">
-                  <Users className="text-white" size={16} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-800 text-sm sm:text-base mb-1">Principal</p>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={profileData.principalName}
-                      onChange={(e) => handleInputChange('principalName', e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#257B5A] focus:border-transparent text-sm sm:text-base"
-                    />
-                  ) : (
-                    <p className="text-gray-600 text-sm sm:text-base break-words">{profileData.principalName}</p>
-                  )}
-                </div>
               </div>
             </div>
           </div>
         </div>
+        {showEditModal && <EditModal />}
       </div>
     </div>
   );

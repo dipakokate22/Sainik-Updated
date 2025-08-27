@@ -3,25 +3,44 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://resume.zih
 // Register API
 export const registerUser = async (userData) => {
   try {
+    const payload = {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      mobile: userData.mobile,
+      email: userData.email,
+      role: userData.role,
+      password: userData.password,
+    };
+
     const response = await fetch(`${API_BASE_URL}/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        mobile: userData.mobile,
-        email: userData.email,
-        role: userData.role,
-        password: userData.password
-      })
+      body: JSON.stringify(payload)
     });
 
-    const data = await response.json();
-    
+    let data;
+    try {
+      data = await response.json();
+    } catch (jsonError) {
+      // If response is not JSON, show a generic error
+      throw new Error('Server error: Invalid response format');
+    }
+
     if (!response.ok) {
       throw new Error(data.message || 'Registration failed');
+    }
+
+    // Store response in localStorage (similar to login)
+    if (data && data.jwttoken) {
+      localStorage.setItem('authToken', data.jwttoken);
+      localStorage.setItem('userRole', data.role);
+      localStorage.setItem('userId', data.id);
+      localStorage.setItem('firstName', data.firstName || '');
+      localStorage.setItem('lastName', data.lastName || '');
+      localStorage.setItem('email', data.email || '');
+      localStorage.setItem('mobile', data.mobile || '');
     }
 
     return data;
@@ -152,4 +171,25 @@ export const logout = () => {
 // Check if user is authenticated
 export const isAuthenticated = () => {
   return !!getAuthToken();
+};
+
+// Contact Form API
+export const submitContactForm = async (contactData) => {
+  try {
+    const response = await fetch('https://sainik.codekrafters.in/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(contactData),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to submit contact form');
+    }
+    return data;
+  } catch (error) {
+    console.error('Contact form error:', error);
+    throw error;
+  }
 };
