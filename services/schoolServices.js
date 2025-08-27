@@ -1,7 +1,7 @@
 import { getAuthToken } from './authServices';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://resume.zihcc.in/api';
-const SEARCH_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://resume.zihcc.in/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
+const SEARCH_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
 
 // Get All Schools List
 export const getAllSchools = async () => {

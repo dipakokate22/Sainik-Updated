@@ -6,7 +6,7 @@ import { getAuthToken, getUserId } from './authServices';
  * @returns {Promise<Object>} - API response.
  */
 export const createSchool = async (schoolData) => {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://resume.zihcc.in/api';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
   const url = `${API_BASE_URL}/user/schools`;
   const token = getAuthToken();
   const userId = getUserId();
@@ -81,7 +81,7 @@ export const createSchool = async (schoolData) => {
  * @returns {Promise<Object>} - School info response.
  */
 export const getSchoolInfo = async () => {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://resume.zihcc.in/api';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
   const url = `${API_BASE_URL}/user/schools`;
   const token = getAuthToken();
 
