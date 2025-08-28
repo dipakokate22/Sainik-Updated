@@ -41,7 +41,7 @@ const NewsDetailsPage = () => {
   const [contact, setContact] = useState({
     name: '',
     email: '',
-    number: '',
+    number: '', // Already using the correct field name
     message: '',
   });
   const [contactLoading, setContactLoading] = useState(false);
@@ -107,8 +107,8 @@ const NewsDetailsPage = () => {
   return (
     <>
       <Navbar />
-  <div className="min-h-screen w-full overflow-x-hidden">
-  <div className="max-w-7xl mx-auto px-2 sm:px-6 py-12 pt-32 flex flex-col md:flex-row gap-10">
+      <div className="min-h-screen w-full overflow-x-hidden">
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 py-12 pt-32 flex flex-col md:flex-row gap-10">
           {/* Main News Content */}
           <div className="w-full md:w-2/3 bg-white rounded-lg shadow-lg p-6 md:p-8">
             <Image
@@ -156,55 +156,93 @@ const NewsDetailsPage = () => {
           <div className="w-full md:w-1/3 max-w-md flex-shrink-0 flex flex-col gap-8">
             {/* Contact Form Section */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-bold mb-2 text-[#10744E] text-center">Quick Contact</h2>
-              <form onSubmit={handleContactSubmit} className="space-y-3">
-                <input
-                  type="text"
-                  name="name"
-                  value={contact.name}
-                  onChange={handleContactChange}
-                  placeholder="Name"
-                  required
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#10744E]"
-                />
-                <input
-                  type="email"
-                  name="email"
-                  value={contact.email}
-                  onChange={handleContactChange}
-                  placeholder="Email"
-                  required
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#10744E]"
-                />
-                <input
-                  type="text"
-                  name="number"
-                  value={contact.number}
-                  onChange={handleContactChange}
-                  placeholder="Mobile Number"
-                  required
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#10744E]"
-                />
-                <textarea
-                  name="message"
-                  value={contact.message}
-                  onChange={handleContactChange}
-                  placeholder="Message"
-                  required
-                  rows={2}
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#10744E]"
-                />
+              <h2 className="text-xl font-bold mb-4 text-[#10744E] text-center">Quick Contact</h2>
+              <form onSubmit={handleContactSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="name" className="block text-[16px] text-gray-700 font-medium">
+                    Your Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    value={contact.name}
+                    onChange={handleContactChange}
+                    placeholder="Enter your name"
+                    required
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#10744E] text-gray-800"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="email" className="block text-[16px] text-gray-700 font-medium">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    value={contact.email}
+                    onChange={handleContactChange}
+                    placeholder="Enter your email"
+                    required
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#10744E] text-gray-800"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="number" className="block text-[16px] text-gray-700 font-medium">
+                    Mobile Number
+                  </label>
+                  <input
+                    type="text"
+                    name="number"
+                    id="number"
+                    value={contact.number}
+                    onChange={handleContactChange}
+                    placeholder="Enter your number"
+                    required
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#10744E] text-gray-800"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="message" className="block text-[16px] text-gray-700 font-medium">
+                    Message
+                  </label>
+                  <textarea
+                    name="message"
+                    id="message"
+                    value={contact.message}
+                    onChange={handleContactChange}
+                    placeholder="Enter your message"
+                    required
+                    rows={3}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#10744E] text-gray-800 resize-none"
+                  />
+                </div>
+                
                 <button
                   type="submit"
                   disabled={contactLoading}
-                  className="w-full bg-[#10744E] text-white font-semibold py-2 rounded hover:bg-[#0e5c3c] transition"
+                  className="w-full bg-[#10744E] text-white font-semibold py-3 px-6 rounded-lg hover:bg-[#0e5c3c] transition"
                 >
-                  {contactLoading ? 'Sending...' : 'Send'}
+                  {contactLoading ? 'Sending...' : 'Send Message'}
                 </button>
-                {contactSuccess && <div className="text-green-600 text-center mt-2">{contactSuccess}</div>}
-                {contactError && <div className="text-red-600 text-center mt-2">{contactError}</div>}
+                
+                {contactSuccess && (
+                  <div className="mt-3 p-3 bg-green-100 text-green-800 rounded-lg text-center">
+                    {contactSuccess}
+                  </div>
+                )}
+                {contactError && (
+                  <div className="mt-3 p-3 bg-red-100 text-red-800 rounded-lg text-center">
+                    {contactError}
+                  </div>
+                )}
               </form>
             </div>
+            
             {/* Related News Cards */}
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-bold mb-4 text-[#10744E] text-center">Related News</h2>

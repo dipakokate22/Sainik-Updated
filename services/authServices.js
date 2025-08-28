@@ -176,12 +176,21 @@ export const isAuthenticated = () => {
 // Contact Form API
 export const submitContactForm = async (contactData) => {
   try {
-    const response = await fetch('https://sainik.codekrafters.in/api/contact', {
+    // Create payload with exact field names matching the API requirements
+    const payload = {
+      name: contactData.name,
+      email: contactData.email,
+      number: contactData.number,
+      message: contactData.message
+      // Category is omitted as it's not in the required payload format
+    };
+    
+    const response = await fetch(`${API_BASE_URL}/contact`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(contactData),
+      body: JSON.stringify(payload),
     });
     const data = await response.json();
     if (!response.ok) {

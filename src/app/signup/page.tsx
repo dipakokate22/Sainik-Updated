@@ -174,6 +174,7 @@ export default function SignupPage() {
       if (result.status || result.jwttoken) {
         // Registration successful
         alert('Registration successful!');
+        window.dispatchEvent(new Event('authChanged'));
         router.push('/'); // Go to home page
       } else {
         setError(result.message || 'Registration failed. Please try again.');
