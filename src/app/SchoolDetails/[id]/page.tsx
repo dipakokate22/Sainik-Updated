@@ -38,6 +38,9 @@ import Footer from '../../../Components/Footer';
 import { getSchoolById } from '../../../../services/schoolServices';
 import { searchSchoolsByCoordinates } from '../../../../services/schoolServices';
 
+// Function to check if a URL is external
+const isExternalUrl = (url: string) => /^https?:\/\//.test(url);
+
 // Horizontal School Card Component
 const HorizontalSchoolCard = ({ name, image, location, distance, rating }: { 
   name: string; 
@@ -50,13 +53,23 @@ const HorizontalSchoolCard = ({ name, image, location, distance, rating }: {
     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
       {/* School Image */}
       <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-        <Image
-          src={image}
-          alt={name}
-          width={64}
-          height={64}
-          className="w-full h-full object-cover"
-        />
+        {isExternalUrl(image) ? (
+          <img
+            src={image}
+            alt={name}
+            width={64}
+            height={64}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <Image
+            src={image}
+            alt={name}
+            width={64}
+            height={64}
+            className="w-full h-full object-cover"
+          />
+        )}
       </div>
       
       {/* School Info */}
@@ -200,7 +213,7 @@ export default function SchoolDetailSection() {
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
               <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🌟 Key Highlights</h4>
               <ul className="list-disc pl-6 text-[16px] font-regular font-poppins text-black space-y-1">
-                {school.overview?.keyHighlights?.map((highlight: string, idx: number) => (
+                {(Array.isArray(school.overview?.keyHighlights) ? school.overview.keyHighlights : []).map((highlight: string, idx: number) => (
                   <li key={idx}>{highlight}</li>
                 ))}
               </ul>
@@ -209,7 +222,7 @@ export default function SchoolDetailSection() {
             {/* Admission Criteria */}
             <div className="bg-white border rounded-lg  px-4 md:px-[26px] py-[25px]">
               <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">Admission Criteria & Eligibility</h4>
-              {school.overview?.admissionCriteriaEligibility?.map((criteria: string, idx: number) => (
+              {(Array.isArray(school.overview?.admissionCriteriaEligibility) ? school.overview.admissionCriteriaEligibility : []).map((criteria: string, idx: number) => (
                 <li key={idx} className="flex items-start gap-2 text-[16px] text-black">
                   <FiArrowRight className="text-black mt-[3px]" />
                   <span>{criteria}</span>
@@ -685,13 +698,23 @@ export default function SchoolDetailSection() {
             <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 lg:gap-6">
               {/* School Logo */}
               <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 bg-white rounded-2xl p-2 flex-shrink-0 shadow-sm">
-                <Image
-                  src={school.profileImage || "/Listing/Logo.png"}
-                  alt={school.name}
-                  width={120}
-                  height={120}
-                  className="w-full h-full object-contain"
-                />
+                {isExternalUrl(school.profileImage || "") ? (
+                  <img
+                    src={school.profileImage}
+                    alt={school.name}
+                    width={120}
+                    height={120}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <Image
+                    src={school.profileImage || "/Listing/Logo.png"}
+                    alt={school.name}
+                    width={120}
+                    height={120}
+                    className="w-full h-full object-contain"
+                  />
+                )}
               </div>
 
               {/* School Information */}

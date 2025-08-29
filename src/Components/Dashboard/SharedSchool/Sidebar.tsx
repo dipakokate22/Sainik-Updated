@@ -2,7 +2,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
@@ -14,6 +14,8 @@ import {
   TrendingUp,
   IndianRupee,
   ArrowLeft,
+  Mail,
+  Phone,
 } from 'lucide-react';
 
 const menuItems = [
@@ -31,6 +33,36 @@ interface SidebarProps {
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
   const pathname = usePathname() || '';
+
+  // State for user info
+  const [userInfo, setUserInfo] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    mobile: '',
+  });
+
+  useEffect(() => {
+    function updateUserInfo() {
+      const firstName = localStorage.getItem('firstName') || '';
+      const lastName = localStorage.getItem('lastName') || '';
+      const email = localStorage.getItem('email') || '';
+      const mobile = localStorage.getItem('mobile') || '';
+      setUserInfo({
+        firstName,
+        lastName,
+        email,
+        mobile,
+      });
+    }
+
+    if (typeof window !== 'undefined') {
+      updateUserInfo();
+      // Listen for localStorage changes (e.g., after login)
+      window.addEventListener('storage', updateUserInfo);
+      return () => window.removeEventListener('storage', updateUserInfo);
+    }
+  }, [sidebarOpen]);
 
   return (
     <aside
@@ -57,9 +89,28 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
         <Link href="/SchoolDashboard" className="flex items-center gap-3">
           <Image width={55} height={55} src="/Listing/Logo.png" alt="Logo" className="rounded-md" />
           <span className="text-base sm:text-xl font-semibold text-white leading-tight">
-            Aurora International<br className="hidden sm:block" />Sainik School
+            {(userInfo.firstName || userInfo.lastName)
+              ? `${userInfo.firstName} ${userInfo.lastName}`.trim()
+              : 'Aurora International'}
+            <br className="hidden sm:block" />
           </span>
         </Link>
+      </div>
+
+      {/* Improved user details card */}
+      <div className="px-4 sm:px-6 pb-4">
+        <div className="bg-white/10 rounded-lg p-3 flex flex-col gap-2 shadow">
+          <div className="flex items-center gap-2">
+            <Mail size={16} className="text-white/80" />
+            <span className="text-xs font-medium text-white/90">Email:</span>
+            <span className="text-xs text-white/80 break-all">{userInfo.email}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Phone size={16} className="text-white/80" />
+            <span className="text-xs font-medium text-white/90">Mobile:</span>
+            <span className="text-xs text-white/80">{userInfo.mobile}</span>
+          </div>
+        </div>
       </div>
 
       <nav className="flex-1 px-2 sm:px-4 pb-4 overflow-y-auto">

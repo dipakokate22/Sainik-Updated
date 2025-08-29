@@ -97,9 +97,9 @@ export default function Navbar() {
           <Image 
             src="/Image/Sainik-logo.png" 
             alt="Sainik Logo" 
-            width={120} 
-            height={40} 
-            className="sm:w-[50px] w-[15px]" 
+            width={160} 
+            height={55} 
+            className="h-12 w-auto sm:h-14" // Increased height for mobile
           />
 
          {/* Desktop Only */}

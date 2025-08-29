@@ -14,23 +14,44 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    fullName: '',
+  const [formData, setFormData] = useState<{
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    phoneNumber: string;
+    agreeToTerms: boolean;
+    website: string;
+    image?: File | null;
+    schoolName: string;
+  }>({
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    schoolName: '',
     phoneNumber: '',
-    agreeToTerms: false
+    agreeToTerms: false,
+    website: '',
+    image: null,
+    schoolName: ''
   });
   const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({});
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
-    });
+    const { name, value, type, checked, files } = e.target;
+    if (type === 'file') {
+      setFormData({
+        ...formData,
+        [name]: files && files.length > 0 ? files[0] : null
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === 'checkbox' ? checked : value
+      });
+    }
     
     // Clear field error when user starts typing
     if (fieldErrors[name]) {
@@ -44,11 +65,18 @@ export default function SignupPage() {
   const validateForm = () => {
     const errors: {[key: string]: string} = {};
     
-    // Full name validation
-    if (!formData.fullName.trim()) {
-      errors.fullName = isStudent ? 'Full name is required' : 'School name is required';
-    } else if (formData.fullName.trim().length < 2) {
-      errors.fullName = 'Name must be at least 2 characters long';
+    // Student validation
+    if (isStudent) {
+      if (!formData.firstName.trim()) {
+        errors.firstName = 'First name is required';
+      }
+      if (!formData.lastName.trim()) {
+        errors.lastName = 'Last name is required';
+      }
+    } else {
+      if (!formData.schoolName.trim()) {
+        errors.schoolName = 'School name is required';
+      }
     }
     
     // Email validation
@@ -90,6 +118,23 @@ export default function SignupPage() {
       errors.agreeToTerms = 'You must agree to the terms and conditions';
     }
     
+    // Website validation for schools
+    if (!isStudent) {
+      if (!formData.website.trim()) {
+        errors.website = 'Website is required for schools';
+      }
+    }
+    // Image validation (optional, but check type/size if provided)
+    if (formData.image) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      if (!allowedTypes.includes(formData.image.type)) {
+        errors.image = 'Only JPG, JPEG, or PNG files are allowed';
+      }
+      if (formData.image.size > 2 * 1024 * 1024) {
+        errors.image = 'Image size must be less than 2MB';
+      }
+    }
+    
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -97,7 +142,6 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
     // Validate form
     if (!validateForm()) {
       setError('Please fix the errors below and try again.');
@@ -105,28 +149,33 @@ export default function SignupPage() {
     }
 
     setIsLoading(true);
-    
+
     try {
-      // Split full name into first and last name
-      const nameParts = formData.fullName.trim().split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
-      
+      let firstName = '';
+      let lastName = '';
+      if (isStudent) {
+        firstName = formData.firstName.trim();
+        lastName = formData.lastName.trim();
+      } else {
+        const nameParts = formData.schoolName.trim().split(' ');
+        firstName = nameParts[0] || '';
+        lastName = nameParts.slice(1).join(' ') || '';
+      }
       const userData = {
         firstName,
         lastName,
-        mobile: formData.phoneNumber || '0000000000', // Default for students
+        mobile: formData.phoneNumber || '',
         email: formData.email,
         role: isStudent ? 'student' : 'school',
         password: formData.password
       };
-
       const result = await registerUser(userData);
-      
-      if (result.status) {
+
+      if (result.status || result.jwttoken) {
         // Registration successful
-        alert('Registration successful! Please login to continue.');
-        router.push('/login');
+        alert('Registration successful!');
+        window.dispatchEvent(new Event('authChanged'));
+        router.push('/'); // Go to home page
       } else {
         setError(result.message || 'Registration failed. Please try again.');
       }
@@ -193,27 +242,73 @@ export default function SignupPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Full Name / School Name Field */}
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-semibold text-gray-800 mb-2">
-                {isStudent ? 'Full Name' : 'School Name'}
-              </label>
-              <input
+            {/* Student: First Name & Last Name */}
+            {isStudent ? (
+              <>
+                <div>
+                  <label htmlFor="firstName" className="block text-sm font-semibold text-gray-800 mb-2">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                      fieldErrors.firstName ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter your first name"
+                    required
+                  />
+                  {fieldErrors.firstName && (
+                    <p className="mt-1 text-sm text-red-600">{fieldErrors.firstName}</p>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="lastName" className="block text-sm font-semibold text-gray-800 mb-2">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                      fieldErrors.lastName ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter your last name"
+                    required
+                  />
+                  {fieldErrors.lastName && (
+                    <p className="mt-1 text-sm text-red-600">{fieldErrors.lastName}</p>
+                  )}
+                </div>
+              </>
+            ) : (
+              // School: Only School Name
+              <div>
+                <label htmlFor="schoolName" className="block text-sm font-semibold text-gray-800 mb-2">
+                  School Name
+                </label>
+                <input
                   type="text"
-                  id="fullName"
-                  name="fullName"
-                  value={formData.fullName}
+                  id="schoolName"
+                  name="schoolName"
+                  value={formData.schoolName}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
-                    fieldErrors.fullName ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    fieldErrors.schoolName ? 'border-red-500 bg-red-50' : 'border-gray-300'
                   }`}
-                  placeholder={`Enter ${isStudent ? 'your full name' : 'school name'}`}
+                  placeholder="Enter school name"
                   required
                 />
-                {fieldErrors.fullName && (
-                  <p className="mt-1 text-sm text-red-600">{fieldErrors.fullName}</p>
+                {fieldErrors.schoolName && (
+                  <p className="mt-1 text-sm text-red-600">{fieldErrors.schoolName}</p>
                 )}
-            </div>
+              </div>
+            )}
 
             {/* Email Field */}
             <div>
@@ -221,20 +316,20 @@ export default function SignupPage() {
                 Email Address
               </label>
               <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
-                    fieldErrors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                  }`}
-                  placeholder={`Enter your ${isStudent ? 'student' : 'official'} email`}
-                  required
-                />
-                {fieldErrors.email && (
-                  <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
-                )}
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                  fieldErrors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
+                placeholder={`Enter your ${isStudent ? 'student' : 'official'} email`}
+                required
+              />
+              {fieldErrors.email && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
+              )}
             </div>
 
             {/* Phone Number Field (for schools) */}
@@ -344,6 +439,50 @@ export default function SignupPage() {
               </div>
               {fieldErrors.confirmPassword && (
                 <p className="mt-1 text-sm text-red-600">{fieldErrors.confirmPassword}</p>
+              )}
+            </div>
+
+            {/* Website Field (for schools) */}
+            {!isStudent && (
+              <div>
+                <label htmlFor="website" className="block text-sm font-semibold text-gray-800 mb-2">
+                  School Website
+                </label>
+                <input
+                  type="text"
+                  id="website"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                    fieldErrors.website ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                  }`}
+                  placeholder="Enter school website"
+                  required
+                />
+                {fieldErrors.website && (
+                  <p className="mt-1 text-sm text-red-600">{fieldErrors.website}</p>
+                )}
+              </div>
+            )}
+
+            {/* Image Upload Field */}
+            <div>
+              <label htmlFor="image" className="block text-sm font-semibold text-gray-800 mb-2">
+                Profile Image (JPG/JPEG/PNG, max 2MB)
+              </label>
+              <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/jpeg,image/png,image/jpg"
+                onChange={handleInputChange}
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors ${
+                  fieldErrors.image ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
+              />
+              {fieldErrors.image && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.image}</p>
               )}
             </div>
 

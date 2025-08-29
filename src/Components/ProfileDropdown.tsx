@@ -7,10 +7,10 @@ import { getUserRole, logout, isAuthenticated } from '../../services/authService
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAuth, setIsAuth] = useState(isAuthenticated());
+  const [userRole, setUserRole] = useState(getUserRole());
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const userRole = getUserRole();
-  const isUserAuthenticated = isAuthenticated();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -21,6 +21,21 @@ const ProfileDropdown = () => {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const updateAuth = () => {
+      setIsAuth(isAuthenticated());
+      setUserRole(getUserRole());
+    };
+    window.addEventListener('storage', updateAuth);
+    // Optionally, listen for a custom event after signup
+    window.addEventListener('authChanged', updateAuth);
+
+    return () => {
+      window.removeEventListener('storage', updateAuth);
+      window.removeEventListener('authChanged', updateAuth);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -45,7 +60,7 @@ const ProfileDropdown = () => {
       {isOpen && (
         <div className="absolute top-[70px] right-0 w-56 bg-[#1C1F24] text-white rounded-xl shadow-xl p-2 z-50">
           <ul className="space-y-1 text-sm">
-            {isUserAuthenticated ? (
+            {isAuth ? (
               // Authenticated user options
               <>
                 <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
@@ -70,11 +85,11 @@ const ProfileDropdown = () => {
                     <LogIn size={16} /> Sign In
                   </Link>
                 </li>
-                <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
+                {/* <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                   <Link href="/signup" onClick={() => setIsOpen(false)} className="flex items-center gap-3">
                     <UserPlus size={16} /> Sign Up
                   </Link>
-                </li>
+                </li> */}
               </>
             )}
           </ul>
