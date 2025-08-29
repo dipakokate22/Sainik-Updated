@@ -37,6 +37,7 @@ const Sidebar = ({ activePage }: SidebarProps) => {
     name: '',
     studentId: '',
     signupDate: '',
+    image: '', // <-- add image field
   });
 
   useEffect(() => {
@@ -44,6 +45,7 @@ const Sidebar = ({ activePage }: SidebarProps) => {
       const name = localStorage.getItem('firstName') || '';
       const studentId = localStorage.getItem('studentId') || '';
       let signupDate = localStorage.getItem('signupDate') || '';
+      const image = localStorage.getItem('studentImage') || '';
       // Format signupDate to DD-MM-YYYY if present
       if (signupDate) {
         try {
@@ -57,6 +59,7 @@ const Sidebar = ({ activePage }: SidebarProps) => {
         name,
         studentId,
         signupDate,
+        image,
       });
     }
   }, []);
@@ -113,7 +116,19 @@ const Sidebar = ({ activePage }: SidebarProps) => {
           <span>Back to Website</span>
         </Link>
         <div className="flex justify-center py-4">
-          <img src="/Image/Sainik-logo.jpg" alt="Logo" className="w-[127px] h-[130px] rounded-[5px]" />
+          {studentInfo.image ? (
+            <img
+              src={studentInfo.image.replace(/^http:/, 'https:')}
+              alt="Student"
+              className="w-[127px] h-[130px] rounded-[5px] border-2 border-white object-cover mb-2"
+            />
+          ) : (
+            <div className="w-[127px] h-[130px] rounded-[5px] border-2 border-white bg-[#e2e8f0] flex items-center justify-center mb-2">
+              <span className="text-5xl font-bold text-[#257B5A]">
+                {studentInfo.name ? studentInfo.name.charAt(0).toUpperCase() : 'S'}
+              </span>
+            </div>
+          )}
         </div>
         <div className="text-sm space-y-1">
           <h2 className="font-medium text-lg">
@@ -155,3 +170,6 @@ const Sidebar = ({ activePage }: SidebarProps) => {
 };
 
 export default Sidebar;
+
+
+

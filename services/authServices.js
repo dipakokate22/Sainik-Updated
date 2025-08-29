@@ -152,6 +152,10 @@ export const studentLogin = async (loginData) => {
       // Store studentId and signupDate for sidebar
       localStorage.setItem('studentId', data.id ? String(data.id) : '');
       localStorage.setItem('signupDate', data.created_at || '');
+      // Store image URL if present
+      if (data.image) {
+        localStorage.setItem('studentImage', data.image);
+      }
     }
 
     return data;

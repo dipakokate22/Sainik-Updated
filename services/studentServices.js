@@ -11,14 +11,36 @@ export async function getStudentProfile(id) {
 
 export async function updateStudentProfile(id, payload) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
-  const res = await fetch(`https://sainik.codekrafters.in/api/student/profile`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify({ ...payload, id }),
-  });
+  let res;
+  if (payload.imageFile) {
+    // If imageFile is present, use FormData
+    const formData = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+      if (key === 'imageFile') {
+        formData.append('image', value); // API expects 'image'
+      } else {
+        formData.append(key, value);
+      }
+    });
+    formData.append('id', id);
+    res = await fetch(`https://sainik.codekrafters.in/api/student/profile`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        // Do not set Content-Type for FormData; browser sets it automatically
+      },
+      body: formData,
+    });
+  } else {
+    res = await fetch(`https://sainik.codekrafters.in/api/student/profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ...payload, id }),
+    });
+  }
   if (!res.ok) throw new Error('Failed to update profile');
   return res.json();
 }
