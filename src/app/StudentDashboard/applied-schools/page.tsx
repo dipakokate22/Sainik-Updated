@@ -22,15 +22,22 @@ const AppliedSchoolsPage = () => {
   const [appliedSchools, setAppliedSchools] = useState<any[]>([]);
   const [availableSchools, setAvailableSchools] = useState<any[]>([]); // <-- Use state for schools
   const [selectedPreference, setSelectedPreference] = useState(1);
+  const [userId, setUserId] = useState<number | null>(null);
 
-  // Replace hardcoded user_id with actual user id if available
-  const user_id = localStorage.getItem('studentId') ? parseInt(localStorage.getItem('studentId') as string, 10) : 2;
+  // Set userId from localStorage on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const id = localStorage.getItem('studentId');
+      setUserId(id ? parseInt(id, 10) : 2);
+    }
+  }, []);
 
   // Fetch applied schools from API
   useEffect(() => {
     async function fetchAppliedSchools() {
+      if (userId === null) return;
       try {
-        const res = await getAppliedStudentsByUser(user_id);
+        const res = await getAppliedStudentsByUser(userId);
         // API response: { success, message, data: [...] }
         if (res.success && Array.isArray(res.data)) {
           // Map API data to UI format
@@ -52,7 +59,7 @@ const AppliedSchoolsPage = () => {
       }
     }
     fetchAppliedSchools();
-  }, []);
+  }, [userId]);
 
   // Fetch available schools from API
   useEffect(() => {
@@ -185,7 +192,8 @@ const AppliedSchoolsPage = () => {
         status: 'withdrawn',
       });
       // Refresh list after withdrawal
-      const res = await getAppliedStudentsByUser(user_id);
+      if (userId === null) return;
+      const res = await getAppliedStudentsByUser(userId);
       if (res.success && Array.isArray(res.data)) {
         setAppliedSchools(res.data.map((app: any) => ({
           id: app.id,
