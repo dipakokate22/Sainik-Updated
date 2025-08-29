@@ -167,7 +167,8 @@ export default function SignupPage() {
         mobile: formData.phoneNumber || '',
         email: formData.email,
         role: isStudent ? 'student' : 'school',
-        password: formData.password
+        password: formData.password,
+        image: formData.image || null
       };
       const result = await registerUser(userData);
 
@@ -175,12 +176,14 @@ export default function SignupPage() {
         // Registration successful
         alert('Registration successful!');
         window.dispatchEvent(new Event('authChanged'));
-        router.push('/'); // Go to home page
+        router.push('/login');
       } else {
+        // Show API error message
         setError(result.message || 'Registration failed. Please try again.');
       }
     } catch (error: any) {
-      setError(error.message || 'Registration failed. Please try again.');
+      // Show API error message
+      setError(error?.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

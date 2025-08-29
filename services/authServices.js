@@ -3,29 +3,51 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.cod
 // Register API
 export const registerUser = async (userData) => {
   try {
-    const payload = {
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      mobile: userData.mobile,
-      email: userData.email,
-      role: userData.role,
-      password: userData.password,
-    };
+    let response, data;
+    // If image is present, use FormData
+    if (userData.image) {
+      const formData = new FormData();
+      formData.append('firstName', userData.firstName);
+      formData.append('lastName', userData.lastName);
+      formData.append('mobile', userData.mobile);
+      formData.append('email', userData.email);
+      formData.append('role', userData.role);
+      formData.append('password', userData.password);
+      formData.append('image', userData.image);
 
-    const response = await fetch(`${API_BASE_URL}/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    });
+      response = await fetch(`${API_BASE_URL}/register`, {
+        method: 'POST',
+        body: formData
+      });
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        throw new Error('Server error: Invalid response format');
+      }
+    } else {
+      const payload = {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        mobile: userData.mobile,
+        email: userData.email,
+        role: userData.role,
+        password: userData.password,
+      };
 
-    let data;
-    try {
-      data = await response.json();
-    } catch (jsonError) {
-      // If response is not JSON, show a generic error
-      throw new Error('Server error: Invalid response format');
+      response = await fetch(`${API_BASE_URL}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        // If response is not JSON, show a generic error
+        throw new Error('Server error: Invalid response format');
+      }
     }
 
     if (!response.ok) {
@@ -41,6 +63,10 @@ export const registerUser = async (userData) => {
       localStorage.setItem('lastName', data.lastName || '');
       localStorage.setItem('email', data.email || '');
       localStorage.setItem('mobile', data.mobile || '');
+      // Optionally store image URL if returned
+      if (data.image) {
+        localStorage.setItem('image', data.image);
+      }
     }
 
     return data;
