@@ -36,8 +36,8 @@ const ProfilePage = () => {
   };
   
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [editOpen, setEditOpen] = useState(false);
-  const [form, setForm] = useState<Profile>({});
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [fieldValue, setFieldValue] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -45,27 +45,24 @@ const ProfilePage = () => {
     if (!studentId) return;
     getStudentProfile(studentId).then(data => {
       setProfile(data.data || data); // adapt to API response
-      setForm(data.data || data);
     });
   }, [studentId]);
 
-  const handleEdit = () => setEditOpen(true);
-  const handleClose = () => setEditOpen(false);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setForm(f => ({ ...f, [name]: value }));
+    setProfile(f => ({ ...f, [name]: value }));
   };
 
   const handleSave = async () => {
     setLoading(true);
     try {
-      const res = await updateStudentProfile(studentId, form); // This calls the PUT service
-      setMessage(res.message);
-      setProfile(form);
-      setEditOpen(false);
-    } catch (e) {
-      setMessage('Failed to update profile');
+      const updated = { ...profile, [editingField!]: fieldValue };
+      const res = await updateStudentProfile(studentId, updated);
+      setProfile(updated);
+      setMessage('Saved!');
+      setEditingField(null);
+    } catch {
+      setMessage('Failed to update');
     }
     setLoading(false);
   };
@@ -89,6 +86,80 @@ const ProfilePage = () => {
     { label: 'Academic Year', value: profile.academic_year },
     { label: 'Admission Date', value: profile.admission_date || '-' },
   ];
+
+  // Helper for rendering inline editable field
+  const renderEditableField = (
+    field: string,
+    value: string | undefined,
+    icon?: React.ReactNode,
+    type: 'text' | 'date' | 'select' = 'text',
+    options?: string[]
+  ) => {
+    const isEditing = editingField === field;
+    return (
+      <div className="group flex items-center gap-2 w-full">
+        {icon && <span className="text-[#257B5A]">{icon}</span>}
+        <p className="text-sm font-medium text-gray-500">{field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+        <div className="flex-1 ml-2 flex items-center">
+          {isEditing ? (
+            <div className="flex items-center gap-2">
+              {type === 'select' ? (
+                <select
+                  className="border rounded-lg px-2 py-1 text-gray-900 bg-gray-50"
+                  value={fieldValue}
+                  onChange={e => setFieldValue(e.target.value)}
+                >
+                  <option value="">Select</option>
+                  {options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                </select>
+              ) : (
+                <input
+                  type={type}
+                  className="border rounded-lg px-2 py-1 text-gray-900 bg-gray-50"
+                  value={fieldValue}
+                  onChange={e => setFieldValue(e.target.value)}
+                />
+              )}
+              <button
+                className="text-green-600 hover:bg-green-100 rounded-full p-1"
+                onClick={handleSave}
+                disabled={loading}
+                title="Save"
+              >
+                ✓
+              </button>
+              <button
+                className="text-red-600 hover:bg-red-100 rounded-full p-1"
+                onClick={() => {
+                  setEditingField(null);
+                  setFieldValue('');
+                }}
+                disabled={loading}
+                title="Cancel"
+              >
+                ✗
+              </button>
+            </div>
+          ) : (
+            <>
+              <span className="text-gray-800 font-medium">{value || '-'}</span>
+              <button
+                className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity text-[#257B5A] hover:bg-gray-100 rounded-full p-1"
+                onClick={() => {
+                  setEditingField(field);
+                  setFieldValue(value || '');
+                  setMessage('');
+                }}
+                title="Edit"
+              >
+                <Edit size={16} />
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className={`relative bg-[#F7F1EE] min-h-screen ${poppins.className}`}>
@@ -118,25 +189,21 @@ const ProfilePage = () => {
               <div className="flex-1">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between">
                   <div>
-                    <h1 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-2">
-                      {profile.firstName} {profile.lastName}
-                    </h1>
-                    <div className="flex items-center gap-2 text-gray-600 mb-3">
-                      <GraduationCap size={18} className="text-[#257B5A]" />
-                      <span className="text-lg">{profile.current_class}</span>
+                    <div className="flex flex-col gap-2">
+                      {renderEditableField('firstName', profile.firstName)}
+                      {renderEditableField('lastName', profile.lastName)}
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <div className="flex items-center gap-2 text-gray-600 mb-3 mt-2">
+                      <GraduationCap size={18} className="text-[#257B5A]" />
+                      <div className="flex-1">
+                        {renderEditableField('current_class', profile.current_class, undefined, 'select', classOptions)}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-500 mt-2">
                       <User size={14} />
                       <span>Student ID: {profile.student_id || 'SK2025001'}</span>
                     </div>
                   </div>
-                  <button
-                    className="mt-4 md:mt-0 px-4 py-2 bg-[#257B5A] text-white rounded-lg hover:bg-[#1e6b4a] transition-colors flex items-center gap-2"
-                    onClick={handleEdit}
-                  >
-                    <Edit size={16} />
-                    Edit Profile
-                  </button>
                 </div>
               </div>
             </div>
@@ -148,18 +215,19 @@ const ProfilePage = () => {
                 <GraduationCap size={20} className="text-[#257B5A]" />
                 Academic Information
               </h2>
-              <button className="p-2 text-gray-400 hover:text-[#257B5A] hover:bg-gray-50 rounded-lg transition-colors">
-                <Edit size={18} />
-              </button>
             </div>
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {academicInfo.map(({ label, value }, idx) => (
-                  <div key={idx} className="space-y-1">
-                    <p className="text-sm font-medium text-gray-500">{label}</p>
-                    <p className="text-gray-800 font-medium">{value}</p>
-                  </div>
-                ))}
+                {renderEditableField('academic_year', profile.academic_year)}
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Student ID</p>
+                  <p className="text-gray-800 font-medium">{profile.student_id || 'SK2025001'}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Admission Date</p>
+                  <p className="text-gray-800 font-medium">{profile.admission_date || '-'}</p>
+                  <p className="text-xs text-gray-400 mt-1">Admission date is set at creation and cannot be changed.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -170,156 +238,22 @@ const ProfilePage = () => {
                 <User size={20} className="text-[#257B5A]" />
                 Personal Information
               </h2>
-              <button className="p-2 text-gray-400 hover:text-[#257B5A] hover:bg-gray-50 rounded-lg transition-colors">
-                <Edit size={18} />
-              </button>
             </div>
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {personalInfo.map(({ label, value, icon }, idx) => (
-                  <div key={idx} className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[#257B5A]">{icon}</span>
-                      <p className="text-sm font-medium text-gray-500">{label}</p>
-                    </div>
-                    <p className="text-gray-800 font-medium ml-6">{value}</p>
-                  </div>
-                ))}
+                {renderEditableField('email', profile.email, <Mail size={16} />)}
+                {renderEditableField('dob', profile.dob, <Calendar size={16} />, 'date')}
+                {renderEditableField('mobile', profile.mobile, <Phone size={16} />)}
+                {renderEditableField('country', profile.country, <Globe size={16} />, 'select', countryOptions)}
+                {renderEditableField('street_address', profile.street_address, <MapPin size={16} />)}
+                {renderEditableField('city', profile.city, <MapPin size={16} />)}
+                {renderEditableField('state', profile.state, <MapPin size={16} />, 'select', stateOptions)}
+                {renderEditableField('zip_code', profile.zip_code, <MapPin size={16} />)}
               </div>
             </div>
           </div>
+          {message && <div className="mt-4 text-center text-green-700 font-semibold">{message}</div>}
         </div>
-        {/* Modal Popup for Edit */}
-        {editOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg">
-              <h2 className="text-2xl font-bold mb-6 text-[#257B5A] text-center">Edit Profile</h2>
-              <div className="space-y-5">
-                <div className="flex gap-4">
-                  <input
-                    name="firstName"
-                    value={form.firstName || ''}
-                    onChange={handleChange}
-                    placeholder="First Name"
-                    className="border rounded-lg px-3 py-2 w-1/2 text-gray-900 text-base font-medium bg-gray-50"
-                  />
-                  <input
-                    name="lastName"
-                    value={form.lastName || ''}
-                    onChange={handleChange}
-                    placeholder="Last Name"
-                    className="border rounded-lg px-3 py-2 w-1/2 text-gray-900 text-base font-medium bg-gray-50"
-                  />
-                </div>
-                <input
-                  name="email"
-                  value={form.email || ''}
-                  onChange={handleChange}
-                  placeholder="Email"
-                  className="border rounded-lg px-3 py-2 w-full text-gray-900 text-base font-medium bg-gray-50"
-                />
-                <input
-                  name="mobile"
-                  value={form.mobile || ''}
-                  onChange={handleChange}
-                  placeholder="Mobile"
-                  className="border rounded-lg px-3 py-2 w-full text-gray-900 text-base font-medium bg-gray-50"
-                />
-                <input
-                  name="dob"
-                  type="date"
-                  value={form.dob || ''}
-                  onChange={handleChange}
-                  className="border rounded-lg px-3 py-2 w-full text-gray-900 text-base font-medium bg-gray-50"
-                />
-                <input
-                  name="street_address"
-                  value={form.street_address || ''}
-                  onChange={handleChange}
-                  placeholder="Street Address"
-                  className="border rounded-lg px-3 py-2 w-full text-gray-900 text-base font-medium bg-gray-50"
-                />
-                <div className="flex gap-4">
-                  <input
-                    name="city"
-                    value={form.city || ''}
-                    onChange={handleChange}
-                    placeholder="City"
-                    className="border rounded-lg px-3 py-2 w-1/2 text-gray-900 text-base font-medium bg-gray-50"
-                  />
-                  <select
-                    name="state"
-                    value={form.state || ''}
-                    onChange={handleChange}
-                    className="border rounded-lg px-3 py-2 w-1/2 text-gray-900 text-base font-medium bg-gray-50"
-                  >
-                    <option value="">Select State</option>
-                    {stateOptions.map(s => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex gap-4">
-                  <input
-                    name="zip_code"
-                    value={form.zip_code || ''}
-                    onChange={handleChange}
-                    placeholder="Zip Code"
-                    className="border rounded-lg px-3 py-2 w-1/2 text-gray-900 text-base font-medium bg-gray-50"
-                  />
-                  <select
-                    name="country"
-                    value={form.country || ''}
-                    onChange={handleChange}
-                    className="border rounded-lg px-3 py-2 w-1/2 text-gray-900 text-base font-medium bg-gray-50"
-                  >
-                    <option value="">Select Country</option>
-                    {countryOptions.map(c => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex gap-4">
-                  <select
-                    name="current_class"
-                    value={form.current_class || ''}
-                    onChange={handleChange}
-                    className="border rounded-lg px-3 py-2 w-1/2 text-gray-900 text-base font-medium bg-gray-50"
-                  >
-                    <option value="">Select Class</option>
-                    {classOptions.map(c => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                  <input
-                    name="academic_year"
-                    value={form.academic_year || ''}
-                    onChange={handleChange}
-                    placeholder="Academic Year"
-                    className="border rounded-lg px-3 py-2 w-1/2 text-gray-900 text-base font-medium bg-gray-50"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-3 mt-8">
-                <button
-                  className="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold text-base"
-                  onClick={handleClose}
-                  disabled={loading}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="px-5 py-2 rounded-lg bg-[#257B5A] text-white hover:bg-[#1e6b4a] font-semibold text-base"
-                  onClick={handleSave}
-                  disabled={loading}
-                >
-                  {loading ? 'Saving...' : 'Save'}
-                </button>
-              </div>
-              {message && <div className="mt-4 text-center text-green-700 font-semibold">{message}</div>}
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );

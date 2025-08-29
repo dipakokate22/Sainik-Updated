@@ -3,8 +3,10 @@ import Image from 'next/image';
 import Sidebar from '../Sidebar';
 import Header from '../Header';
 import { Poppins } from 'next/font/google';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Trash2 } from 'lucide-react';
+import { getAppliedStudentsByUser, updateAppliedStudentStatus } from '../../../../services/studentServices';
+import { getAllSchools } from '../../../../services/schoolServices'; // <-- Import API
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -17,246 +19,88 @@ const AppliedSchoolsPage = () => {
   const [showAllSchoolsModal, setShowAllSchoolsModal] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [selectedSchool, setSelectedSchool] = useState<any>(null);
-  const [appliedSchools, setAppliedSchools] = useState([
-    { id: 1, school: 'Army Public School', location: 'Delhi', appliedDate: '15-06-2025', status: 'Applied', preference: 1 },
-    { id: 2, school: 'Sainik Public School', location: 'Mumbai', appliedDate: '15-06-2025', status: 'Applied', preference: 2 },
-    { id: 3, school: 'Defence Public School', location: 'Chennai', appliedDate: '15-06-2025', status: 'Applied', preference: 3 },
-  ]);
+  const [appliedSchools, setAppliedSchools] = useState<any[]>([]);
+  const [availableSchools, setAvailableSchools] = useState<any[]>([]); // <-- Use state for schools
   const [selectedPreference, setSelectedPreference] = useState(1);
 
-  const availableSchools = [
-    { 
-      id: 1, 
-      name: 'Army Public School', 
-      location: 'Delhi', 
-      grade: '1st-12th', 
-      type: 'Military', 
-      board: 'CBSE',
-      medium: 'English',
-      category: 'Co-Ed',
-      rating: 4.8,
-      distance: 2.5,
-      logo: '/student_dashboard/school1.png',
-      image: '/student_dashboard/school1.png',
-      description: 'A premier military school with excellent academic standards and discipline.',
-      facilities: ['Library', 'Sports Complex', 'Computer Lab', 'Science Lab'],
-      fees: '₹50,000 per year',
-      contact: '+91-11-12345678',
-      email: 'info@armypublicschool.edu.in'
-    },
-    { 
-      id: 2, 
-      name: 'Sainik Public School', 
-      location: 'Mumbai', 
-      grade: '1st-12th', 
-      type: 'Military',
-      board: 'CBSE',
-      medium: 'English',
-      category: 'Boys',
-      rating: 4.7,
-      distance: 3.2,
-      logo: '/student_dashboard/school2.png',
-      image: '/student_dashboard/school2.png',
-      description: 'Dedicated to producing future leaders with strong moral values.',
-      facilities: ['Hostel', 'Playground', 'Medical Center', 'Cafeteria'],
-      fees: '₹45,000 per year',
-      contact: '+91-22-87654321',
-      email: 'admissions@sainikpublic.edu.in'
-    },
-    { 
-      id: 3, 
-      name: 'Rashtriya Military School', 
-      location: 'Bangalore', 
-      grade: '1st-12th', 
-      type: 'Military',
-      board: 'CBSE',
-      medium: 'English',
-      category: 'Co-Ed',
-      rating: 4.9,
-      distance: 4.1,
-      logo: '/student_dashboard/school3.png',
-      image: '/student_dashboard/school3.png',
-      description: 'Excellence in education with military discipline and values.',
-      facilities: ['Swimming Pool', 'Auditorium', 'Workshop', 'Art Room'],
-      fees: '₹55,000 per year',
-      contact: '+91-80-11223344',
-      email: 'contact@rmschool.edu.in'
-    },
-    { 
-      id: 4, 
-      name: 'Defence Public School', 
-      location: 'Chennai', 
-      grade: '1st-12th', 
-      type: 'Military',
-      board: 'CBSE',
-      medium: 'English',
-      category: 'Co-Ed',
-      rating: 4.6,
-      distance: 5.3,
-      logo: '/student_dashboard/school4.png',
-      image: '/student_dashboard/school4.png',
-      description: 'Nurturing young minds with academic excellence and character building.',
-      facilities: ['Laboratory', 'Music Room', 'Dance Studio', 'Gymnasium'],
-      fees: '₹48,000 per year',
-      contact: '+91-44-99887766',
-      email: 'info@defencepublic.edu.in'
-    },
-    { 
-      id: 5, 
-      name: 'Kendriya Vidyalaya', 
-      location: 'Pune', 
-      grade: '1st-12th', 
-      type: 'Central Government',
-      board: 'CBSE',
-      medium: 'English/Hindi',
-      category: 'Co-Ed',
-      rating: 4.5,
-      distance: 6.8,
-      logo: '/student_dashboard/school1.png',
-      image: '/student_dashboard/school1.png',
-      description: 'Quality education with affordable fees and excellent infrastructure.',
-      facilities: ['Library', 'Computer Lab', 'Science Lab', 'Sports Ground'],
-      fees: '₹25,000 per year',
-      contact: '+91-20-12345678',
-      email: 'kv.pune@kvs.gov.in'
-    },
-    { 
-      id: 6, 
-      name: 'Navodaya Vidyalaya', 
-      location: 'Hyderabad', 
-      grade: '6th-12th', 
-      type: 'Central Government',
-      board: 'CBSE',
-      medium: 'English',
-      category: 'Co-Ed',
-      rating: 4.4,
-      distance: 7.5,
-      logo: '/student_dashboard/school2.png',
-      image: '/student_dashboard/school2.png',
-      description: 'Residential school focusing on rural talent development.',
-      facilities: ['Hostel', 'Library', 'Laboratory', 'Sports Complex'],
-      fees: '₹15,000 per year',
-      contact: '+91-40-87654321',
-      email: 'jnv.hyderabad@navodaya.gov.in'
-    },
-    { 
-      id: 7, 
-      name: 'Military School Ajmer', 
-      location: 'Ajmer', 
-      grade: '6th-12th', 
-      type: 'Military',
-      board: 'CBSE',
-      medium: 'English',
-      category: 'Boys',
-      rating: 4.8,
-      distance: 8.2,
-      logo: '/student_dashboard/school3.png',
-      image: '/student_dashboard/school3.png',
-      description: 'One of the oldest military schools in India with rich traditions.',
-      facilities: ['Hostel', 'Parade Ground', 'Swimming Pool', 'Horse Riding'],
-      fees: '₹60,000 per year',
-      contact: '+91-145-12345678',
-      email: 'admissions@militaryschoolajmer.edu.in'
-    },
-    { 
-      id: 8, 
-      name: 'Rashtriya Indian Military College', 
-      location: 'Dehradun', 
-      grade: '8th-12th', 
-      type: 'Military',
-      board: 'CBSE',
-      medium: 'English',
-      category: 'Girls',
-      rating: 4.9,
-      distance: 9.1,
-      logo: '/student_dashboard/school4.png',
-      image: '/student_dashboard/school4.png',
-      description: 'Premier military college preparing cadets for National Defence Academy.',
-      facilities: ['Hostel', 'Shooting Range', 'Gymnasium', 'Medical Center'],
-      fees: '₹75,000 per year',
-      contact: '+91-135-87654321',
-      email: 'rimc.dehradun@gov.in'
-    },
-    { 
-      id: 9, 
-      name: 'Sainik School Bhubaneswar', 
-      location: 'Bhubaneswar', 
-      grade: '6th-12th', 
-      type: 'Military',
-      board: 'CBSE',
-      medium: 'English',
-      category: 'Girls',
-      rating: 4.7,
-      distance: 10.3,
-      logo: '/student_dashboard/school1.png',
-      image: '/student_dashboard/school1.png',
-      description: 'Sainik School with focus on character building and leadership.',
-      facilities: ['Hostel', 'NCC Training', 'Sports Complex', 'Library'],
-      fees: '₹52,000 per year',
-      contact: '+91-674-12345678',
-      email: 'sainikschool.bbsr@gov.in'
-    },
-    { 
-      id: 10, 
-      name: 'Army School Bangalore', 
-      location: 'Bangalore', 
-      grade: '1st-12th', 
-      type: 'Military',
-      board: 'CBSE',
-      medium: 'English',
-      category: 'Co-Ed',
-      rating: 4.6,
-      distance: 11.7,
-      logo: '/student_dashboard/school2.png',
-      image: '/student_dashboard/school2.png',
-      description: 'Army school providing quality education to defence personnel children.',
-      facilities: ['Library', 'Computer Lab', 'Sports Ground', 'Auditorium'],
-      fees: '₹40,000 per year',
-      contact: '+91-80-99887766',
-      email: 'armyschool.blr@army.gov.in'
-    },
-    { 
-      id: 11, 
-      name: 'Air Force School', 
-      location: 'Coimbatore', 
-      grade: '1st-12th', 
-      type: 'Military',
-      board: 'CBSE',
-      medium: 'English',
-      category: 'Co-Ed',
-      rating: 4.5,
-      distance: 12.4,
-      logo: '/student_dashboard/school3.png',
-      image: '/student_dashboard/school3.png',
-      description: 'Air Force school with emphasis on discipline and academic excellence.',
-      facilities: ['Aviation Club', 'Science Lab', 'Sports Complex', 'Library'],
-      fees: '₹42,000 per year',
-      contact: '+91-422-12345678',
-      email: 'afschool.cbe@airforce.gov.in'
-    },
-    { 
-      id: 12, 
-      name: 'Navy Children School', 
-      location: 'Kochi', 
-      grade: '1st-12th', 
-      type: 'Military',
-      board: 'CBSE',
-      medium: 'English',
-      category: 'Co-Ed',
-      rating: 4.4,
-      distance: 13.8,
-      logo: '/student_dashboard/school4.png',
-      image: '/student_dashboard/school4.png',
-      description: 'Navy school providing holistic education with maritime focus.',
-      facilities: ['Swimming Pool', 'Sailing Club', 'Computer Lab', 'Library'],
-      fees: '₹38,000 per year',
-      contact: '+91-484-87654321',
-      email: 'navyschool.kochi@navy.gov.in'
+  // Replace hardcoded user_id with actual user id if available
+  const user_id = localStorage.getItem('studentId') ? parseInt(localStorage.getItem('studentId') as string, 10) : 2;
+
+  // Fetch applied schools from API
+  useEffect(() => {
+    async function fetchAppliedSchools() {
+      try {
+        const res = await getAppliedStudentsByUser(user_id);
+        // API response: { success, message, data: [...] }
+        if (res.success && Array.isArray(res.data)) {
+          // Map API data to UI format
+          setAppliedSchools(res.data.map((app: any) => ({
+            id: app.id,
+            school: app.school?.name || '',
+            location: app.school?.city || '',
+            appliedDate: new Date(app.applied_date).toLocaleDateString('en-GB'),
+            status: app.status.charAt(0).toUpperCase() + app.status.slice(1),
+            preference: app.preference || '', // If available
+            school_id: app.school_id,
+            user_id: app.user_id,
+            raw: app, // keep raw for further use
+          })));
+        }
+      } catch (err) {
+        // Handle error
+        console.error('Failed to fetch applied schools', err);
+      }
     }
-  ];
+    fetchAppliedSchools();
+  }, []);
+
+  // Fetch available schools from API
+  useEffect(() => {
+    async function fetchSchools() {
+      try {
+        const res = await getAllSchools();
+        if (res.success && Array.isArray(res.data)) {
+          setAvailableSchools(
+            res.data.map((school: any) => ({
+              id: school.id,
+              name: school.name,
+              location: school.address?.city || '',
+              grade: school.overview?.admissionCriteriaEligibility?.join(', ') || '',
+              type: school.tags?.join(', ') || '',
+              board: school.overview?.schoolInformation?.board || '',
+              medium: school.overview?.schoolInformation?.medium || '',
+              category: school.overview?.schoolInformation?.category || '',
+              rating: school.reviews?.length
+                ? (
+                    school.reviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) /
+                    school.reviews.length
+                  ).toFixed(1)
+                : '4.5',
+              distance: 0, // <-- Always set a default value
+              logo: school.profileImage,
+              image: school.gallery?.[0] || school.profileImage,
+              description: school.overview?.welcomeNote || '',
+              facilities: [
+                ...(school.facilities?.academic || []),
+                ...(school.facilities?.sportsRecreation || []),
+                ...(school.facilities?.infrastructure || [])
+              ].filter(Boolean), // <-- Ensure array, filter out falsy
+              fees: school.fees?.annualFeeStructure?.[0]?.totalFee || '',
+              contact: school.address?.mobile || '',
+              email: school.address?.email || '',
+              raw: school, // keep raw for further use
+            }))
+          );
+        }
+      } catch (err) {
+        console.error('Failed to fetch schools', err);
+      }
+    }
+    fetchSchools();
+  }, []);
 
   // Sort schools by distance and get first 9 for grid display
-  const sortedSchools = [...availableSchools].sort((a, b) => a.distance - b.distance);
+  const sortedSchools = [...availableSchools].sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0));
   const gridSchools = sortedSchools.slice(0, 9);
   const remainingSchools = sortedSchools.slice(9);
 
@@ -328,6 +172,37 @@ const AppliedSchoolsPage = () => {
   const getAvailablePreferences = () => {
     const usedPreferences = appliedSchools.map(app => app.preference);
     return [1, 2, 3, 4, 5].filter(pref => !usedPreferences.includes(pref));
+  };
+
+  // Withdraw application handler
+  const handleWithdrawApplication = async (application: any) => {
+    if (!window.confirm('Are you sure you want to withdraw this application?')) return;
+    try {
+      await updateAppliedStudentStatus(application.id, {
+        school_id: application.school_id,
+        user_id: application.user_id,
+        applied_date: application.raw.applied_date,
+        status: 'withdrawn',
+      });
+      // Refresh list after withdrawal
+      const res = await getAppliedStudentsByUser(user_id);
+      if (res.success && Array.isArray(res.data)) {
+        setAppliedSchools(res.data.map((app: any) => ({
+          id: app.id,
+          school: app.school?.name || '',
+          location: app.school?.city || '',
+          appliedDate: new Date(app.applied_date).toLocaleDateString('en-GB'),
+          status: app.status.charAt(0).toUpperCase() + app.status.slice(1),
+          preference: app.preference || '',
+          school_id: app.school_id,
+          user_id: app.user_id,
+          raw: app,
+        })));
+      }
+      alert('Application withdrawn successfully!');
+    } catch (err) {
+      alert('Failed to withdraw application');
+    }
   };
 
   return (
@@ -406,6 +281,16 @@ const AppliedSchoolsPage = () => {
                         >
                           <Trash2 size={16} />
                         </button>
+                        {/* Withdraw button */}
+                        {app.status.toLowerCase() !== 'withdrawn' && (
+                          <button
+                            onClick={() => handleWithdrawApplication(app)}
+                            className="text-orange-600 hover:text-orange-800 p-1 rounded transition-colors text-sm font-medium"
+                            title="Withdraw Application"
+                          >
+                            Withdraw
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -443,7 +328,7 @@ const AppliedSchoolsPage = () => {
                     <div className="space-y-2 mb-4 flex-1">
                       <div className="flex items-center text-xs text-gray-600">
                         <span className="w-4">📍</span>
-                        <span>{school.location} ({school.distance} km)</span>
+                        <span>{school.location}{school.distance ? ` (${school.distance} km)` : ''}</span>
                       </div>
                       <div className="flex items-center text-xs text-gray-600">
                         <span className="w-4">🎓</span>
@@ -533,6 +418,15 @@ const AppliedSchoolsPage = () => {
                             >
                               <Trash2 size={16} />
                             </button>
+                            {app.status.toLowerCase() !== 'withdrawn' && (
+                              <button
+                                onClick={() => handleWithdrawApplication(app)}
+                                className="text-orange-600 hover:text-orange-800 p-1 rounded transition-colors text-sm font-medium"
+                                title="Withdraw Application"
+                              >
+                                Withdraw
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -577,7 +471,7 @@ const AppliedSchoolsPage = () => {
                       <div className="space-y-2 mb-4 flex-1">
                         <div className="flex items-center text-xs text-gray-600">
                           <span className="w-4">📍</span>
-                          <span>{school.location} ({school.distance} km)</span>
+                          <span>{school.location}{school.distance ? ` (${school.distance} km)` : ''}</span>
                         </div>
                         <div className="flex items-center text-xs text-gray-600">
                           <span className="w-4">🎓</span>

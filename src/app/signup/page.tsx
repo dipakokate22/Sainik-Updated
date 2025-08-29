@@ -255,7 +255,7 @@ export default function SignupPage() {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
                       fieldErrors.firstName ? 'border-red-500 bg-red-50' : 'border-gray-300'
                     }`}
                     placeholder="Enter your first name"
@@ -275,7 +275,7 @@ export default function SignupPage() {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
                       fieldErrors.lastName ? 'border-red-500 bg-red-50' : 'border-gray-300'
                     }`}
                     placeholder="Enter your last name"
@@ -298,7 +298,7 @@ export default function SignupPage() {
                   name="schoolName"
                   value={formData.schoolName}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
                     fieldErrors.schoolName ? 'border-red-500 bg-red-50' : 'border-gray-300'
                   }`}
                   placeholder="Enter school name"
@@ -321,7 +321,7 @@ export default function SignupPage() {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
                   fieldErrors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
                 placeholder={`Enter your ${isStudent ? 'student' : 'official'} email`}
@@ -344,7 +344,7 @@ export default function SignupPage() {
                    name="phoneNumber"
                    value={formData.phoneNumber}
                    onChange={handleInputChange}
-                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
                      fieldErrors.phoneNumber ? 'border-red-500 bg-red-50' : 'border-gray-300'
                    }`}
                    placeholder="Enter school contact number"
@@ -368,7 +368,7 @@ export default function SignupPage() {
                    name="phoneNumber"
                    value={formData.phoneNumber}
                    onChange={handleInputChange}
-                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
                      fieldErrors.phoneNumber ? 'border-red-500 bg-red-50' : 'border-gray-300'
                    }`}
                    placeholder="Enter your phone number"
@@ -391,7 +391,7 @@ export default function SignupPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                  className={`w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
                     fieldErrors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
                   }`}
                   placeholder="Create a strong password"
@@ -423,7 +423,7 @@ export default function SignupPage() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                  className={`w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
                     fieldErrors.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300'
                   }`}
                   placeholder="Confirm your password"
@@ -454,7 +454,7 @@ export default function SignupPage() {
                   name="website"
                   value={formData.website}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-500 ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
                     fieldErrors.website ? 'border-red-500 bg-red-50' : 'border-gray-300'
                   }`}
                   placeholder="Enter school website"
@@ -477,7 +477,7 @@ export default function SignupPage() {
                 name="image"
                 accept="image/jpeg,image/png,image/jpg"
                 onChange={handleInputChange}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors ${
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors placeholder-gray-700 ${
                   fieldErrors.image ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
               />
