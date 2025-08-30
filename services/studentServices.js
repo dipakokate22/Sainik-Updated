@@ -33,7 +33,7 @@ export async function updateStudentProfile(id, payload) {
     });
   } else {
     res = await fetch(`https://sainik.codekrafters.in/api/student/profile`, {
-      method: 'PATCH',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
