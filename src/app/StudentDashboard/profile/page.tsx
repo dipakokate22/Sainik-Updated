@@ -83,7 +83,8 @@ const ProfilePage = () => {
     setImageUploading(true);
     setMessage('');
     try {
-      const updated = { ...profile, imageFile: file };
+      // Only send the image file under the correct key (usually 'image')
+      const updated = { ...profile, image: file };
       const res = await updateStudentProfile(studentId, updated);
       const newImage = res.data?.image || res.image;
       setProfile(prev => ({ ...prev!, image: newImage })); // update image URL
