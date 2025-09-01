@@ -37,7 +37,7 @@ const Sidebar = ({ activePage }: SidebarProps) => {
     name: '',
     studentId: '',
     signupDate: '',
-    image: '', // <-- add image field
+    image: '',
   });
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const Sidebar = ({ activePage }: SidebarProps) => {
       const name = localStorage.getItem('firstName') || '';
       const studentId = localStorage.getItem('studentId') || '';
       let signupDate = localStorage.getItem('signupDate') || '';
-      const image = localStorage.getItem('studentImage') || '';
+      const image = localStorage.getItem('image') || localStorage.getItem('studentImage') || '';
       // Format signupDate to DD-MM-YYYY if present
       if (signupDate) {
         try {
@@ -120,17 +120,17 @@ const Sidebar = ({ activePage }: SidebarProps) => {
             <img
               src={studentInfo.image.replace(/^http:/, 'https:')}
               alt="Student"
-              className="w-[127px] h-[130px] rounded-[5px] border-2 border-white object-cover mb-2"
+              className="w-[100px] h-[100px] rounded-full border-2 border-white object-cover"
             />
           ) : (
-            <div className="w-[127px] h-[130px] rounded-[5px] border-2 border-white bg-[#e2e8f0] flex items-center justify-center mb-2">
-              <span className="text-5xl font-bold text-[#257B5A]">
+            <div className="w-[100px] h-[100px] rounded-full border-2 border-white bg-[#e2e8f0] flex items-center justify-center">
+              <span className="text-3xl font-bold text-[#257B5A]">
                 {studentInfo.name ? studentInfo.name.charAt(0).toUpperCase() : 'S'}
               </span>
             </div>
           )}
         </div>
-        <div className="text-sm space-y-1">
+        <div className="text-sm space-y-1 text-center">
           <h2 className="font-medium text-lg">
             Hello, {studentInfo.name ? studentInfo.name : 'Krishna Kumar'}
           </h2>
@@ -158,12 +158,12 @@ const Sidebar = ({ activePage }: SidebarProps) => {
             </Link>
           ))}
         </nav>
-        <div className="mt-auto border-t border-[#979797] pt-3">
+        {/* <div className="mt-auto border-t border-[#979797] pt-3">
           <button className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#2a8a63] w-full text-left">
             <LogOut size={20} />
             Logout
           </button>
-        </div>
+        </div> */}
       </div>
     </>
   );

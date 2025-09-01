@@ -19,7 +19,7 @@ const DashboardHomePage = () => {
           color="bg-blue-100"
           iconBgColor="bg-blue-400"
         />
-        <StatCard 
+        {/* <StatCard 
           title="New Student" 
           value="50%" 
           subtitle="Increase in 20 Days" 
@@ -40,7 +40,7 @@ const DashboardHomePage = () => {
           icon={IndianRupee}
           color="bg-red-100"
           iconBgColor="bg-red-400"
-        />
+        /> */}
       </div>
 
       {/* Renew and Student List Section */}
@@ -50,7 +50,7 @@ const DashboardHomePage = () => {
       </div>
 
       {/* Earnings Chart Section */}
-      <EarningsChart />
+      {/* <EarningsChart /> */}
     </div>
   );
 };

@@ -12,7 +12,7 @@ const poppins = Poppins({
   weight: ['300', '400', '500', '700'],
 });
 
-const classOptions = ['12th Standard', '11th Standard', '10th Standard'];
+const classOptions = ['12th', '11th ', '10th ','9th', '8th', '7th', '6th', '5th', '4th', '3rd', '2nd', '1st'];
 const stateOptions = ['Maharashtra', 'Delhi', 'Karnataka'];
 const countryOptions = ['India', 'USA', 'UK'];
 
@@ -65,6 +65,7 @@ const ProfilePage = () => {
   const handleSave = async () => {
     setLoading(true);
     try {
+      // Send only changed field as JSON
       const updated = { ...profile, [editingField!]: fieldValue };
       const res = await updateStudentProfile(studentId, updated);
       setProfile(updated);
@@ -83,12 +84,19 @@ const ProfilePage = () => {
     setImageUploading(true);
     setMessage('');
     try {
-      // Only send the image file under the correct key (usually 'image')
-      const updated = { ...profile, image: file };
-      const res = await updateStudentProfile(studentId, updated);
-      const newImage = res.data?.image || res.image;
-      setProfile(prev => ({ ...prev!, image: newImage })); // update image URL
-      // Store new image in localStorage
+      // Send image and studentId as FormData
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('student_id', studentId); // add student_id if backend expects it
+      const res = await updateStudentProfile(studentId, formData);
+      // Try to get the image URL from different possible response keys
+      const newImage =
+        res.data?.image ||
+        res.image ||
+        res.data?.url ||
+        res.url ||
+        (typeof res === 'string' ? res : undefined);
+      setProfile(prev => ({ ...prev!, image: newImage }));
       if (typeof window !== 'undefined' && newImage) {
         localStorage.setItem('studentImage', newImage);
       }

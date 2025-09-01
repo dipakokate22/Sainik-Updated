@@ -106,9 +106,18 @@ export const schoolLogin = async (loginData) => {
       localStorage.setItem('lastName', data.lastName || '');
       localStorage.setItem('email', data.email || '');
       localStorage.setItem('mobile', data.mobile || '');
+      // Store image URL if present
+      if (data.image) {
+        localStorage.setItem('image', data.image);
+      }
       // Store school object for sidebar display
       if (data.school) {
         localStorage.setItem('school', JSON.stringify(data.school));
+      }
+      
+      // Trigger custom event to update sidebar immediately
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('userInfoUpdated'));
       }
     }
 
@@ -154,7 +163,12 @@ export const studentLogin = async (loginData) => {
       localStorage.setItem('signupDate', data.created_at || '');
       // Store image URL if present
       if (data.image) {
-        localStorage.setItem('studentImage', data.image);
+        localStorage.setItem('image', data.image);
+      }
+      
+      // Trigger custom event to update sidebar immediately
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('userInfoUpdated'));
       }
     }
 
