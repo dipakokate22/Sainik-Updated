@@ -45,6 +45,24 @@ export async function updateStudentProfile(id, payload) {
   return res.json();
 }
 
+// New API: Upload profile image via POST /api/profile/image/{id}
+export async function uploadStudentProfileImage(id, imageFile) {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
+  const formData = new FormData();
+  formData.append('image', imageFile);
+
+  const res = await fetch(`https://sainik.codekrafters.in/api/profile/image/${id}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      // Let the browser set Content-Type for multipart/form-data
+    },
+    body: formData,
+  });
+  if (!res.ok) throw new Error('Failed to upload profile image');
+  return res.json();
+}
+
 export async function getLibraryResources() {
   const res = await fetch('https://sainik.codekrafters.in/api/Library');
   if (!res.ok) throw new Error('Failed to fetch library resources');

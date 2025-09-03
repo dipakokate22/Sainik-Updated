@@ -71,7 +71,6 @@ const ResourceCard = ({ title, description, pdfs, className }: ResourceCardProps
 
 export default function LibraryPage() {
   const [libraryRecords, setLibraryRecords] = useState<LibraryRecord[]>([]);
-  const [selectedClass, setSelectedClass] = useState<number | 'all'>('all');
   const [showAllResources, setShowAllResources] = useState(false);
 
   useEffect(() => {
@@ -108,15 +107,7 @@ export default function LibraryPage() {
       });
   }, []);
 
-  // Get unique classes for dropdown
-  const classOptions = Array.from(new Set(libraryRecords.map(r => r.class))).sort((a, b) => a - b);
-
-  // Filter records by selected class
-  const filteredRecords = selectedClass === 'all'
-    ? libraryRecords
-    : libraryRecords.filter(r => r.class === selectedClass);
-
-  const displayedResources = showAllResources ? filteredRecords : filteredRecords.slice(0, 9);
+  const displayedResources = showAllResources ? libraryRecords : libraryRecords.slice(0, 9);
 
   return (
     <div className={`flex bg-[#F7F1EE] min-h-screen ${poppins.className}`}>
@@ -137,21 +128,7 @@ export default function LibraryPage() {
               <p className="text-gray-600">Access all your course materials, textbooks and study resources</p>
             </div>
 
-            {/* Class Selection Dropdown */}
-            <div className="mb-8 flex items-center gap-4">
-              <label htmlFor="class-select" className="font-medium text-gray-700">Select Class:</label>
-              <select
-                id="class-select"
-                value={selectedClass}
-                onChange={e => setSelectedClass(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                className="py-2 px-4 rounded-lg border border-gray-300 bg-white text-gray-700"
-              >
-                <option value="all">All Classes</option>
-                {classOptions.map(cls => (
-                  <option key={cls} value={cls}>Class {cls}</option>
-                ))}
-              </select>
-            </div>
+            
 
             {/* Main Content Area - Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
@@ -166,7 +143,7 @@ export default function LibraryPage() {
             </div>
 
             {/* View All Button */}
-            {!showAllResources && filteredRecords.length > 9 && (
+            {!showAllResources && libraryRecords.length > 9 && (
               <div className="flex justify-center">
                 <button
                   onClick={() => setShowAllResources(true)}

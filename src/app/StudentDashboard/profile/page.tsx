@@ -3,9 +3,9 @@ import Image from 'next/image';
 import Sidebar from '../Sidebar';
 import Header from '../Header';
 import { Poppins } from 'next/font/google';
-import { Edit, Mail, Phone, MapPin, Calendar, Globe, User, GraduationCap } from 'lucide-react';
+import { Edit, Mail, Phone, MapPin, Calendar, Globe, User, GraduationCap, Check, X, Pencil } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { getStudentProfile, updateStudentProfile } from '../../../../services/studentServices';
+import { getStudentProfile, updateStudentProfile, uploadStudentProfileImage } from '../../../../services/studentServices';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -30,7 +30,7 @@ const ProfilePage = () => {
     state?: string;
     zip_code?: string;
     current_class?: string;
-    student_id?: string;
+    id?: string;
     academic_year?: string;
     admission_date?: string;
     image?: string; // <-- added
@@ -42,15 +42,37 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [imageUploading, setImageUploading] = useState(false); // <-- added
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [backupLoginImage, setBackupLoginImage] = useState<string>('');
+
+  // Ensure Next/Image gets an absolute or root-relative URL
+  const normalizeImageUrl = (url?: string) => {
+    if (!url) return '';
+    // convert http -> https
+    const httpsUrl = url.replace(/^http:/, 'https:');
+    if (/^https?:\/\//i.test(httpsUrl)) return httpsUrl;
+    if (httpsUrl.startsWith('/')) return httpsUrl;
+    // treat as relative from API origin
+    return `https://sainik.codekrafters.in/${httpsUrl.replace(/^\/+/, '')}`;
+  };
 
   useEffect(() => {
     if (!studentId) return;
+    // Load backup image saved at login
+    if (typeof window !== 'undefined') {
+      const loginImg = localStorage.getItem('image') || '';
+      setBackupLoginImage(loginImg);
+    }
     getStudentProfile(studentId).then(data => {
       const profileData = data.data || data;
-      setProfile(profileData);
+      // prefer API image, else fallback to login image
+      const normalizedApiImage = profileData.image ? profileData.image : '';
+      const fallback = !normalizedApiImage && typeof window !== 'undefined' ? (localStorage.getItem('image') || '') : '';
+      const finalImage = normalizedApiImage || fallback;
+      setProfile({ ...profileData, image: finalImage });
       // Store image, name, email in localStorage
       if (typeof window !== 'undefined') {
-        if (profileData.image) localStorage.setItem('studentImage', profileData.image);
+        if (finalImage) localStorage.setItem('studentImage', finalImage);
         if (profileData.firstName) localStorage.setItem('studentName', profileData.firstName);
         if (profileData.email) localStorage.setItem('studentEmail', profileData.email);
       }
@@ -84,11 +106,8 @@ const ProfilePage = () => {
     setImageUploading(true);
     setMessage('');
     try {
-      // Send image and studentId as FormData
-      const formData = new FormData();
-      formData.append('image', file);
-      formData.append('student_id', studentId); // add student_id if backend expects it
-      const res = await updateStudentProfile(studentId, formData);
+      // Use new API to upload profile image
+      const res = await uploadStudentProfileImage(studentId, file);
       // Try to get the image URL from different possible response keys
       const newImage =
         res.data?.image ||
@@ -96,9 +115,10 @@ const ProfilePage = () => {
         res.data?.url ||
         res.url ||
         (typeof res === 'string' ? res : undefined);
-      setProfile(prev => ({ ...prev!, image: newImage }));
+      const normalized = normalizeImageUrl(newImage);
+      setProfile(prev => ({ ...prev!, image: normalized }));
       if (typeof window !== 'undefined' && newImage) {
-        localStorage.setItem('studentImage', newImage);
+        localStorage.setItem('studentImage', normalized || '');
       }
       setMessage('Profile image updated!');
     } catch {
@@ -188,7 +208,7 @@ const ProfilePage = () => {
 
   const academicInfo = [
     { label: 'Current Class', value: profile.current_class },
-    { label: 'Student ID', value: profile.student_id || 'SK2025001' },
+    { label: 'Student ID', value: profile.id ? `SK-A-${profile.id}` : 'SK-A-2025001' },
     { label: 'Academic Year', value: profile.academic_year },
     { label: 'Admission Date', value: profile.admission_date || '-' },
   ];
@@ -211,7 +231,7 @@ const ProfilePage = () => {
             <div className="flex items-center gap-2">
               {type === 'select' ? (
                 <select
-                  className="border rounded-lg px-2 py-1 text-gray-900 bg-gray-50"
+                  className="border rounded-lg px-2 py-1 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#257B5A]/40"
                   value={fieldValue}
                   onChange={e => setFieldValue(e.target.value)}
                 >
@@ -221,21 +241,22 @@ const ProfilePage = () => {
               ) : (
                 <input
                   type={type}
-                  className="border rounded-lg px-2 py-1 text-gray-900 bg-gray-50"
+                  className="border rounded-lg px-2 py-1 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#257B5A]/40"
                   value={fieldValue}
                   onChange={e => setFieldValue(e.target.value)}
                 />
               )}
               <button
-                className="text-green-600 hover:bg-green-100 rounded-full p-1"
+                className="inline-flex items-center gap-1 text-white bg-green-600 hover:bg-green-700 rounded-full px-2 py-1"
                 onClick={handleSave}
                 disabled={loading}
                 title="Save"
               >
-                ✓
+                <Check size={16} />
+                <span className="text-xs font-semibold">Save</span>
               </button>
               <button
-                className="text-red-600 hover:bg-red-100 rounded-full p-1"
+                className="inline-flex items-center gap-1 text-white bg-red-600 hover:bg-red-700 rounded-full px-2 py-1"
                 onClick={() => {
                   setEditingField(null);
                   setFieldValue('');
@@ -243,23 +264,36 @@ const ProfilePage = () => {
                 disabled={loading}
                 title="Cancel"
               >
-                ✗
+                <X size={16} />
+                <span className="text-xs font-semibold">Cancel</span>
               </button>
             </div>
           ) : (
             <>
-              <span className="text-gray-800 font-medium">{value || '-'}</span>
-              <button
-                className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity text-[#257B5A] hover:bg-gray-100 rounded-full p-1"
+              <span
+                className={`text-gray-800 font-medium ${isEditMode ? 'cursor-text' : ''}`}
                 onClick={() => {
+                  if (!isEditMode) return;
                   setEditingField(field);
                   setFieldValue(value || '');
                   setMessage('');
                 }}
-                title="Edit"
               >
-                <Edit size={16} />
-              </button>
+                {value || '-'}
+              </span>
+              {isEditMode && (
+                <button
+                  className="ml-2 transition-opacity text-[#257B5A] hover:bg-gray-100 rounded-full p-1 border border-gray-200"
+                  onClick={() => {
+                    setEditingField(field);
+                    setFieldValue(value || '');
+                    setMessage('');
+                  }}
+                  title="Edit"
+                >
+                  <Pencil size={16} />
+                </button>
+              )}
             </>
           )}
         </div>
@@ -273,6 +307,22 @@ const ProfilePage = () => {
       <main className="flex flex-col min-h-screen md:ml-[270px] overflow-y-auto">
         <Header />
         <div className="px-8 py-8 space-y-6">
+          <div className="flex items-center justify-between">
+            <div />
+            <button
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-sm transition-colors ${isEditMode ? 'bg-[#257B5A] text-white hover:bg-[#1e6b4a]' : 'bg-white text-[#257B5A] border border-[#257B5A]/40 hover:bg-[#257B5A]/5'}`}
+              onClick={() => {
+                setIsEditMode(m => !m);
+                setEditingField(null);
+                setFieldValue('');
+                setMessage('');
+              }}
+              title={isEditMode ? 'Exit edit mode' : 'Enter edit mode'}
+            >
+              {isEditMode ? <X size={16} /> : <Pencil size={16} />}
+              {isEditMode ? 'Exit Edit Mode' : 'Edit Profile'}
+            </button>
+          </div>
           {/* Profile Header Card */}
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
@@ -280,23 +330,25 @@ const ProfilePage = () => {
               <div className="relative">
                 <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-[#257B5A] shadow-lg">
                   <Image
-                    src={profile.image ? profile.image.replace(/^http:/, 'https:') : "/student_dashboard/profile-picture.jpg"}
+                    src={normalizeImageUrl(profile.image) || normalizeImageUrl(backupLoginImage) || "/student_dashboard/profile-picture.jpg"}
                     alt={`${profile.firstName} ${profile.lastName}`}
                     width={128}
                     height={128}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <label className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#257B5A] rounded-full flex items-center justify-center text-white hover:bg-[#1e6b4a] transition-colors shadow-lg cursor-pointer" title="Edit Image">
-                  <Edit size={16} />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}
-                    disabled={imageUploading}
-                  />
-                </label>
+                {isEditMode && (
+                  <label className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#257B5A] rounded-full flex items-center justify-center text-white hover:bg-[#1e6b4a] transition-colors shadow-lg cursor-pointer" title="Change profile image">
+                    <Pencil size={16} />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageChange}
+                      disabled={imageUploading}
+                    />
+                  </label>
+                )}
                 {imageUploading && (
                   <div className="absolute left-0 right-0 bottom-[-28px] text-xs text-[#257B5A] text-center">Uploading...</div>
                 )}
@@ -317,7 +369,7 @@ const ProfilePage = () => {
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-500 mt-2">
                       <User size={14} />
-                      <span>Student ID: {profile.student_id || 'SK2025001'}</span>
+                      <span>Student ID: {profile.id ? `SK-A-${profile.id}` : 'SK-A-2025001'}</span>
                     </div>
                   </div>
                 </div>
@@ -337,13 +389,13 @@ const ProfilePage = () => {
                 {renderEditableField('academic_year', profile.academic_year)}
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-500">Student ID</p>
-                  <p className="text-gray-800 font-medium">{profile.student_id || 'SK2025001'}</p>
+                  <p className="text-gray-800 font-medium">{profile.id ? `SK-A-${profile.id}` : 'SK-A-2025001'}</p>
                 </div>
-                <div className="space-y-1">
+                {/* <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-500">Admission Date</p>
                   <p className="text-gray-800 font-medium">{profile.admission_date || '-'}</p>
                   <p className="text-xs text-gray-400 mt-1">Admission date is set at creation and cannot be changed.</p>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

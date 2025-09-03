@@ -105,8 +105,8 @@ const Footer = () => {
           <div className="flex flex-col sm:flex-row justify-between items-center text-sm text-gray-400 pt-8 gap-4">
             <p className="text-center">© 2025 Designed & developed by : Code Krafters.</p>
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-center">
-              <a href="#" className="hover:text-white font-medium transition">Privacy Policy</a>
-              <a href="#" className="hover:text-white font-medium transition">Terms of Service</a>
+              <a href="/privacy" className="hover:text-white font-medium transition">Privacy Policy</a>
+              <a href="/terms" className="hover:text-white font-medium transition">Terms of Service</a>
               <a href="#" className="hover:text-white font-medium transition">Cookie Settings</a>
             </div>
           </div>

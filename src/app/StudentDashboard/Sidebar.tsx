@@ -71,7 +71,7 @@ const Sidebar = ({ activePage }: SidebarProps) => {
     { name: 'Library', href: '/StudentDashboard/library', icon: <Library size={18} /> },
     { name: 'Entrance Exams', href: '/StudentDashboard/entrance-exams', icon: <FileText size={18} /> },
     { name: 'Exam Results', href: '/StudentDashboard/exam-results', icon: <ClipboardList size={18} /> },
-    { name: 'Payment History', href: '/StudentDashboard/payment-history', icon: <CreditCard size={18} /> },
+    { name: 'Subscription ', href: '/StudentDashboard/payment-history', icon: <CreditCard size={18} /> },
   ];
 
   const isActive = (href: string) =>
@@ -135,7 +135,7 @@ const Sidebar = ({ activePage }: SidebarProps) => {
             Hello, {studentInfo.name ? studentInfo.name : 'Krishna Kumar'}
           </h2>
           <p>
-            Student ID: {studentInfo.studentId ? studentInfo.studentId : 'SK2025001'}
+            Student ID: {studentInfo.studentId ? `SK-A-${studentInfo.studentId}` : 'SK-A-2025001'}
           </p>
           <p>
             Signup Date: {studentInfo.signupDate ? studentInfo.signupDate : '12-06-2025'}

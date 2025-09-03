@@ -25,6 +25,8 @@ export default function SignupPage() {
     website: string;
     image?: File | null;
     schoolName: string;
+    currentClass?: string;
+    appearingClass?: string;
   }>({
     firstName: '',
     lastName: '',
@@ -35,7 +37,9 @@ export default function SignupPage() {
     agreeToTerms: false,
     website: '',
     image: null,
-    schoolName: ''
+    schoolName: '',
+    currentClass: '',
+    appearingClass: ''
   });
   const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({});
 
@@ -73,6 +77,15 @@ export default function SignupPage() {
       if (!formData.lastName.trim()) {
         errors.lastName = 'Last name is required';
       }
+      if (!formData.currentClass || !formData.currentClass.trim()) {
+        errors.currentClass = 'Current class is required';
+      }
+      if (!formData.appearingClass || !formData.appearingClass.trim()) {
+        errors.appearingClass = 'Appearing class is required';
+      }
+      if (!formData.phoneNumber.trim()) {
+        errors.phoneNumber = 'Phone number is required for students';
+      }
     } else {
       if (!formData.schoolName.trim()) {
         errors.schoolName = 'School name is required';
@@ -87,14 +100,12 @@ export default function SignupPage() {
       errors.email = 'Please enter a valid email address';
     }
     
-    // Phone number validation for schools
-    if (!isStudent) {
-      const phoneRegex = /^[0-9]{10}$/;
-      if (!formData.phoneNumber.trim()) {
-        errors.phoneNumber = 'Phone number is required for schools';
-      } else if (!phoneRegex.test(formData.phoneNumber.replace(/\D/g, ''))) {
-        errors.phoneNumber = 'Please enter a valid 10-digit phone number';
-      }
+    // Phone number validation (required for all)
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!formData.phoneNumber.trim()) {
+      errors.phoneNumber = 'Phone number is required';
+    } else if (!phoneRegex.test(formData.phoneNumber.replace(/\D/g, ''))) {
+      errors.phoneNumber = 'Please enter a valid 10-digit phone number';
     }
     
     // Password validation
@@ -161,7 +172,7 @@ export default function SignupPage() {
         firstName = nameParts[0] || '';
         lastName = nameParts.slice(1).join(' ') || '';
       }
-      const userData = {
+      const userData: any = {
         firstName,
         lastName,
         mobile: formData.phoneNumber || '',
@@ -170,6 +181,10 @@ export default function SignupPage() {
         password: formData.password,
         image: formData.image || null
       };
+      if (isStudent) {
+        userData.current_class = formData.currentClass || '';
+        userData.appearing_class = formData.appearingClass || '';
+      }
       const result = await registerUser(userData);
 
       if (result.status || result.jwttoken) {
@@ -198,9 +213,9 @@ export default function SignupPage() {
              <Image 
             src="/Image/Sainik-logo.png" 
             alt="Sainik Logo" 
-            width={120} 
-            height={40} 
-            className="sm:w-[60px] w-[20px]" 
+            width={160} 
+            height={53} 
+            className="w-[140px] sm:w-[160px]" 
           />
           </Link>
           <p className="text-gray-700 mt-2 font-medium">Create your account and join our community.</p>
@@ -288,6 +303,48 @@ export default function SignupPage() {
                     <p className="mt-1 text-sm text-red-600">{fieldErrors.lastName}</p>
                   )}
                 </div>
+                {/* Current Class */}
+                <div>
+                  <label htmlFor="currentClass" className="block text-sm font-semibold text-gray-800 mb-2">
+                    Current Class
+                  </label>
+                  <input
+                    type="text"
+                    id="currentClass"
+                    name="currentClass"
+                    value={formData.currentClass}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
+                      fieldErrors.currentClass ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter your current class (e.g., 8th, 9th)"
+                    required
+                  />
+                  {fieldErrors.currentClass && (
+                    <p className="mt-1 text-sm text-red-600">{fieldErrors.currentClass}</p>
+                  )}
+                </div>
+                {/* Appearing Class */}
+                <div>
+                  <label htmlFor="appearingClass" className="block text-sm font-semibold text-gray-800 mb-2">
+                    Appearing Class
+                  </label>
+                  <input
+                    type="text"
+                    id="appearingClass"
+                    name="appearingClass"
+                    value={formData.appearingClass}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
+                      fieldErrors.appearingClass ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter the class you are appearing for"
+                    required
+                  />
+                  {fieldErrors.appearingClass && (
+                    <p className="mt-1 text-sm text-red-600">{fieldErrors.appearingClass}</p>
+                  )}
+                </div>
               </>
             ) : (
               // School: Only School Name
@@ -359,11 +416,11 @@ export default function SignupPage() {
               </div>
             )}
 
-            {/* Phone Number Field (for students - optional) */}
+            {/* Phone Number Field (for students - required) */}
             {isStudent && (
               <div>
                 <label htmlFor="phoneNumber" className="block text-sm font-semibold text-gray-800 mb-2">
-                   Phone Number (Optional)
+                   Phone Number
                  </label>
                 <input
                    type="tel"
@@ -375,6 +432,7 @@ export default function SignupPage() {
                      fieldErrors.phoneNumber ? 'border-red-500 bg-red-50' : 'border-gray-300'
                    }`}
                    placeholder="Enter your phone number"
+                   required
                  />
                  {fieldErrors.phoneNumber && (
                    <p className="mt-1 text-sm text-red-600">{fieldErrors.phoneNumber}</p>
@@ -508,11 +566,11 @@ export default function SignupPage() {
                 <div className="ml-3 text-sm">
                   <label htmlFor="agreeToTerms" className="text-gray-700 font-medium">
                     I agree to the{' '}
-                    <Link href="/terms" className="text-[#257B5A] hover:underline font-semibold">
+                    <Link href="/terms?from=signup" className="text-[#257B5A] hover:underline font-semibold">
                       Terms of Service
                     </Link>{' '}
                     and{' '}
-                    <Link href="/privacy" className="text-[#257B5A] hover:underline font-semibold">
+                    <Link href="/privacy?from=signup" className="text-[#257B5A] hover:underline font-semibold">
                       Privacy Policy
                     </Link>
                   </label>

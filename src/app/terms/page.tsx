@@ -2,28 +2,45 @@
 
 import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
+import { useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 
 export default function TermsPage() {
+  const searchParams = useSearchParams();
+  const from = searchParams?.get('from') ?? null;
+  const backHref = from === 'signup' ? '/signup' : '/';
   return (
     <div className="min-h-screen bg-[#F7F1EE] py-8">
       <div className="max-w-4xl mx-auto px-4">
+        {/* Top Logo */}
+        <div className="text-center mb-6">
+          <Link href="/" className="inline-block">
+            <Image
+              src="/Image/Sainik-logo.png"
+              alt="Sainik Logo"
+              width={160}
+              height={53}
+              className="w-[140px] sm:w-[160px]"
+            />
+          </Link>
+        </div>
         {/* Header */}
-        <div className="bg-white rounded-[20px] shadow-lg p-8 mb-8">
+        <div className="bg-white rounded-[20px] shadow-lg p-8 mb-8 border border-gray-200">
           <div className="mb-6">
-            <Link href="/signup" className="flex items-center text-[#257B5A] hover:underline">
+            <Link href={backHref} className="flex items-center text-[#257B5A] hover:underline">
               <FaArrowLeft className="mr-2" size={14} />
-              <span className="text-sm">Back to Sign Up</span>
+              <span className="text-sm">{from === 'signup' ? 'Back to Sign Up' : 'Back to Home'}</span>
             </Link>
           </div>
-          
+          <div className="h-1.5 bg-gradient-to-r from-[#257B5A] via-[#1e6347] to-[#257B5A] rounded-full mb-6"></div>
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Terms of Service</h1>
-            <p className="text-gray-600">Last updated: December 2024</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Terms of Service</h1>
+            <p className="text-gray-600 text-sm">Last updated: December 2024</p>
           </div>
         </div>
 
         {/* Content */}
-        <div className="bg-white rounded-[20px] shadow-lg p-8">
+        <div className="bg-white rounded-[20px] shadow-lg p-8 border border-gray-200">
           <div className="prose max-w-none">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">1. Acceptance of Terms</h2>
             <p className="text-gray-700 mb-6">
