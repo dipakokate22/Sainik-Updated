@@ -42,13 +42,13 @@ export default function HeroSection() {
           ],
           button: { text: "Take Admission", link: "https://sainik.codekrafters.in/admission" },
           images: [
-            "https://sainik-updated.vercel.app/_next/image?url=%2FImage%2Fimg.png&w=640&q=75",
-            "https://sainik-updated.vercel.app/_next/image?url=%2FImage%2Fimg.png&w=640&q=75",
-            "https://sainik-updated.vercel.app/_next/image?url=%2FImage%2Fimg.png&w=640&q=75",
-            "https://sainik-updated.vercel.app/_next/image?url=%2FImage%2Fimg.png&w=640&q=75",
-            "https://sainik-updated.vercel.app/_next/image?url=%2FImage%2Fimg.png&w=640&q=75",
-            "https://sainik-updated.vercel.app/_next/image?url=%2FImage%2Fimg.png&w=640&q=75",
-            "https://sainik-updated.vercel.app/_next/image?url=%2FImage%2Fimg.png&w=640&q=75"
+            "/Image/img.png",
+            "/Image/img.png",
+            "/Image/img.png",
+            "/Image/img.png",
+            "/Image/img.png",
+            "/Image/img.png",
+            "/Image/img.png"
           ]
         });
       });

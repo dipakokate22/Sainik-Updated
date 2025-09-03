@@ -48,9 +48,9 @@ const staticData = {
       batch: 'Alumnus, Class of 2015',
       rating: 4,
       review:
-        'I am grateful for the lifelong friendships and the incredible mentorship I received. Sainik School didn’t just educate me; it shaped me into the person I am today.',
+        'I am grateful for the lifelong friendships and the incredible mentorship I received. Sainik School didn\'t just educate me; it shaped me into the person I am today.',
       image: 'https://cdn-icons-png.flaticon.com/512/219/219983.png',
-      school_logo: 'https://sainik-updated.vercel.app/_next/image?url=%2FImage%2FSainik-logo.png&w=640&q=75',
+      school_logo: '/Image/Sainik-logo.png',
     },
     {
       id: 2,
@@ -60,7 +60,7 @@ const staticData = {
       review:
         'As a parent, I have seen my son grow into a disciplined, confident leader. Sainik School provides the perfect blend of academics and life skills.',
       image: 'https://cdn-icons-png.flaticon.com/512/219/219983.png',
-      school_logo: 'https://sainik-updated.vercel.app/_next/image?url=%2FImage%2FSainik-logo.png&w=640&q=75',
+      school_logo: '/Image/Sainik-logo.png',
     },
     {
       id: 3,
@@ -70,7 +70,7 @@ const staticData = {
       review:
         'Sainik School provided me with a strong foundation in academics and a life-changing experience. I am highly recommend it!',
       image: 'https://cdn-icons-png.flaticon.com/512/219/219983.png',
-      school_logo: 'https://sainik-updated.vercel.app/_next/image?url=%2FImage%2FSainik-logo.png&w=640&q=75',
+      school_logo: '/Image/Sainik-logo.png',
     },
   ],
 };
