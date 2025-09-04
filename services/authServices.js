@@ -14,6 +14,13 @@ export const registerUser = async (userData) => {
       formData.append('role', userData.role);
       formData.append('password', userData.password);
       formData.append('image', userData.image);
+      // Optional fields
+      if (userData.website) {
+        formData.append('website', userData.website);
+      }
+      if (userData.current_class) {
+        formData.append('current_class', userData.current_class);
+      }
 
       response = await fetch(`${API_BASE_URL}/register`, {
         method: 'POST',
@@ -33,6 +40,14 @@ export const registerUser = async (userData) => {
         role: userData.role,
         password: userData.password,
       };
+
+      // Conditionally include optional fields
+      if (userData.website) {
+        payload.website = userData.website;
+      }
+      if (userData.current_class) {
+        payload.current_class = userData.current_class;
+      }
 
       response = await fetch(`${API_BASE_URL}/register`, {
         method: 'POST',

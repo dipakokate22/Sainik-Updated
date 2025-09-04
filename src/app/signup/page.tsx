@@ -26,7 +26,6 @@ export default function SignupPage() {
     image?: File | null;
     schoolName: string;
     currentClass?: string;
-    appearingClass?: string;
   }>({
     firstName: '',
     lastName: '',
@@ -39,7 +38,6 @@ export default function SignupPage() {
     image: null,
     schoolName: '',
     currentClass: '',
-    appearingClass: ''
   });
   const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({});
 
@@ -79,9 +77,6 @@ export default function SignupPage() {
       }
       if (!formData.currentClass || !formData.currentClass.trim()) {
         errors.currentClass = 'Current class is required';
-      }
-      if (!formData.appearingClass || !formData.appearingClass.trim()) {
-        errors.appearingClass = 'Appearing class is required';
       }
       if (!formData.phoneNumber.trim()) {
         errors.phoneNumber = 'Phone number is required for students';
@@ -183,7 +178,9 @@ export default function SignupPage() {
       };
       if (isStudent) {
         userData.current_class = formData.currentClass || '';
-        userData.appearing_class = formData.appearingClass || '';
+      } else {
+        // Include website for schools
+        userData.website = formData.website || '';
       }
       const result = await registerUser(userData);
 
@@ -324,27 +321,7 @@ export default function SignupPage() {
                     <p className="mt-1 text-sm text-red-600">{fieldErrors.currentClass}</p>
                   )}
                 </div>
-                {/* Appearing Class */}
-                <div>
-                  <label htmlFor="appearingClass" className="block text-sm font-semibold text-gray-800 mb-2">
-                    Appearing Class
-                  </label>
-                  <input
-                    type="text"
-                    id="appearingClass"
-                    name="appearingClass"
-                    value={formData.appearingClass}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
-                      fieldErrors.appearingClass ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                    }`}
-                    placeholder="Enter the class you are appearing for"
-                    required
-                  />
-                  {fieldErrors.appearingClass && (
-                    <p className="mt-1 text-sm text-red-600">{fieldErrors.appearingClass}</p>
-                  )}
-                </div>
+                
               </>
             ) : (
               // School: Only School Name

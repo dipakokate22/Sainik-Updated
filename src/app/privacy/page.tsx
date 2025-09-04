@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
+import { Suspense } from 'react';
 
-export default function PrivacyPage() {
+function PrivacyContent() {
   const searchParams = useSearchParams();
   const from = searchParams?.get('from') ?? null;
   const backHref = from === 'signup' ? '/signup' : '/';
@@ -100,5 +101,13 @@ export default function PrivacyPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PrivacyPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#F7F1EE] py-8" />}> 
+      <PrivacyContent />
+    </Suspense>
   );
 }
