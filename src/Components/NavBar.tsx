@@ -176,9 +176,9 @@ export default function Navbar() {
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/Schools">Recommended Schools</Link>
                   </li>
-                  {/* <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
+                  <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/Listing">School List</Link>
-                  </li> */}
+                  </li>
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/About">About Us</Link>
                   </li>
