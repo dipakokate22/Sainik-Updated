@@ -16,6 +16,8 @@ import { FaMapMarkerAlt as FaMapMarkerAltIcon } from "react-icons/fa";
 import {
   getSchoolByUserId,
   updateSchoolById,
+  uploadProfileImage,       // ✅ NEW
+  uploadGalleryImages,      // ✅ NEW
 } from "../../../../services/schoolServices";
 
 /* ================= Map API Payload ================= */
@@ -23,7 +25,8 @@ const mapToPayload = (data: any) => {
   return {
     firstName: data.firstName || "",
     lastName: data.lastName || "",
-    profile_image: data.profileImage || null,
+    // ✅ accept either property name to avoid losing the uploaded value
+    profile_image: data.profileImage || data.profile_image || null,
     latitude: data.location?.latitude || null,
     longitude: data.location?.longitude || null,
     full_address: data.address?.fullAddress || "",
@@ -192,14 +195,21 @@ const EditableList = ({
 };
 
 /* ================= Tabs ================= */
-const OverviewTab = ({ data, onUpdate }: { data: any; onUpdate: (field: string, value: any) => void }) => (
+const OverviewTab = ({
+  data,
+  onUpdate,
+}: {
+  data: any;
+  onUpdate: (field: string, value: any) => void;
+}) => (
   <div className="space-y-6">
     {[
       {
         label: "Welcome Note",
         field: "overview.welcomeNote",
         multiline: true,
-        placeholder: "Write a welcome message (e.g., 'Welcome to ABC School!')",
+        placeholder:
+          "Write a welcome message (e.g., 'Welcome to ABC School!')",
       },
       {
         label: "Key Highlights",
@@ -244,7 +254,13 @@ const OverviewTab = ({ data, onUpdate }: { data: any; onUpdate: (field: string, 
   </div>
 );
 
-const FacilitiesTab = ({ data, onUpdate }: { data: any; onUpdate: (field: string, value: any) => void }) => (
+const FacilitiesTab = ({
+  data,
+  onUpdate,
+}: {
+  data: any;
+  onUpdate: (field: string, value: any) => void;
+}) => (
   <div className="space-y-6">
     {[
       {
@@ -277,7 +293,13 @@ const FacilitiesTab = ({ data, onUpdate }: { data: any; onUpdate: (field: string
   </div>
 );
 
-const FeesTab = ({ data, onUpdate }: { data: any; onUpdate: (field: string, value: any) => void }) => (
+const FeesTab = ({
+  data,
+  onUpdate,
+}: {
+  data: any;
+  onUpdate: (field: string, value: any) => void;
+}) => (
   <div className="space-y-6">
     {[
       {
@@ -305,18 +327,92 @@ const FeesTab = ({ data, onUpdate }: { data: any; onUpdate: (field: string, valu
   </div>
 );
 
-const GalleryTab = ({ data, onUpdate }: { data: any; onUpdate: (field: string, value: any) => void }) => (
-  <div className="bg-white rounded-lg border p-6 shadow-sm">
-    <h3 className="text-xl font-semibold text-gray-800 mb-4">Gallery</h3>
-    <EditableList
-      items={
-        Array.isArray(data.gallery) ? data.gallery : JSON.parse(data.gallery || "[]")
-      }
-      onChange={(list) => onUpdate("gallery", list)}
-      placeholder="Paste image URL here"
-    />
-  </div>
-);
+const GalleryTab = ({
+  data,
+  onUpdate,
+}: {
+  data: any;
+  onUpdate: (field: string, value: any) => void;
+}) => {
+  const parseGallery = () => {
+    if (Array.isArray(data.gallery)) return data.gallery;
+    try {
+      return JSON.parse(data.gallery || "[]");
+    } catch {
+      return [];
+    }
+  };
+
+  const galleryItems: string[] = parseGallery();
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    try {
+      const res: any = await uploadGalleryImages(data.id, files);
+      const updatedGallery =
+        res?.data?.gallery ?? res?.gallery ?? galleryItems;
+      onUpdate("gallery", updatedGallery);
+    } catch (err) {
+      console.error("Error uploading gallery images:", err);
+    } finally {
+      e.target.value = "";
+    }
+  };
+
+  const handleRemove = (index: number) => {
+    const updated = galleryItems.filter((_, i) => i !== index);
+    onUpdate("gallery", updated);
+  };
+
+  return (
+    <div className="bg-white rounded-lg border p-6 shadow-sm">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4">Gallery</h3>
+
+      {/* Upload Button */}
+      <div className="mb-4">
+        <label className="inline-flex items-center gap-2 px-3 py-2 bg-[#257B5A] text-white rounded-lg cursor-pointer hover:bg-[#1e6249]">
+          <Plus size={16} />
+          Upload Images
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            className="hidden"
+            onChange={handleUpload}
+          />
+        </label>
+        <p className="text-xs text-gray-500 mt-1">
+          Upload school images. Uploaded images will appear below.
+        </p>
+      </div>
+
+      {/* Image Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {galleryItems.map((img, idx) => (
+          <div
+            key={idx}
+            className="relative group rounded-lg overflow-hidden border bg-gray-50"
+          >
+            <img
+              src={img}
+              alt={`Gallery ${idx + 1}`}
+              className="w-full h-40 object-cover"
+            />
+            <button
+              onClick={() => handleRemove(idx)}
+              className="absolute top-2 right-2 p-1.5 rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100 transition"
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 
 const ReviewsTab = () => (
   <div className="bg-white rounded-lg border p-6 shadow-sm text-gray-600">
@@ -405,7 +501,12 @@ export default function MySchool() {
             <div className="w-32 h-32 bg-gray-100 rounded-2xl p-2 flex-shrink-0 relative overflow-hidden">
               <label className="cursor-pointer block w-full h-full">
                 <img
-                  src={schoolData.profileImage || "/Listing/Logo.png"}
+                  // ✅ support either field name – whatever your API returns
+                  src={
+                    schoolData.profileImage ||
+                    schoolData.profile_image ||
+                    "/Listing/Logo.png"
+                  }
                   alt="School Logo"
                   className="w-full h-full object-contain"
                 />
@@ -417,22 +518,28 @@ export default function MySchool() {
                     const file = e.target.files?.[0];
                     if (!file) return;
                     try {
-                      const reader = new FileReader();
-                      reader.onloadend = async () => {
-                        const base64Image = reader.result;
-                        const payload = mapToPayload({
-                          ...schoolData,
-                          profileImage: base64Image,
-                        });
-                        const res = await updateSchoolById(
-                          schoolData.id,
-                          payload
-                        );
-                        setSchoolData(res.data);
-                      };
-                      reader.readAsDataURL(file);
+                      // ✅ use new API for profile image upload
+                      const res: any = await uploadProfileImage(
+                        schoolData.id,
+                        file
+                      );
+
+                      const newUrl =
+                        res?.data?.profile_image ?? res?.profile_image;
+
+                      if (newUrl) {
+                        // keep both keys in sync to avoid UI mismatches
+                        setSchoolData((prev: any) => ({
+                          ...prev,
+                          profileImage: newUrl,
+                          profile_image: newUrl,
+                        }));
+                      }
                     } catch (err) {
-                      console.error("Error uploading logo:", err);
+                      console.error("Error uploading profile image:", err);
+                    } finally {
+                      // reset input so same file can be reselected
+                      e.currentTarget.value = "";
                     }
                   }}
                 />
@@ -457,7 +564,9 @@ export default function MySchool() {
                   <FaMapMarkerAltIcon className="text-[#257B5A]" />
                   <InlineEdit
                     value={schoolData.address?.fullAddress}
-                    onSave={(val) => handleDataUpdate("address.fullAddress", val)}
+                    onSave={(val) =>
+                      handleDataUpdate("address.fullAddress", val)
+                    }
                     className="text-gray-700"
                     placeholder="Full Address (e.g., 123 Main Street, NY)"
                   />
@@ -519,13 +628,25 @@ export default function MySchool() {
           {(() => {
             switch (activeTab) {
               case "Overview":
-                return <OverviewTab data={schoolData} onUpdate={handleDataUpdate} />;
+                return (
+                  <OverviewTab
+                    data={schoolData}
+                    onUpdate={handleDataUpdate}
+                  />
+                );
               case "Facilities":
-                return <FacilitiesTab data={schoolData} onUpdate={handleDataUpdate} />;
+                return (
+                  <FacilitiesTab
+                    data={schoolData}
+                    onUpdate={handleDataUpdate}
+                  />
+                );
               case "Fees":
                 return <FeesTab data={schoolData} onUpdate={handleDataUpdate} />;
               case "Gallery":
-                return <GalleryTab data={schoolData} onUpdate={handleDataUpdate} />;
+                return (
+                  <GalleryTab data={schoolData} onUpdate={handleDataUpdate} />
+                );
               case "Reviews":
                 return <ReviewsTab />;
               case "FAQs":

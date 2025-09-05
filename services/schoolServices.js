@@ -1,178 +1,234 @@
-import { getAuthToken } from './authServices';
+import { getAuthToken,getUserId } from './authServices';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
-const SEARCH_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
+const SEARCH_API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
 
-// Get All Schools List
+/* ================== SCHOOL APIs ================== */
+
+// Get All Schools
 export const getAllSchools = async () => {
   try {
     const token = getAuthToken();
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers.Authorization = `Bearer ${token}`;
 
-    const response = await fetch(`${API_BASE_URL}/schools`, { method: 'GET', headers });
-    const data = await response.json();
-
-    if (!response.ok) throw new Error(data.message || 'Failed to fetch schools list');
+    const res = await fetch(`${API_BASE_URL}/schools`, { method: 'GET', headers });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to fetch schools list');
     return data;
-  } catch (error) {
-    console.error('Get all schools error:', error);
-    throw error;
+  } catch (err) {
+    console.error('Get all schools error:', err);
+    throw err;
   }
 };
 
-// Get School Details by Slug (with Nearby Schools)
+/* ================== SUBSCRIPTION APIs ================== */
+
+// ✅ Purchase Subscription
+export const purchaseSubscription = async (schoolId) => {
+  try {
+    const token = getAuthToken();
+    const userId = getUserId();
+
+    if (!userId) throw new Error('User ID not found. Please login again.');
+
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const payload = {
+      user_id: userId,
+      school_id: schoolId,
+    };
+
+    const res = await fetch(`${API_BASE_URL}/subscription/purchase`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to purchase subscription');
+
+    return data;
+  } catch (err) {
+    console.error('Purchase subscription error:', err);
+    throw err;
+  }
+};
+// ✅ Get School Subscriptions By User ID
+export const getSchoolSubscriptionsByUserId = async () => {
+  try {
+    const token = getAuthToken();
+    const userId = getUserId();
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const res = await fetch(`${API_BASE_URL}/school-subscriptions/user/${userId}`, {
+      method: 'GET',
+      headers,
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to fetch school subscriptions');
+    return data;
+  } catch (err) {
+    console.error('Get school subscriptions by userId error:', err);
+    throw err;
+  }
+};
+
+// Get School By Slug
 export const getSchoolBySlug = async (slug) => {
   try {
     const token = getAuthToken();
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers.Authorization = `Bearer ${token}`;
 
-    const response = await fetch(`${API_BASE_URL}/schools/${slug}`, { method: 'GET', headers });
-    const data = await response.json();
-
-    if (!response.ok) throw new Error(data.message || 'Failed to fetch school details');
+    const res = await fetch(`${API_BASE_URL}/schools/${slug}`, { method: 'GET', headers });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to fetch school details');
     return data;
-  } catch (error) {
-    console.error('Get school by slug error:', error);
-    throw error;
+  } catch (err) {
+    console.error('Get school by slug error:', err);
+    throw err;
   }
 };
 
-// Get School Details by ID
+// Get School By ID
 export const getSchoolById = async (id) => {
   try {
     const token = getAuthToken();
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers.Authorization = `Bearer ${token}`;
 
-    const response = await fetch(`${API_BASE_URL}/schools/${id}`, { method: 'GET', headers });
-    const data = await response.json();
-
-    if (!response.ok) throw new Error(data.message || 'Failed to fetch school details');
+    const res = await fetch(`${API_BASE_URL}/schools/${id}`, { method: 'GET', headers });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to fetch school by id');
     return data;
-  } catch (error) {
-    console.error('Get school by id error:', error);
-    throw error;
+  } catch (err) {
+    console.error('Get school by id error:', err);
+    throw err;
   }
 };
 
-// ✅ New API: Get School Details by User ID
+// ✅ Get School By User ID
 export const getSchoolByUserId = async (userId) => {
   try {
     const token = getAuthToken();
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers.Authorization = `Bearer ${token}`;
 
-    const response = await fetch(`${API_BASE_URL}/user/schools/${userId}`, { method: 'GET', headers });
-    const data = await response.json();
-
-    if (!response.ok) throw new Error(data.message || 'Failed to fetch school by userId');
+    const res = await fetch(`${API_BASE_URL}/user/schools/${userId}`, { method: 'GET', headers });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to fetch school by userId');
     return data;
-  } catch (error) {
-    console.error('Get school by userId error:', error);
-    throw error;
+  } catch (err) {
+    console.error('Get school by userId error:', err);
+    throw err;
   }
 };
-
-
 
 // ✅ Update School Details (JSON only, no file upload)
 export const updateSchoolById = async (id, schoolData) => {
   try {
     const token = getAuthToken();
-    const headers = { "Content-Type": "application/json" };
+    const headers = { 'Content-Type': 'application/json' };
     if (token) headers.Authorization = `Bearer ${token}`;
 
-    const response = await fetch(`${API_BASE_URL}/user/schools/${id}`, {
-      method: "PUT",
+    const res = await fetch(`${API_BASE_URL}/user/schools/${id}`, {
+      method: 'PUT',
       headers,
       body: JSON.stringify(schoolData),
     });
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to update school details");
-    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to update school details');
     return data;
-  } catch (error) {
-    console.error("Update school by id error:", error);
-    throw error;
+  } catch (err) {
+    console.error('Update school by id error:', err);
+    throw err;
   }
 };
 
-// ✅ Upload Profile Image (FormData, separate API call)
-export const uploadSchoolImage = async (id, file) => {
+/* ================== IMAGE UPLOAD APIs ================== */
+
+// ✅ Upload Profile Image
+export const uploadProfileImage = async (id, file) => {
   try {
     const token = getAuthToken();
     const headers = {};
     if (token) headers.Authorization = `Bearer ${token}`;
 
     const formData = new FormData();
-    formData.append("profile_image", file);
+    formData.append('image', file);
 
-    const response = await fetch(`${API_BASE_URL}/user/schools/${id}`, {
-      method: "PUT",
+    const res = await fetch(`${API_BASE_URL}/school/profile/${id}`, {
+      method: 'POST',
       headers,
       body: formData,
     });
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to upload profile image");
-    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to upload profile image');
     return data;
-  } catch (error) {
-    console.error("Upload school image error:", error);
-    throw error;
+  } catch (err) {
+    console.error('Upload profile image error:', err);
+    throw err;
   }
 };
 
-// Search Schools with optional parameters
-export const searchSchools = async (searchParams = {}) => {
+// ✅ Upload Gallery Images
+export const uploadGalleryImages = async (id, files) => {
+  try {
+    const token = getAuthToken();
+    const headers = {};
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append('gallery[]', file);
+    });
+
+    const res = await fetch(`${API_BASE_URL}/school/gallery/${id}`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to upload gallery images');
+    return data;
+  } catch (err) {
+    console.error('Upload gallery images error:', err);
+    throw err;
+  }
+};
+
+/* ================== SEARCH APIs ================== */
+export const searchSchools = async (params = {}) => {
   try {
     const token = getAuthToken();
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers.Authorization = `Bearer ${token}`;
 
-    const queryParams = new URLSearchParams();
-    if (searchParams.name) queryParams.append('name', searchParams.name);
-    if (searchParams.city) queryParams.append('city', searchParams.city);
-    if (searchParams.state) queryParams.append('state', searchParams.state);
-    if (searchParams.board) queryParams.append('board', searchParams.board);
-    if (searchParams.latitude) queryParams.append('latitude', searchParams.latitude);
-    if (searchParams.longitude) queryParams.append('longitude', searchParams.longitude);
-    if (searchParams.category) queryParams.append('category', searchParams.category);
-    if (searchParams.medium) queryParams.append('medium', searchParams.medium);
-    if (searchParams.max_fees) queryParams.append('max_fees', searchParams.max_fees);
+    const queryParams = new URLSearchParams(params).toString();
+    const url = `${SEARCH_API_BASE_URL}/schools/search${queryParams ? `?${queryParams}` : ''}`;
 
-    const queryString = queryParams.toString();
-    const url = `${SEARCH_API_BASE_URL}/schools/search${queryString ? `?${queryString}` : ''}`;
-
-    const response = await fetch(url, { method: 'GET', headers });
-    const data = await response.json();
-
-    if (!response.ok) throw new Error(data.message || 'Failed to search schools');
+    const res = await fetch(url, { method: 'GET', headers });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to search schools');
     return data;
-  } catch (error) {
-    console.error('Search schools error:', error);
-    throw error;
+  } catch (err) {
+    console.error('Search schools error:', err);
+    throw err;
   }
 };
 
-// Helper function to search schools by name
+// Helpers
 export const searchSchoolsByName = async (name) => searchSchools({ name });
-
-// Helper function to search schools by location
 export const searchSchoolsByLocation = async (city, state) => searchSchools({ city, state });
-
-// Helper function to search schools by board
 export const searchSchoolsByBoard = async (board) => searchSchools({ board });
-
-// Helper function to search schools by coordinates
 export const searchSchoolsByCoordinates = async (latitude, longitude) =>
   searchSchools({ latitude, longitude });
-
-// Helper function for combined search
-export const searchSchoolsAdvanced = async (name, city, state, board, latitude, longitude) =>
-  searchSchools({ name, city, state, board, latitude, longitude });
