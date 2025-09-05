@@ -59,7 +59,7 @@ const mapToPayload = (data: any) => {
   };
 };
 
-/* ================= Inline Edit with Validation ================= */
+/* ================= Inline Edit ================= */
 const InlineEdit = ({
   value,
   onSave,
@@ -67,7 +67,6 @@ const InlineEdit = ({
   placeholder = "",
   multiline = false,
   className = "",
-  alwaysShowIcon = false,
 }: {
   value: string | null;
   onSave: (value: string) => void;
@@ -75,79 +74,54 @@ const InlineEdit = ({
   placeholder?: string;
   multiline?: boolean;
   className?: string;
-  alwaysShowIcon?: boolean;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value || "");
-  const [error, setError] = useState("");
-
-  const validate = (val: string) => {
-    if (type === "email" && val && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
-      return "Please enter a valid email address";
-    }
-    if (type === "url" && val && !/^https?:\/\//i.test(val)) {
-      return "Website should start with http:// or https://";
-    }
-    if (type === "tel" && val && !/^\+?\d{7,15}$/.test(val)) {
-      return "Enter a valid phone number (7–15 digits)";
-    }
-    return "";
-  };
 
   const handleSave = () => {
-    const err = validate(editValue);
-    if (err) {
-      setError(err);
-      return;
-    }
-    setError("");
     onSave(editValue);
     setIsEditing(false);
   };
 
   if (isEditing) {
     return (
-      <div className="flex flex-col gap-1 w-full">
-        <div className="flex items-center gap-2">
-          {multiline ? (
-            <textarea
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              className={`flex-1 px-3 py-2 border rounded-lg text-gray-900 placeholder-gray-400
-                ${error ? "border-red-500" : "border-gray-300"}
-                focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A] ${className}`}
-              placeholder={placeholder}
-              rows={3}
-            />
-          ) : (
-            <input
-              type={type}
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              className={`flex-1 px-3 py-2 border rounded-lg text-gray-900 placeholder-gray-400
-                ${error ? "border-red-500" : "border-gray-300"}
-                focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A] ${className}`}
-              placeholder={placeholder}
-            />
-          )}
-          <button
-            onClick={handleSave}
-            className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          >
-            <Save size={16} />
-          </button>
-          <button
-            onClick={() => {
-              setEditValue(value || "");
-              setIsEditing(false);
-              setError("");
-            }}
-            className="p-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-          >
-            <X size={16} />
-          </button>
-        </div>
-        {error && <span className="text-red-500 text-sm">{error}</span>}
+      <div className="flex items-center gap-2 w-full">
+        {multiline ? (
+          <textarea
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className={`flex-1 px-3 py-2 border border-gray-300 rounded-lg 
+            text-gray-900 placeholder-gray-400
+            focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A] ${className}`}
+            placeholder={placeholder}
+            rows={3}
+          />
+        ) : (
+          <input
+            type={type}
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className={`flex-1 px-3 py-2 border border-gray-300 rounded-lg 
+            text-gray-900 placeholder-gray-400
+            focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A] ${className}`}
+            placeholder={placeholder}
+          />
+        )}
+        <button
+          onClick={handleSave}
+          className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+        >
+          <Save size={16} />
+        </button>
+        <button
+          onClick={() => {
+            setEditValue(value || "");
+            setIsEditing(false);
+          }}
+          className="p-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+        >
+          <X size={16} />
+        </button>
       </div>
     );
   }
@@ -159,8 +133,7 @@ const InlineEdit = ({
       </span>
       <button
         onClick={() => setIsEditing(true)}
-        className={`${alwaysShowIcon ? "opacity-100" : "opacity-0 group-hover:opacity-100"}
-          p-1 text-gray-500 hover:text-blue-600 transition-all`}
+        className="opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-blue-600 transition-all"
       >
         <Pencil size={14} />
       </button>
@@ -173,12 +146,10 @@ const EditableList = ({
   items,
   onChange,
   placeholder,
-  alwaysShowIcon = false,
 }: {
   items: any;
   onChange: (items: string[]) => void;
   placeholder: string;
-  alwaysShowIcon?: boolean;
 }) => {
   const safeItems: string[] = Array.isArray(items)
     ? items
@@ -191,13 +162,6 @@ const EditableList = ({
     updated[index] = newVal;
     onChange(updated);
   };
-  const handleDelete = (index: number) => {
-    const updated = safeItems.filter((_, i) => i !== index);
-    onChange(updated);
-  };
-  const handleAdd = () => {
-    onChange([...safeItems, ""]);
-  };
 
   return (
     <div className="space-y-3">
@@ -208,39 +172,34 @@ const EditableList = ({
             onSave={(val) => handleEdit(idx, val)}
             placeholder={placeholder}
             className="flex-1"
-            alwaysShowIcon={alwaysShowIcon}
           />
-          {alwaysShowIcon && (
-            <button
-              onClick={() => handleDelete(idx)}
-              className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-            >
-              <Trash2 size={16} />
-            </button>
-          )}
+          <button
+            onClick={() => onChange(safeItems.filter((_, i) => i !== idx))}
+            className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+          >
+            <Trash2 size={16} />
+          </button>
         </div>
       ))}
-      {alwaysShowIcon && (
-        <button
-          onClick={handleAdd}
-          className="mt-2 flex items-center gap-2 px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600"
-        >
-          <Plus size={14} /> Add
-        </button>
-      )}
+      <button
+        onClick={() => onChange([...safeItems, ""])}
+        className="mt-2 flex items-center gap-2 px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600"
+      >
+        <Plus size={14} /> Add
+      </button>
     </div>
   );
 };
 
 /* ================= Tabs ================= */
-const OverviewTab = ({ data, onUpdate, alwaysShowIcon }: any) => (
+const OverviewTab = ({ data, onUpdate }: { data: any; onUpdate: (field: string, value: any) => void }) => (
   <div className="space-y-6">
     {[
       {
         label: "Welcome Note",
         field: "overview.welcomeNote",
         multiline: true,
-        placeholder: "Write a short welcome message...",
+        placeholder: "Write a welcome message (e.g., 'Welcome to ABC School!')",
       },
       {
         label: "Key Highlights",
@@ -270,7 +229,6 @@ const OverviewTab = ({ data, onUpdate, alwaysShowIcon }: any) => (
             items={data.overview?.[section.field.split(".")[1]] || []}
             onChange={(list) => onUpdate(section.field, list)}
             placeholder={section.placeholder}
-            alwaysShowIcon={alwaysShowIcon}
           />
         ) : (
           <InlineEdit
@@ -279,7 +237,6 @@ const OverviewTab = ({ data, onUpdate, alwaysShowIcon }: any) => (
             multiline={section.multiline}
             placeholder={section.placeholder}
             className="w-full"
-            alwaysShowIcon={alwaysShowIcon}
           />
         )}
       </div>
@@ -287,7 +244,7 @@ const OverviewTab = ({ data, onUpdate, alwaysShowIcon }: any) => (
   </div>
 );
 
-const FacilitiesTab = ({ data, onUpdate, alwaysShowIcon }: any) => (
+const FacilitiesTab = ({ data, onUpdate }: { data: any; onUpdate: (field: string, value: any) => void }) => (
   <div className="space-y-6">
     {[
       {
@@ -314,14 +271,13 @@ const FacilitiesTab = ({ data, onUpdate, alwaysShowIcon }: any) => (
           items={data.facilities?.[section.field.split(".")[1]] || []}
           onChange={(list) => onUpdate(section.field, list)}
           placeholder={section.placeholder}
-          alwaysShowIcon={alwaysShowIcon}
         />
       </div>
     ))}
   </div>
 );
 
-const FeesTab = ({ data, onUpdate, alwaysShowIcon }: any) => (
+const FeesTab = ({ data, onUpdate }: { data: any; onUpdate: (field: string, value: any) => void }) => (
   <div className="space-y-6">
     {[
       {
@@ -343,21 +299,21 @@ const FeesTab = ({ data, onUpdate, alwaysShowIcon }: any) => (
           items={data.fees?.[section.field.split(".")[1]] || []}
           onChange={(list) => onUpdate(section.field, list)}
           placeholder={section.placeholder}
-          alwaysShowIcon={alwaysShowIcon}
         />
       </div>
     ))}
   </div>
 );
 
-const GalleryTab = ({ data, onUpdate, alwaysShowIcon }: any) => (
+const GalleryTab = ({ data, onUpdate }: { data: any; onUpdate: (field: string, value: any) => void }) => (
   <div className="bg-white rounded-lg border p-6 shadow-sm">
     <h3 className="text-xl font-semibold text-gray-800 mb-4">Gallery</h3>
     <EditableList
-      items={Array.isArray(data.gallery) ? data.gallery : []}
+      items={
+        Array.isArray(data.gallery) ? data.gallery : JSON.parse(data.gallery || "[]")
+      }
       onChange={(list) => onUpdate("gallery", list)}
       placeholder="Paste image URL here"
-      alwaysShowIcon={alwaysShowIcon}
     />
   </div>
 );
@@ -380,7 +336,6 @@ export default function MySchool() {
   const [activeTab, setActiveTab] = useState(TABS[0]);
   const [schoolData, setSchoolData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
     const fetchSchoolData = async () => {
@@ -406,49 +361,12 @@ export default function MySchool() {
     for (let i = 0; i < keys.length - 1; i++) current = current[keys[i]];
     current[keys[keys.length - 1]] = value;
     setSchoolData(updatedData);
-  };
 
-  const renderTabContent = () => {
-    if (!schoolData) return null;
-    switch (activeTab) {
-      case "Overview":
-        return (
-          <OverviewTab
-            data={schoolData}
-            onUpdate={handleDataUpdate}
-            alwaysShowIcon={editMode}
-          />
-        );
-      case "Facilities":
-        return (
-          <FacilitiesTab
-            data={schoolData}
-            onUpdate={handleDataUpdate}
-            alwaysShowIcon={editMode}
-          />
-        );
-      case "Fees":
-        return (
-          <FeesTab
-            data={schoolData}
-            onUpdate={handleDataUpdate}
-            alwaysShowIcon={editMode}
-          />
-        );
-      case "Gallery":
-        return (
-          <GalleryTab
-            data={schoolData}
-            onUpdate={handleDataUpdate}
-            alwaysShowIcon={editMode}
-          />
-        );
-      case "Reviews":
-        return <ReviewsTab />;
-      case "FAQs":
-        return <FAQsTab />;
-      default:
-        return null;
+    try {
+      const payload = mapToPayload(updatedData);
+      await updateSchoolById(updatedData.id, payload);
+    } catch (error) {
+      console.error("Error updating school:", error);
     }
   };
 
@@ -472,26 +390,18 @@ export default function MySchool() {
     <div className="min-h-screen bg-[#F7F1EE]">
       <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 md:px-10 lg:px-14 py-6">
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-800">My School</h2>
-            <p className="mt-1 text-gray-600">
-              Manage and showcase your school's identity, facilities, fee
-              structure, and achievements — all in one place.
-            </p>
-          </div>
-          <button
-            onClick={() => setEditMode(!editMode)}
-            className="px-4 py-2 bg-[#257B5A] text-white rounded-lg hover:bg-[#1e6249]"
-          >
-            {editMode ? "Exit Edit Mode" : "Edit Mode"}
-          </button>
+        <div className="mb-6">
+          <h2 className="text-3xl font-bold text-gray-800">My School</h2>
+          <p className="mt-1 text-gray-600">
+            Manage and showcase your school's identity, facilities, fee
+            structure, and achievements — all in one place.
+          </p>
         </div>
 
         {/* School Header */}
         <div className="bg-white rounded-lg border p-6 mb-6 shadow-sm">
           <div className="flex items-start gap-6">
-            {/* Logo */}
+            {/* Logo Upload */}
             <div className="w-32 h-32 bg-gray-100 rounded-2xl p-2 flex-shrink-0 relative overflow-hidden">
               <label className="cursor-pointer block w-full h-full">
                 <img
@@ -499,10 +409,40 @@ export default function MySchool() {
                   alt="School Logo"
                   className="w-full h-full object-contain"
                 />
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    try {
+                      const reader = new FileReader();
+                      reader.onloadend = async () => {
+                        const base64Image = reader.result;
+                        const payload = mapToPayload({
+                          ...schoolData,
+                          profileImage: base64Image,
+                        });
+                        const res = await updateSchoolById(
+                          schoolData.id,
+                          payload
+                        );
+                        setSchoolData(res.data);
+                      };
+                      reader.readAsDataURL(file);
+                    } catch (err) {
+                      console.error("Error uploading logo:", err);
+                    }
+                  }}
+                />
               </label>
+              <div className="absolute bottom-1 right-1 bg-black/50 text-white px-2 py-1 text-xs rounded">
+                Change
+              </div>
             </div>
 
-            {/* Info */}
+            {/* School Info */}
             <div className="flex-1">
               <h1 className="text-2xl font-medium text-black mb-2">
                 <InlineEdit
@@ -510,7 +450,6 @@ export default function MySchool() {
                   onSave={(val) => handleDataUpdate("firstName", val)}
                   className="text-2xl font-medium"
                   placeholder="Enter School Name"
-                  alwaysShowIcon={editMode}
                 />
               </h1>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -520,8 +459,7 @@ export default function MySchool() {
                     value={schoolData.address?.fullAddress}
                     onSave={(val) => handleDataUpdate("address.fullAddress", val)}
                     className="text-gray-700"
-                    placeholder="Full Address"
-                    alwaysShowIcon={editMode}
+                    placeholder="Full Address (e.g., 123 Main Street, NY)"
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -531,8 +469,6 @@ export default function MySchool() {
                     onSave={(val) => handleDataUpdate("mobile", val)}
                     className="text-gray-700"
                     placeholder="Contact Number"
-                    type="tel"
-                    alwaysShowIcon={editMode}
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -542,8 +478,6 @@ export default function MySchool() {
                     onSave={(val) => handleDataUpdate("email", val)}
                     className="text-gray-700"
                     placeholder="Email Address"
-                    type="email"
-                    alwaysShowIcon={editMode}
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -552,9 +486,7 @@ export default function MySchool() {
                     value={schoolData.website}
                     onSave={(val) => handleDataUpdate("website", val)}
                     className="text-gray-700"
-                    placeholder="Website"
-                    type="url"
-                    alwaysShowIcon={editMode}
+                    placeholder="Website (https://...)"
                   />
                 </div>
               </div>
@@ -583,7 +515,26 @@ export default function MySchool() {
         </div>
 
         {/* Tab Content */}
-        <div className="min-h-[600px]">{renderTabContent()}</div>
+        <div className="min-h-[600px]">
+          {(() => {
+            switch (activeTab) {
+              case "Overview":
+                return <OverviewTab data={schoolData} onUpdate={handleDataUpdate} />;
+              case "Facilities":
+                return <FacilitiesTab data={schoolData} onUpdate={handleDataUpdate} />;
+              case "Fees":
+                return <FeesTab data={schoolData} onUpdate={handleDataUpdate} />;
+              case "Gallery":
+                return <GalleryTab data={schoolData} onUpdate={handleDataUpdate} />;
+              case "Reviews":
+                return <ReviewsTab />;
+              case "FAQs":
+                return <FAQsTab />;
+              default:
+                return null;
+            }
+          })()}
+        </div>
       </div>
     </div>
   );
