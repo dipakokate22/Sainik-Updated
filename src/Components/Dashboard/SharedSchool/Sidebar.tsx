@@ -23,7 +23,7 @@ const menuItems = [
   // { name: 'Profile', icon: User, href: '/SchoolDashboard/Profile' },
   { name: 'My School', icon: GraduationCap, href: '/SchoolDashboard/MySchool' },
   { name: 'Subscription', icon: TrendingUp, href: '/SchoolDashboard/Subscription' },
-  { name: 'Student Inquiry', icon: IndianRupee, href: '/SchoolDashboard/StudentInquiry' },
+  // { name: 'Student Inquiry', icon: IndianRupee, href: '/SchoolDashboard/StudentInquiry' },
   { name: 'Billing', icon: IndianRupee, href: '/SchoolDashboard/Billing' },
 ];
 
