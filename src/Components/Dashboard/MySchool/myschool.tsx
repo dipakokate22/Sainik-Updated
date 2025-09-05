@@ -559,6 +559,14 @@ export default function MySchool() {
                   placeholder="Enter School Name"
                 />
               </h1>
+               <h1 className="text-2xl font-medium text-black mb-2">
+                <InlineEdit
+                  value={schoolData.lastName}
+                  onSave={(val) => handleDataUpdate("lastName", val)}
+                  className="text-2xl font-medium"
+                  placeholder="Enter School Name"
+                />
+              </h1>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div className="flex items-center gap-2">
                   <FaMapMarkerAltIcon className="text-[#257B5A]" />
