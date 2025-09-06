@@ -12,6 +12,7 @@ interface School {
   id: number; // <-- Added
   slug: string;
   name: string;
+  isFeatured?: boolean;
   profileImage?: string; // <-- Added
   location: {
     latitude: number;
@@ -182,30 +183,35 @@ const SchoolListSection = () => {
   };
   
   // Fetch schools data on component mount
-  useEffect(() => {
-    const fetchSchools = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await getAllSchools();
-        
-        if (response.status && response.data) {
-          setSchools(response.data);
-          // Set first 6 schools as featured schools
-          setFeaturedSchools(response.data.slice(0, 6));
-        } else {
-          setError('Failed to fetch schools data');
-        }
-      } catch (err) {
-        console.error('Error fetching schools:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred while fetching schools');
-      } finally {
-        setLoading(false);
+useEffect(() => {
+  const fetchSchools = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getAllSchools();
+      
+      if (response.status && response.data) {
+        setSchools(response.data);
+
+        // ✅ Pick schools with isFeatured = true
+        const featured = response.data.filter((school: School) => school.isFeatured);
+
+        setFeaturedSchools(featured.length > 0 ? featured : response.data.slice(0, 6));
+
+      } else {
+        setError('Failed to fetch schools data');
       }
-    };
-    
-    fetchSchools();
-  }, []);
+    } catch (err) {
+      console.error('Error fetching schools:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred while fetching schools');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchSchools();
+}, []);
+
   
   // Sync searchTerm with URL param on mount and when param changes
   useEffect(() => {
