@@ -226,6 +226,25 @@ export const searchSchools = async (params = {}) => {
   }
 };
 
+// schoolServices.js
+
+export const getStates = async () => {
+  const res = await fetch("https://sainik.codekrafters.in/api/states");
+  if (!res.ok) {
+    throw new Error("Failed to fetch states");
+  }
+  return await res.json(); // adjust if API response has { data: [...] }
+};
+
+export const getCities = async (stateId) => {
+  const res = await fetch(`https://sainik.codekrafters.in/api/cities/${stateId}`);
+  if (!res.ok) {
+    throw new Error("Failed to fetch cities for state " + stateId);
+  }
+  return await res.json();
+};
+
+
 // Helpers
 export const searchSchoolsByName = async (name) => searchSchools({ name });
 export const searchSchoolsByLocation = async (city, state) => searchSchools({ city, state });

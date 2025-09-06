@@ -17,7 +17,7 @@ import {
   getSchoolByUserId,
   updateSchoolById,
   uploadProfileImage,       // ✅ NEW
-  uploadGalleryImages,      // ✅ NEW
+  uploadGalleryImages,getStates,getCities      // ✅ NEW
 } from "../../../../services/schoolServices";
 
 /* ================= Map API Payload ================= */
@@ -193,6 +193,253 @@ const EditableList = ({
     </div>
   );
 };
+
+/* ================= Address Section ================= */
+
+interface State {
+  id: number;
+  name: string;
+}
+
+interface City {
+  id: number;
+  name: string;
+  stateId: number;
+}
+
+interface AddressSectionProps {
+  school: any;
+  onSave: (updatedAddress: {
+    state: string;
+    city: string;
+    fullAddress: string;
+    latitude: string;
+    longitude: string;
+  }) => void;
+}
+/* ================= Address Section ================= */
+
+
+interface State {
+  id: number;
+  name: string;
+}
+
+interface City {
+  id: number;
+  name: string;
+  stateId: number;
+}
+
+interface AddressSectionProps {
+  school: any;
+  onSave: (updatedAddress: {
+    state: string;
+    city: string;
+    fullAddress: string;
+    latitude: string;
+    longitude: string;
+  }) => void;
+}
+
+const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
+  const [states, setStates] = useState<State[]>([]);
+  const [cities, setCities] = useState<City[]>([]);
+  const [selectedStateId, setSelectedStateId] = useState<string>(
+    school?.address?.state ? "" : ""
+  );
+  const [selectedCityId, setSelectedCityId] = useState<string>("");
+  const [address, setAddress] = useState<string>(
+    school?.address?.fullAddress || ""
+  );
+  const [latitude, setLatitude] = useState<string>(
+    school?.location?.latitude || ""
+  );
+  const [longitude, setLongitude] = useState<string>(
+    school?.location?.longitude || ""
+  );
+  const [fetchingLocation, setFetchingLocation] = useState(false);
+
+  // Load states
+  useEffect(() => {
+    getStates().then((res) => {
+      const allStates: State[] = res.data || res;
+      setStates(allStates);
+      if (school?.address?.state) {
+        const match = allStates.find((s) => s.name === school.address.state);
+        if (match) setSelectedStateId(match.id.toString());
+      }
+    });
+  }, [school]);
+
+  // Load cities
+  useEffect(() => {
+    if (selectedStateId) {
+      getCities(selectedStateId).then((res) => {
+        const allCities: City[] = res.data || res;
+        setCities(allCities);
+        if (school?.address?.city) {
+          const match = allCities.find((c) => c.name === school.address.city);
+          if (match) setSelectedCityId(match.id.toString());
+        }
+      });
+    } else {
+      setCities([]);
+    }
+  }, [selectedStateId, school]);
+
+  // Fetch current location
+  const fetchCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported by your browser");
+      return;
+    }
+    setFetchingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude.toString());
+        setLongitude(position.coords.longitude.toString());
+        setFetchingLocation(false);
+      },
+      (error) => {
+        console.error(error);
+        alert("Unable to fetch location");
+        setFetchingLocation(false);
+      }
+    );
+  };
+
+  const handleSave = () => {
+    if (!selectedStateId || !selectedCityId || !address.trim()) {
+      alert("Please select state, city and enter address");
+      return;
+    }
+
+    const stateName =
+      states.find((s) => String(s.id) === selectedStateId)?.name || "";
+    const cityName =
+      cities.find((c) => String(c.id) === selectedCityId)?.name || "";
+
+    const updatedAddress = {
+      state: stateName,
+      city: cityName,
+      fullAddress: address,
+      latitude,
+      longitude,
+    };
+
+    onSave(updatedAddress);
+  };
+
+  return (
+    <div className="space-y-4 p-6 border rounded-xl shadow-sm bg-white mb-6">
+      <h3 className="text-lg font-semibold text-gray-800">School Address</h3>
+
+      {/* State */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1 text-gray-700">
+          State
+        </label>
+        <select
+          value={selectedStateId}
+          onChange={(e) => {
+            setSelectedStateId(e.target.value);
+            setSelectedCityId(""); // reset city
+          }}
+          className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+        >
+          <option value="">Select State</option>
+          {states.map((s: State) => (
+            <option key={s.id} value={s.id}>
+              {s.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* City */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1 text-gray-700">
+          City
+        </label>
+        <select
+          value={selectedCityId}
+          onChange={(e) => setSelectedCityId(e.target.value)}
+          className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+          disabled={!selectedStateId}
+        >
+          <option value="">Select City</option>
+          {cities.map((c: City) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Full Address */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1 text-gray-700">
+          Full Address
+        </label>
+        <textarea
+          rows={3}
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+        />
+      </div>
+
+      {/* Latitude & Longitude with Button */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-700">
+            Latitude
+          </label>
+          <input
+            type="text"
+            value={latitude}
+            onChange={(e) => setLatitude(e.target.value)}
+            className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-700">
+            Longitude
+          </label>
+          <input
+            type="text"
+            value={longitude}
+            onChange={(e) => setLongitude(e.target.value)}
+            className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+          />
+        </div>
+        <div className="flex">
+          <button
+            onClick={fetchCurrentLocation}
+            disabled={fetchingLocation}
+            className="w-full bg-[#257B5A] text-white px-4 py-2 rounded-lg hover:bg-[#1e6249]"
+          >
+            {fetchingLocation ? "Fetching..." : "Use Current Location"}
+          </button>
+        </div>
+      </div>
+
+      {/* Save */}
+      <button
+        onClick={handleSave}
+        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+      >
+        <Save size={18} /> Save Address
+      </button>
+    </div>
+  );
+};
+
+
+
+
+
 
 /* ================= Tabs ================= */
 const OverviewTab = ({
@@ -610,6 +857,33 @@ export default function MySchool() {
             </div>
           </div>
         </div>
+<AddressSection
+  school={schoolData}
+  onSave={async (updatedAddress) => {
+    const updatedData = {
+      ...schoolData,
+      address: {
+        ...schoolData.address,
+        ...updatedAddress,
+      },
+      location: {
+        latitude: updatedAddress.latitude,
+        longitude: updatedAddress.longitude,
+      },
+    };
+    setSchoolData(updatedData);
+    try {
+      const payload = mapToPayload(updatedData);
+      await updateSchoolById(updatedData.id, payload);
+    } catch (error) {
+      console.error("Error updating address:", error);
+    }
+  }}
+/>
+
+
+
+        
 
         {/* Tabs */}
         <div className="bg-white border rounded-lg mb-6 overflow-x-auto shadow-sm">
