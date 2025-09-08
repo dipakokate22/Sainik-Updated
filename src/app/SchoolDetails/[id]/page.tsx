@@ -1,53 +1,38 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { 
   FaSchool, 
-  FaLanguage, 
-  FaThLarge, 
   FaStar, 
   FaMapMarkerAlt, 
   FaPhone, 
   FaEnvelope,
   FaGlobe,
-  FaBook,
-  FaFlask,
-  FaDesktop,
-  FaFootballBall,
-  FaSwimmingPool,
-  FaMusic,
-  FaPalette,
-  FaWifi,
-  FaBus,
   FaArrowLeft,
   FaPlus
 } from 'react-icons/fa';
-import { PiCertificateFill } from 'react-icons/pi';
 import { FiArrowRight } from "react-icons/fi";
-import { IoMdCheckmarkCircle } from 'react-icons/io';
-import { BiSolidQuoteLeft } from 'react-icons/bi';
-import { 
-  MdAir, 
-  MdSecurity, 
-  MdRestaurant, 
-  MdMedicalServices 
-} from 'react-icons/md';
 import Navbar from '../../../Components/NavBar';
 import Footer from '../../../Components/Footer';
-import { getSchoolById } from '../../../../services/schoolServices';
-import { searchSchoolsByCoordinates } from '../../../../services/schoolServices';
+import { getSchoolById, searchSchoolsByCoordinates } from '../../../../services/schoolServices';
 
 // Function to check if a URL is external
 const isExternalUrl = (url: string) => /^https?:\/\//.test(url);
 
 // Horizontal School Card Component
-const HorizontalSchoolCard = ({ name, image, location, distance, rating }: { 
-  name: string; 
-  image: string; 
-  location: string; 
-  distance: string; 
-  rating: number; 
+const HorizontalSchoolCard = ({
+  name,
+  image,
+  location,
+  distance,
+  rating
+}: {
+  name: string;
+  image: string;
+  location: string;
+  distance: string;
+  rating: number;
 }) => {
   return (
     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
@@ -71,7 +56,7 @@ const HorizontalSchoolCard = ({ name, image, location, distance, rating }: {
           />
         )}
       </div>
-      
+
       {/* School Info */}
       <div className="flex-1 min-w-0">
         <h3 className="text-sm font-semibold text-gray-900 truncate">{name}</h3>
@@ -80,15 +65,15 @@ const HorizontalSchoolCard = ({ name, image, location, distance, rating }: {
           <span className="text-xs text-gray-500">{distance}</span>
           <div className="flex items-center gap-1">
             {[...Array(5)].map((_, i) => (
-              <FaStar 
-                key={i} 
-                className={`w-3 h-3 ${i < rating ? 'text-yellow-400' : 'text-gray-300'}`} 
+              <FaStar
+                key={i}
+                className={`w-3 h-3 ${i < (Math.round(Number(rating) || 0)) ? 'text-yellow-400' : 'text-gray-300'}`}
               />
             ))}
           </div>
         </div>
       </div>
-      
+
       {/* Arrow Icon */}
       <div className="flex-shrink-0">
         <FiArrowRight className="w-4 h-4 text-gray-400" />
@@ -96,6 +81,23 @@ const HorizontalSchoolCard = ({ name, image, location, distance, rating }: {
     </div>
   );
 };
+
+function parseArray(value: any): any[] {
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return trimmed ? [trimmed] : [];
+  }
+  return [];
+}
 
 export default function SchoolDetailSection() {
   const { id } = useParams() as { id: string };
@@ -112,7 +114,7 @@ export default function SchoolDetailSection() {
       try {
         const data = await getSchoolById(id);
         setSchool(data?.data || null);
-      } catch (err) {
+      } catch {
         setSchool(null);
       } finally {
         setLoading(false);
@@ -131,7 +133,7 @@ export default function SchoolDetailSection() {
             school.location.longitude
           );
           setNearbySchools(res?.data?.filter((s: any) => s.id !== school.id).slice(0, 6) || []);
-        } catch (err) {
+        } catch {
           setNearbySchools([]);
         } finally {
           setNearbyLoading(false);
@@ -141,188 +143,156 @@ export default function SchoolDetailSection() {
     fetchNearbySchools();
   }, [school]);
 
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-lg text-gray-600">Loading...</div>;
-  }
-  if (!school) {
-    return <div className="min-h-screen flex items-center justify-center text-lg text-red-600">School not found.</div>;
-  }
+  const {
+    keyHighlights,
+    admissionCriteriaEligibility,
+    schoolHours,
+    annualFeeStructure,
+    additionalFees,
+    facilities,
+    gallery,
+    reviews,
+    faqs
+  } = useMemo(() => {
+    return {
+      keyHighlights: parseArray(school?.overview?.keyHighlights),
+      admissionCriteriaEligibility: parseArray(school?.overview?.admissionCriteriaEligibility),
+      schoolHours: parseArray(school?.overview?.schoolHours),
+      annualFeeStructure: parseArray(school?.fees?.annualFeeStructure),
+      additionalFees: parseArray(school?.fees?.additionalFees),
+      facilities: Array.isArray(school?.facilities) ? school.facilities : [],
+      gallery: Array.isArray(school?.gallery) ? school.gallery : [],
+      reviews: Array.isArray(school?.reviews) ? school.reviews : [],
+      faqs: Array.isArray(school?.faqs) ? school.faqs : []
+    };
+  }, [school]);
 
-  const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'facilities', label: 'Facilities' },
-    { id: 'fees', label: 'Fees' },
-    { id: 'gallery', label: 'Gallery' },
-    { id: 'reviews', label: 'Reviews' },
-    { id: 'faqs', label: "FAQ's" }
-  ];
+  const avgRating = useMemo(() => {
+    if (!reviews.length) return 0;
+    const sum = reviews.reduce((acc: number, r: any) => acc + (Number(r?.rating) || 0), 0);
+    return sum / reviews.length;
+  }, [reviews]);
+
+  const tabs = useMemo(
+    () => [
+      { id: 'overview', label: 'Overview' },
+      { id: 'facilities', label: 'Facilities' },
+      { id: 'fees', label: 'Fees' },
+      { id: 'gallery', label: 'Gallery' },
+      { id: 'reviews', label: 'Reviews' },
+      { id: 'faqs', label: "FAQ's" }
+    ],
+    []
+  );
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
         return (
-          <div className="space-y-6 ">
-            {/* School Details */}
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">School Information</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <FaSchool className="text-xl text-black" />
-                  <span className="text-black">
-                    Ownership : <span className="text-[#257B5A] ">{school.overview?.schoolInformation?.ownership}</span>
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FaLanguage className="text-xl text-black" />
-                  <span className="text-black">
-                    Medium : <span className="text-[#257B5A]">{school.overview?.schoolInformation?.medium}</span>
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <PiCertificateFill className="text-xl text-black" />
-                  <span className="text-black">
-                    Board : <span className="text-[#257B5A]">{school.overview?.schoolInformation?.board}</span>
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FaThLarge className="text-xl text-black" />
-                  <span className="text-black">
-                    Category : <span className="text-[#257B5A]">{school.overview?.schoolInformation?.category}</span>
-                  </span>
-                </div>
+          <div className="space-y-6">
+            {/* School Information (only if provided) */}
+            {Array.isArray(school?.overview?.schoolInformation) && school.overview.schoolInformation.length > 0 && (
+              <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
+                <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                  School Information
+                </h4>
+                <ul className="list-disc pl-6 text-[16px] font-poppins text-black space-y-1">
+                  {school.overview.schoolInformation.map((item: any, idx: number) => (
+                    <li key={idx}>
+                      {typeof item === 'string'
+                        ? item
+                        : typeof item === 'object'
+                        ? `${item?.label || item?.key || 'Info'}: ${item?.value || ''}`
+                        : String(item)}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
+            )}
 
-            {/* Description Section */}
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">{school.overview?.welcomeNote}</h4>
-              <p className="text-[16px] font-regular font-poppins text-black mb-4">
-                Established in 1961, Sainik School Pune is one of India's premier military schools,
-                committed to preparing young students for leadership roles in the Indian Armed
-                Forces and beyond. The school operates under the Ministry of Defence and is part
-                of a prestigious chain of Sainik Schools across the country.
-              </p>
-              <p className='text-[16px] font-regular font-poppins text-black'>With a legacy of excellence spanning over 60 years, the school has proudly
-                produced more than 1,000 defense officers through rigorous academic training,
-                disciplined routines, and character-building programs. Students receive a
-                holistic education combining academics, military ethos, sports, and life skills
-                that prepare them for both NDA and civilian success.</p>
-            </div>
+            {/* Welcome / Description */}
+            {school?.overview?.welcomeNote && (
+              <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
+                <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                  About the School
+                </h4>
+                {String(school.overview.welcomeNote)
+                  .split('\n')
+                  .filter(Boolean)
+                  .map((para: string, i: number) => (
+                    <p key={i} className="text-[16px] font-poppins text-black mb-3">
+                      {para}
+                    </p>
+                  ))}
+              </div>
+            )}
 
             {/* Key Highlights */}
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🌟 Key Highlights</h4>
-              <ul className="list-disc pl-6 text-[16px] font-regular font-poppins text-black space-y-1">
-                {(Array.isArray(school.overview?.keyHighlights) ? school.overview.keyHighlights : []).map((highlight: string, idx: number) => (
-                  <li key={idx}>{highlight}</li>
-                ))}
-              </ul>
-            </div>
+            {keyHighlights.length > 0 && (
+              <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
+                <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                  🌟 Key Highlights
+                </h4>
+                <ul className="list-disc pl-6 text-[16px] font-poppins text-black space-y-1">
+                  {keyHighlights.map((highlight: string, idx: number) => (
+                    <li key={idx}>{highlight}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* Admission Criteria */}
-            <div className="bg-white border rounded-lg  px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">Admission Criteria & Eligibility</h4>
-              {(Array.isArray(school.overview?.admissionCriteriaEligibility) ? school.overview.admissionCriteriaEligibility : []).map((criteria: string, idx: number) => (
-                <li key={idx} className="flex items-start gap-2 text-[16px] text-black">
-                  <FiArrowRight className="text-black mt-[3px]" />
-                  <span>{criteria}</span>
-                </li>
-              ))}
-            </div>
+            {admissionCriteriaEligibility.length > 0 && (
+              <div className="bg-white border rounded-lg  px-4 md:px-[26px] py-[25px]">
+                <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                  Admission Criteria & Eligibility
+                </h4>
+                <ul className="space-y-2">
+                  {admissionCriteriaEligibility.map((criteria: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2 text-[16px] text-black">
+                      <FiArrowRight className="text-black mt-[3px]" />
+                      <span>{criteria}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* School Hours */}
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">School Hours</h4>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Monday : {school.overview?.schoolHours?.monday}</span>
-              </li>
-              <li className="flex items-start gap-2 text-[16px] text-black">
-                <FiArrowRight className="text-black mt-[3px]" />
-                <span>Sunday : {school.overview?.schoolHours?.sunday}</span>
-              </li>
-            </div>
+            {schoolHours.length > 0 && (
+              <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
+                <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                  School Hours
+                </h4>
+                <ul className="space-y-2">
+                  {schoolHours.map((line: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2 text-[16px] text-black">
+                      <FiArrowRight className="text-black mt-[3px]" />
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         );
 
       case 'facilities':
         return (
           <div className="space-y-6">
-            {/* Academic Facilities */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">📚 Academic Facilities</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <FaBook className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">Well-stocked Library with 15,000+ books</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FaFlask className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">Modern Science Laboratories</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FaDesktop className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">Computer Lab with 50+ systems</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FaBook className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">Smart Classrooms with Digital Boards</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Sports & Recreation */}
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🏃‍♂️ Sports & Recreation</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <FaFootballBall className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">Football & Cricket Grounds</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FaSwimmingPool className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">Olympic Size Swimming Pool</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FaMusic className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">Music & Dance Studios</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FaPalette className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">Art & Craft Rooms</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Infrastructure */}
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🏢 Infrastructure</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <MdAir className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">Air Conditioned Classrooms</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FaWifi className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">High-Speed WiFi Campus</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <MdSecurity className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">24/7 Security & CCTV Surveillance</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FaBus className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">Transportation Facility</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <MdRestaurant className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">Hygienic Cafeteria</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <MdMedicalServices className="text-xl text-[#257B5A]" />
-                  <span className="text-[16px] text-black">Medical Room with Qualified Nurse</span>
-                </div>
-              </div>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                🏫 Facilities
+              </h4>
+              {facilities.length ? (
+                <ul className="list-disc pl-6 text-[16px] font-poppins text-black space-y-1">
+                  {facilities.map((fac: any, idx: number) => (
+                    <li key={idx}>{typeof fac === 'string' ? fac : JSON.stringify(fac)}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-[16px] text-gray-600">No facilities listed.</p>
+              )}
             </div>
           </div>
         );
@@ -332,95 +302,34 @@ export default function SchoolDetailSection() {
           <div className="space-y-6">
             {/* Fee Structure */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">💰 Fee Structure (Annual)</h4>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300">
-                  <thead>
-                    <tr className="bg-[#257B5A] text-white">
-                      <th className="border border-gray-300 px-4 py-2 text-left">Class</th>
-                      <th className="border border-gray-300 px-4 py-2 text-left">Tuition Fee</th>
-                      <th className="border border-gray-300 px-4 py-2 text-left">Development Fee</th>
-                      <th className="border border-gray-300 px-4 py-2 text-left">Total Fee</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="text-black">
-                      <td className="border border-gray-300 px-4 py-2">Class I - III</td>
-                      <td className="border border-gray-300 px-4 py-2">₹85,000</td>
-                      <td className="border border-gray-300 px-4 py-2">₹15,000</td>
-                      <td className="border border-gray-300 px-4 py-2 font-semibold">₹1,00,000</td>
-                    </tr>
-                    <tr className="text-black">
-                      <td className="border border-gray-300 px-4 py-2">Class IV - VI</td>
-                      <td className="border border-gray-300 px-4 py-2">₹95,000</td>
-                      <td className="border border-gray-300 px-4 py-2">₹20,000</td>
-                      <td className="border border-gray-300 px-4 py-2 font-semibold">₹1,15,000</td>
-                    </tr>
-                    <tr className="text-black">
-                      <td className="border border-gray-300 px-4 py-2">Class VII - IX</td>
-                      <td className="border border-gray-300 px-4 py-2">₹1,10,000</td>
-                      <td className="border border-gray-300 px-4 py-2">₹25,000</td>
-                      <td className="border border-gray-300 px-4 py-2 font-semibold">₹1,35,000</td>
-                    </tr>
-                    <tr className="text-black">
-                      <td className="border border-gray-300 px-4 py-2">Class X - XII</td>
-                      <td className="border border-gray-300 px-4 py-2">₹1,25,000</td>
-                      <td className="border border-gray-300 px-4 py-2">₹30,000</td>
-                      <td className="border border-gray-300 px-4 py-2 font-semibold">₹1,55,000</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                💰 Fee Structure
+              </h4>
+              {annualFeeStructure.length ? (
+                <ul className="list-disc pl-6 text-[16px] font-poppins text-black space-y-1">
+                  {annualFeeStructure.map((item: string, idx: number) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-[16px] text-gray-600">No fee details available.</p>
+              )}
             </div>
 
             {/* Additional Fees */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">📋 Additional Fees</h4>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center border-b pb-2">
-                  <span className="text-[16px] text-black">Admission Fee (One-time)</span>
-                  <span className="text-[16px] font-semibold text-[#257B5A]">₹25,000</span>
-                </div>
-                <div className="flex justify-between items-center border-b pb-2">
-                  <span className="text-[16px] text-black">Transportation (Optional)</span>
-                  <span className="text-[16px] font-semibold text-[#257B5A]">₹18,000/year</span>
-                </div>
-                <div className="flex justify-between items-center border-b pb-2">
-                  <span className="text-[16px] text-black">Hostel Fee (Boarding)</span>
-                  <span className="text-[16px] font-semibold text-[#257B5A]">₹2,50,000/year</span>
-                </div>
-                <div className="flex justify-between items-center border-b pb-2">
-                  <span className="text-[16px] text-black">Mess Fee (Boarding)</span>
-                  <span className="text-[16px] font-semibold text-[#257B5A]">₹80,000/year</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[16px] text-black">Activity Fee</span>
-                  <span className="text-[16px] font-semibold text-[#257B5A]">₹12,000/year</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Payment Information */}
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">💳 Payment Information</h4>
-              <ul className="space-y-2">
-                <li className="flex items-start gap-2 text-[16px] text-black">
-                  <IoMdCheckmarkCircle className="text-[#257B5A] mt-1" />
-                  <span>Fees can be paid in 3 installments (April, August, December)</span>
-                </li>
-                <li className="flex items-start gap-2 text-[16px] text-black">
-                  <IoMdCheckmarkCircle className="text-[#257B5A] mt-1" />
-                  <span>Online payment accepted via Net Banking, UPI, Credit/Debit Cards</span>
-                </li>
-                <li className="flex items-start gap-2 text-[16px] text-black">
-                  <IoMdCheckmarkCircle className="text-[#257B5A] mt-1" />
-                  <span>5% discount on annual payment</span>
-                </li>
-                <li className="flex items-start gap-2 text-[16px] text-black">
-                  <IoMdCheckmarkCircle className="text-[#257B5A] mt-1" />
-                  <span>Sibling discount: 10% off on second child's fees</span>
-                </li>
-              </ul>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                📋 Additional Fees
+              </h4>
+              {additionalFees.length ? (
+                <ul className="list-disc pl-6 text-[16px] font-poppins text-black space-y-1">
+                  {additionalFees.map((item: any, idx: number) => (
+                    <li key={idx}>{typeof item === 'string' ? item : JSON.stringify(item)}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-[16px] text-gray-600">No additional fees listed.</p>
+              )}
             </div>
           </div>
         );
@@ -428,61 +337,36 @@ export default function SchoolDetailSection() {
       case 'gallery':
         return (
           <div className="space-y-6">
-            {/* Campus Images */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🏫 Campus Gallery</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="relative group cursor-pointer">
-                    <img 
-                      src={`/Listing/Logo.png`} 
-                      alt={`Campus Image ${i + 1}`}
-                      className="w-full h-48 object-cover rounded-lg border hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg flex items-center justify-center">
-                      <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-semibold">View Image</span>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                🏫 Campus Gallery
+              </h4>
+              {gallery.length ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {gallery.map((src: string, i: number) => (
+                    <div key={i} className="relative group cursor-pointer">
+                      {isExternalUrl(src) ? (
+                        <img
+                          src={src}
+                          alt={`Gallery Image ${i + 1}`}
+                          className="w-full h-48 object-cover rounded-lg border hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <Image
+                          src={src}
+                          alt={`Gallery Image ${i + 1}`}
+                          width={600}
+                          height={400}
+                          className="w-full h-48 object-cover rounded-lg border hover:scale-105 transition-transform duration-300"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg" />
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Facilities Images */}
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🏃‍♂️ Sports & Activities</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="relative group cursor-pointer">
-                    <img 
-                      src={`/Listing/Logo.png`} 
-                      alt={`Sports Image ${i + 1}`}
-                      className="w-full h-48 object-cover rounded-lg border hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg flex items-center justify-center">
-                      <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-semibold">View Image</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Events & Celebrations */}
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🎉 Events & Celebrations</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="relative group cursor-pointer">
-                    <img 
-                      src={`/Listing/Logo.png`} 
-                      alt={`Event Image ${i + 1}`}
-                      className="w-full h-48 object-cover rounded-lg border hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg flex items-center justify-center">
-                      <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-semibold">View Image</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[16px] text-gray-600">No images available.</p>
+              )}
             </div>
           </div>
         );
@@ -492,94 +376,53 @@ export default function SchoolDetailSection() {
           <div className="space-y-6">
             {/* Overall Rating */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">⭐ Overall Rating</h4>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                ⭐ Overall Rating
+              </h4>
               <div className="flex items-center gap-4 mb-4">
-                <div className="text-4xl font-bold text-[#257B5A]">4.2</div>
+                <div className="text-4xl font-bold text-[#257B5A]">{avgRating.toFixed(1)}</div>
                 <div>
                   <div className="flex items-center gap-1 mb-1">
                     {[...Array(5)].map((_, i) => (
-                      <FaStar key={i} className={`${i < 4 ? 'text-yellow-400' : 'text-gray-300'}`} />
+                      <FaStar key={i} className={`${i < Math.round(avgRating) ? 'text-yellow-400' : 'text-gray-300'}`} />
                     ))}
                   </div>
-                  <p className="text-gray-600">Based on 156 reviews</p>
+                  <p className="text-gray-600">Based on {reviews.length} review{reviews.length !== 1 ? 's' : ''}</p>
                 </div>
-              </div>
-              
-              {/* Rating Breakdown */}
-              <div className="space-y-2">
-                {[5, 4, 3, 2, 1].map((star) => (
-                  <div key={star} className="flex items-center gap-3">
-                    <span className="w-8 text-sm">{star}★</span>
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-[#257B5A] h-2 rounded-full" 
-                        style={{ width: `${star === 5 ? 45 : star === 4 ? 35 : star === 3 ? 15 : star === 2 ? 3 : 2}%` }}
-                      ></div>
-                    </div>
-                    <span className="w-8 text-sm text-gray-600">{star === 5 ? 70 : star === 4 ? 55 : star === 3 ? 23 : star === 2 ? 5 : 3}</span>
-                  </div>
-                ))}
               </div>
             </div>
 
             {/* Individual Reviews */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">💬 Student & Parent Reviews</h4>
-              <div className="space-y-6">
-                {[
-                  {
-                    name: "Priya Sharma",
-                    role: "Parent of Class VIII Student",
-                    rating: 5,
-                    date: "2 weeks ago",
-                    review: "Excellent school with great discipline and academic standards. My son has shown remarkable improvement in both studies and personality development. The military training has made him more confident and responsible."
-                  },
-                  {
-                    name: "Rajesh Kumar",
-                    role: "Parent of Class X Student",
-                    rating: 4,
-                    date: "1 month ago",
-                    review: "Good infrastructure and qualified teachers. The NDA preparation program is very effective. However, the fees are quite high compared to other schools in the area."
-                  },
-                  {
-                    name: "Anita Patel",
-                    role: "Alumni Parent",
-                    rating: 5,
-                    date: "2 months ago",
-                    review: "My daughter graduated from here and is now in the Indian Navy. The school's training and values have shaped her into a strong, independent individual. Highly recommended for character building."
-                  }
-                ].map((review, i) => (
-                  <div key={i} className="border-b pb-4 last:border-b-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h5 className="font-semibold text-black">{review.name}</h5>
-                        <p className="text-sm text-gray-600">{review.role}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-center gap-1 mb-1">
-                          {[...Array(5)].map((_, starIndex) => (
-                            <FaStar key={starIndex} className={`text-sm ${starIndex < review.rating ? 'text-yellow-400' : 'text-gray-300'}`} />
-                          ))}
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                💬 Reviews
+              </h4>
+              {reviews.length ? (
+                <div className="space-y-6">
+                  {reviews.map((rev: any, i: number) => (
+                    <div key={i} className="border-b pb-4 last:border-b-0">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <h5 className="font-semibold text-black">{rev?.name || 'Reviewer'}</h5>
                         </div>
-                        <p className="text-sm text-gray-500">{review.date}</p>
+                        <div className="text-right">
+                          <div className="flex items-center gap-1 mb-1">
+                            {[...Array(5)].map((_, starIndex) => (
+                              <FaStar
+                                key={starIndex}
+                                className={`text-sm ${starIndex < (Number(rev?.rating) || 0) ? 'text-yellow-400' : 'text-gray-300'}`}
+                              />
+                            ))}
+                          </div>
+                        </div>
                       </div>
+                      <p className="text-gray-700 text-[15px] leading-relaxed">{rev?.comment || ''}</p>
                     </div>
-                    <div className="flex items-start gap-3">
-                      <BiSolidQuoteLeft className="text-[#257B5A] text-xl mt-1 flex-shrink-0" />
-                      <p className="text-gray-700 text-[15px] leading-relaxed">{review.review}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Write Review */}
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">✍️ Write a Review</h4>
-              <button className="bg-[#257B5A] text-[16px] text-white px-6 py-3 rounded-full hover:bg-[#1e6b4a] transition-colors duration-300">
-
-                📝 Share Your Experience
-              </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[16px] text-gray-600">No reviews available.</p>
+              )}
             </div>
           </div>
         );
@@ -587,86 +430,22 @@ export default function SchoolDetailSection() {
       case 'faqs':
         return (
           <div className="space-y-6">
-            {/* Admission FAQs */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">🎓 Admission FAQs</h4>
-              <div className="space-y-4">
-                {[
-                  {
-                    question: "What is the admission process for Sainik School?",
-                    answer: "Admission is through the All India Sainik School Entrance Examination (AISSEE) conducted annually. Students can apply online through the official website. The exam is held for Class VI and Class IX admissions."
-                  },
-                  {
-                    question: "What is the age criteria for admission?",
-                    answer: "For Class VI: Age should be between 10-12 years as on 31st March of the admission year. For Class IX: Age should be between 13-15 years as on 31st March of the admission year."
-                  },
-                  {
-                    question: "Is there any reservation policy?",
-                    answer: "Yes, reservations are available as per government norms: SC/ST - 15% each, OBC - 27%, EWS - 10%. State-wise quotas are also maintained with 67% seats for home state and 33% for other states."
-                  }
-                ].map((faq, i) => (
-                  <div key={i} className="border border-gray-200 rounded-lg p-4">
-                    <h5 className="font-semibold text-black mb-2">Q: {faq.question}</h5>
-                    <p className="text-gray-700 text-[15px] leading-relaxed">A: {faq.answer}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Academic FAQs */}
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">📚 Academic FAQs</h4>
-              <div className="space-y-4">
-                {[
-                  {
-                    question: "Which board does the school follow?",
-                    answer: "The school follows CBSE (Central Board of Secondary Education) curriculum. All students appear for CBSE board examinations in Class X and XII."
-                  },
-                  {
-                    question: "What is the student-teacher ratio?",
-                    answer: "We maintain an optimal student-teacher ratio of 20:1 to ensure personalized attention and quality education for every student."
-                  },
-                  {
-                    question: "Are there special coaching classes for NDA preparation?",
-                    answer: "Yes, we provide integrated NDA coaching as part of our curriculum. Special classes for Mathematics, English, and General Knowledge are conducted by experienced faculty members."
-                  }
-                ].map((faq, i) => (
-                  <div key={i} className="border border-gray-200 rounded-lg p-4">
-                    <h5 className="font-semibold text-black mb-2">Q: {faq.question}</h5>
-                    <p className="text-gray-700 text-[15px] leading-relaxed">A: {faq.answer}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* General FAQs */}
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">❓ General FAQs</h4>
-              <div className="space-y-4">
-                {[
-                  {
-                    question: "Is hostel accommodation mandatory?",
-                    answer: "Yes, Sainik Schools are residential schools and hostel accommodation is mandatory for all students. This helps in building discipline, character, and camaraderie among students."
-                  },
-                  {
-                    question: "What are the visiting hours for parents?",
-                    answer: "Parents can visit their children on designated visiting days, usually twice a month on Sundays from 10 AM to 5 PM. Special permission can be granted in case of emergencies."
-                  },
-                  {
-                    question: "Are mobile phones allowed for students?",
-                    answer: "Mobile phones are not allowed for junior students (Class VI-VIII). Senior students (Class IX-XII) can use phones during designated hours under supervision."
-                  },
-                  {
-                    question: "What medical facilities are available?",
-                    answer: "The school has a well-equipped medical center with qualified medical staff available 24/7. Regular health check-ups are conducted and emergency medical care is provided when needed."
-                  }
-                ].map((faq, i) => (
-                  <div key={i} className="border border-gray-200 rounded-lg p-4">
-                    <h5 className="font-semibold text-black mb-2">Q: {faq.question}</h5>
-                    <p className="text-gray-700 text-[15px] leading-relaxed">A: {faq.answer}</p>
-                  </div>
-                ))}
-              </div>
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                ❓ FAQs
+              </h4>
+              {faqs.length ? (
+                <div className="space-y-4">
+                  {faqs.map((faq: any, i: number) => (
+                    <div key={i} className="border border-gray-200 rounded-lg p-4">
+                      <h5 className="font-semibold text-black mb-2">Q: {faq?.question}</h5>
+                      <p className="text-gray-700 text-[15px] leading-relaxed">A: {faq?.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[16px] text-gray-600">No FAQs available.</p>
+              )}
             </div>
           </div>
         );
@@ -676,11 +455,26 @@ export default function SchoolDetailSection() {
     }
   };
 
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-lg text-gray-600">Loading...</div>;
+  }
+  if (!school) {
+    return <div className="min-h-screen flex items-center justify-center text-lg text-red-600">School not found.</div>;
+  }
+
+  const avgStars = Math.round(avgRating);
+  const website = school?.address?.website || '';
+  const email = school?.address?.email || '';
+  const mobile = school?.address?.mobile || '';
+  const city = school?.address?.city || '';
+  const fullAddress = school?.address?.fullAddress || '';
+  const mapQuery = encodeURIComponent(`${school?.name || ''}, ${city}`);
+
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-[#F7F1EE] mt-6 "> {/* Added mt-6 for spacing below Navbar */}
-        {/* Header Section - Matching the uploaded image */}
+      <div className="min-h-screen bg-[#F7F1EE] mt-6">
+        {/* Header Section */}
         <div className="max-w-[1440px] w-full mx-auto bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-14 py-4 sm:pt-6 md:pt-10 lg:pt-12">
           <div className="max-w-[1440px] w-full mx-auto mt-16">
             {/* Back Button */}
@@ -698,7 +492,7 @@ export default function SchoolDetailSection() {
             <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 lg:gap-6">
               {/* School Logo */}
               <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 bg-white rounded-2xl p-2 flex-shrink-0 shadow-sm">
-                {isExternalUrl(school.profileImage || "") ? (
+                {isExternalUrl(school.profileImage || '') ? (
                   <img
                     src={school.profileImage}
                     alt={school.name}
@@ -708,7 +502,7 @@ export default function SchoolDetailSection() {
                   />
                 ) : (
                   <Image
-                    src={school.profileImage || "/Listing/Logo.png"}
+                    src={school.profileImage || '/Listing/Logo.png'}
                     alt={school.name}
                     width={120}
                     height={120}
@@ -723,23 +517,21 @@ export default function SchoolDetailSection() {
                   {school.name}
                 </h1>
 
-                {/* Distance and Rating */}
+                {/* City and Rating */}
                 <div className="flex items-center gap-4 mb-4">
-                  <span className="text-gray-600 font-medium">{school.address?.city}</span>
+                  <span className="text-gray-600 font-medium">{city}</span>
                   <span className="text-gray-400">|</span>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1">
                       {[...Array(5)].map((_, i) => (
                         <FaStar
                           key={i}
-                          className={`w-4 h-4 ${
-                            school.reviews?.[0]?.rating && i < school.reviews[0].rating ? 'text-yellow-400' : 'text-gray-300'
-                          }`}
+                          className={`w-4 h-4 ${i < avgStars ? 'text-yellow-400' : 'text-gray-300'}`}
                         />
                       ))}
                     </div>
                     <span className="text-gray-600 font-medium">
-                      ({school.reviews?.[0]?.rating || 0}.0)
+                      ({avgRating.toFixed(1)})
                     </span>
                   </div>
                 </div>
@@ -764,19 +556,21 @@ export default function SchoolDetailSection() {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 lg:gap-6">
                   <div className="flex items-center gap-1">
                     <FaMapMarkerAlt className="text-[#257B5A] text-sm sm:text-base" />
-                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{school.address?.fullAddress}</span>
+                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">
+                      {fullAddress}
+                    </span>
                   </div>
                   <div className="flex items-center gap-1">
                     <FaPhone className="text-[#257B5A] text-sm sm:text-base" />
-                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700">{school.contact?.phone}</span>
+                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700">{mobile}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <FaEnvelope className="text-[#257B5A] text-sm sm:text-base" />
-                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{school.contact?.email}</span>
+                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{email}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <FaGlobe className="text-[#257B5A] text-sm sm:text-base" />
-                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{school.contact?.website}</span>
+                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{website}</span>
                   </div>
                 </div>
 
@@ -817,7 +611,9 @@ export default function SchoolDetailSection() {
               <div className="w-full lg:w-[35%] flex flex-col gap-4 sm:gap-6 mt-4 sm:mt-6 lg:mt-0">
                 {/* Nearby Schools - Horizontal Cards */}
                 <div className="w-full bg-white border rounded-lg font-poppins pt-3 sm:pt-4 lg:pt-[25px] pb-3 sm:pb-4 lg:pb-[25px] px-3 sm:px-4 lg:px-6">
-                  <h2 className="font-semibold font-poppins text-[13px] sm:text-[14px] md:text-[16px] lg:text-[20px] text-black mb-2 sm:mb-3 lg:mb-4">Nearby Schools</h2>
+                  <h2 className="font-semibold font-poppins text-[13px] sm:text-[14px] md:text-[16px] lg:text-[20px] text-black mb-2 sm:mb-3 lg:mb-4">
+                    Nearby Schools
+                  </h2>
                   <div className="flex flex-col gap-2 sm:gap-3">
                     {nearbyLoading ? (
                       <div className="text-gray-500 text-center py-4">Loading nearby schools...</div>
@@ -828,9 +624,9 @@ export default function SchoolDetailSection() {
                         <HorizontalSchoolCard
                           key={s.id}
                           name={s.name}
-                          image={s.profileImage || s.gallery?.[0] || "/Listing/Logo.png"}
-                          location={s.address?.city || ""}
-                          distance="" // You can calculate distance if needed
+                          image={s.profileImage || s.gallery?.[0] || '/Listing/Logo.png'}
+                          location={s.address?.city || ''}
+                          distance=""
                           rating={s.reviews?.[0]?.rating || 0}
                         />
                       ))
@@ -838,20 +634,14 @@ export default function SchoolDetailSection() {
                   </div>
                 </div>
 
-                {/* Review Section */}
-                <div className="w-full bg-white border rounded-lg pt-3 sm:pt-4 lg:pt-[25px] pb-3 sm:pb-4 lg:pb-[25px] px-3 sm:px-4 lg:pl-[23px]">
-                  <h4 className="font-semibold font-poppins text-[13px] sm:text-[14px] md:text-[16px] lg:text-[20px] text-black mb-2 sm:mb-3 lg:mb-4">Get More Reviews</h4>
-                  <button className="bg-[#d3e7dc] text-green-700 font-medium py-1.5 sm:py-2 px-2 sm:px-3 lg:px-4 rounded-full text-[11px] sm:text-[12px] md:text-[14px] lg:text-[16px]">
-                    📩 Ask for Reviews
-                  </button>
-                </div>
-
                 {/* Embedded Map */}
                 <div className="w-full bg-white rounded-lg border pt-3 sm:pt-4 lg:pt-[25px] pb-3 sm:pb-4 lg:pb-[25px] px-3 sm:px-4 lg:px-[23px]">
-                  <h4 className="font-medium font-poppins text-[14px] sm:text-[16px] md:text-[18px] lg:text-[24px] text-black mb-2 sm:mb-3 lg:mb-4">Explore Location</h4>
+                  <h4 className="font-medium font-poppins text-[14px] sm:text-[16px] md:text-[18px] lg:text-[24px] text-black mb-2 sm:mb-3 lg:mb-4">
+                    Explore Location
+                  </h4>
                   <iframe
                     title="School Location"
-                    src="https://maps.google.com/maps?q=Sainik%20School,%20Pune&t=&z=13&ie=UTF8&iwloc=&output=embed"
+                    src={`https://maps.google.com/maps?q=${mapQuery}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
                     width="100%"
                     height="120"
                     className="rounded-lg border sm:h-[150px] lg:h-[200px]"
