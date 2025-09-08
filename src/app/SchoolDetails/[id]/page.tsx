@@ -2,17 +2,17 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { 
-  FaSchool, 
-  FaStar, 
-  FaMapMarkerAlt, 
-  FaPhone, 
+import {
+  FaSchool,
+  FaStar,
+  FaMapMarkerAlt,
+  FaPhone,
   FaEnvelope,
   FaGlobe,
   FaArrowLeft,
   FaPlus
 } from 'react-icons/fa';
-import { FiArrowRight } from "react-icons/fi";
+import { FiArrowRight } from 'react-icons/fi';
 import Navbar from '../../../Components/NavBar';
 import Footer from '../../../Components/Footer';
 import { getSchoolById, searchSchoolsByCoordinates } from '../../../../services/schoolServices';
@@ -45,6 +45,8 @@ const HorizontalSchoolCard = ({
             width={64}
             height={64}
             className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <Image
@@ -67,7 +69,7 @@ const HorizontalSchoolCard = ({
             {[...Array(5)].map((_, i) => (
               <FaStar
                 key={i}
-                className={`w-3 h-3 ${i < (Math.round(Number(rating) || 0)) ? 'text-yellow-400' : 'text-gray-300'}`}
+                className={`w-3 h-3 ${i < Math.round(Number(rating) || 0) ? 'text-yellow-400' : 'text-gray-300'}`}
               />
             ))}
           </div>
@@ -143,29 +145,55 @@ export default function SchoolDetailSection() {
     fetchNearbySchools();
   }, [school]);
 
-  const {
+  // Replace the facilities-related part of your useMemo with this:
+const {
+  keyHighlights,
+  admissionCriteriaEligibility,
+  schoolHours,
+  annualFeeStructure,
+  additionalFees,
+  academicFacilities,
+  sportsFacilities,
+  infraFacilities,
+  gallery,
+  reviews,
+  faqs,
+  schoolInfoEntries
+} = useMemo(() => {
+  const keyHighlights = parseArray(school?.overview?.keyHighlights);
+  const admissionCriteriaEligibility = parseArray(school?.overview?.admissionCriteriaEligibility);
+  const schoolHours = parseArray(school?.overview?.schoolHours);
+  const annualFeeStructure = parseArray(school?.fees?.annualFeeStructure);
+  const additionalFees = parseArray(school?.fees?.additionalFees);
+
+  // NEW: keep facilities groups separate (API may return stringified arrays)
+  const academicFacilities = parseArray(school?.facilities?.academic);
+  const sportsFacilities = parseArray(school?.facilities?.sportsRecreation);
+  const infraFacilities = parseArray(school?.facilities?.infrastructure);
+
+  const gallery = Array.isArray(school?.gallery) ? school.gallery : [];
+  const reviews = Array.isArray(school?.reviews) ? school.reviews : [];
+  const faqs = Array.isArray(school?.faqs) ? school.faqs : [];
+
+  const infoObj = school?.overview?.schoolInformation || {};
+  const schoolInfoEntries = Object.entries(infoObj || {}).filter(([, v]) => v);
+
+  return {
     keyHighlights,
     admissionCriteriaEligibility,
     schoolHours,
     annualFeeStructure,
     additionalFees,
-    facilities,
+    academicFacilities,
+    sportsFacilities,
+    infraFacilities,
     gallery,
     reviews,
-    faqs
-  } = useMemo(() => {
-    return {
-      keyHighlights: parseArray(school?.overview?.keyHighlights),
-      admissionCriteriaEligibility: parseArray(school?.overview?.admissionCriteriaEligibility),
-      schoolHours: parseArray(school?.overview?.schoolHours),
-      annualFeeStructure: parseArray(school?.fees?.annualFeeStructure),
-      additionalFees: parseArray(school?.fees?.additionalFees),
-      facilities: Array.isArray(school?.facilities) ? school.facilities : [],
-      gallery: Array.isArray(school?.gallery) ? school.gallery : [],
-      reviews: Array.isArray(school?.reviews) ? school.reviews : [],
-      faqs: Array.isArray(school?.faqs) ? school.faqs : []
-    };
-  }, [school]);
+    faqs,
+    schoolInfoEntries
+  };
+}, [school]);
+
 
   const avgRating = useMemo(() => {
     if (!reviews.length) return 0;
@@ -190,23 +218,22 @@ export default function SchoolDetailSection() {
       case 'overview':
         return (
           <div className="space-y-6">
-            {/* School Information (only if provided) */}
-            {Array.isArray(school?.overview?.schoolInformation) && school.overview.schoolInformation.length > 0 && (
+            {/* School Information (object-based) */}
+            {schoolInfoEntries.length > 0 && (
               <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
                 <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
                   School Information
                 </h4>
-                <ul className="list-disc pl-6 text-[16px] font-poppins text-black space-y-1">
-                  {school.overview.schoolInformation.map((item: any, idx: number) => (
-                    <li key={idx}>
-                      {typeof item === 'string'
-                        ? item
-                        : typeof item === 'object'
-                        ? `${item?.label || item?.key || 'Info'}: ${item?.value || ''}`
-                        : String(item)}
-                    </li>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {schoolInfoEntries.map(([key, value], idx) => (
+                    <div key={idx} className="flex items-center gap-3">
+                      <FaSchool className="text-xl text-black" />
+                      <span className="text-black capitalize">
+                        {key.replace(/([A-Z])/g, ' $1')}: <span className="text-[#257B5A]">{String(value)}</span>
+                      </span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
 
@@ -277,25 +304,62 @@ export default function SchoolDetailSection() {
           </div>
         );
 
-      case 'facilities':
-        return (
+     case 'facilities':
+  return (
+    <div className="space-y-6">
+      <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
+        <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+          🏫 Facilities
+        </h4>
+
+        {(academicFacilities.length + sportsFacilities.length + infraFacilities.length) > 0 ? (
           <div className="space-y-6">
-            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
-                🏫 Facilities
-              </h4>
-              {facilities.length ? (
-                <ul className="list-disc pl-6 text-[16px] font-poppins text-black space-y-1">
-                  {facilities.map((fac: any, idx: number) => (
-                    <li key={idx}>{typeof fac === 'string' ? fac : JSON.stringify(fac)}</li>
+            {academicFacilities.length > 0 && (
+              <div>
+                <h5 className="text-[15px] sm:text-[16px] md:text-[18px] font-semibold text-black mb-2">
+                  Academic Facilities
+                </h5>
+                <ul className="list-disc pl-6 text-[16px] text-black space-y-1">
+                  {academicFacilities.map((item: string, idx: number) => (
+                    <li key={idx}>{item}</li>
                   ))}
                 </ul>
-              ) : (
-                <p className="text-[16px] text-gray-600">No facilities listed.</p>
-              )}
-            </div>
+              </div>
+            )}
+
+            {sportsFacilities.length > 0 && (
+              <div>
+                <h5 className="text-[15px] sm:text-[16px] md:text-[18px] font-semibold text-black mb-2">
+                  Sports & Recreation
+                </h5>
+                <ul className="list-disc pl-6 text-[16px] text-black space-y-1">
+                  {sportsFacilities.map((item: string, idx: number) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {infraFacilities.length > 0 && (
+              <div>
+                <h5 className="text-[15px] sm:text-[16px] md:text-[18px] font-semibold text-black mb-2">
+                  Infrastructure
+                </h5>
+                <ul className="list-disc pl-6 text-[16px] text-black space-y-1">
+                  {infraFacilities.map((item: string, idx: number) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
-        );
+        ) : (
+          <p className="text-[16px] text-gray-600">No facilities listed.</p>
+        )}
+      </div>
+    </div>
+  );
+
 
       case 'fees':
         return (
@@ -341,28 +405,36 @@ export default function SchoolDetailSection() {
               <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
                 🏫 Campus Gallery
               </h4>
-              {gallery.length ? (
+              {gallery && gallery.filter((s: any) => typeof s === 'string' && s.trim()).length ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {gallery.map((src: string, i: number) => (
-                    <div key={i} className="relative group cursor-pointer">
-                      {isExternalUrl(src) ? (
-                        <img
-                          src={src}
-                          alt={`Gallery Image ${i + 1}`}
-                          className="w-full h-48 object-cover rounded-lg border hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <Image
-                          src={src}
-                          alt={`Gallery Image ${i + 1}`}
-                          width={600}
-                          height={400}
-                          className="w-full h-48 object-cover rounded-lg border hover:scale-105 transition-transform duration-300"
-                        />
-                      )}
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg" />
-                    </div>
-                  ))}
+                  {gallery
+                    .filter((src: any) => typeof src === 'string' && src.trim())
+                    .map((src: string, i: number) => (
+                      <div key={i} className="relative group cursor-pointer overflow-hidden rounded-lg">
+                        {isExternalUrl(src) ? (
+                          <img
+                            src={src}
+                            alt={`Gallery Image ${i + 1}`}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                            onError={(e) => {
+                              e.currentTarget.style.visibility = 'hidden';
+                            }}
+                          />
+                        ) : (
+                          <Image
+                            src={src}
+                            alt={`Gallery Image ${i + 1}`}
+                            width={1200}
+                            height={800}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                        )}
+                        <div className="pointer-events-none absolute inset-0 rounded-lg bg-black/0 group-hover:bg-black/30 transition-colors duration-300" />
+                      </div>
+                    ))}
                 </div>
               ) : (
                 <p className="text-[16px] text-gray-600">No images available.</p>
@@ -463,12 +535,19 @@ export default function SchoolDetailSection() {
   }
 
   const avgStars = Math.round(avgRating);
-  const website = school?.address?.website || '';
-  const email = school?.address?.email || '';
-  const mobile = school?.address?.mobile || '';
+
+  // Name and contact fallbacks according to API
+  const displayName =
+    school?.name ||
+    [school?.firstName, school?.lastName].filter(Boolean).join(' ').trim() ||
+    'School';
+
+  const website = school?.address?.website || school?.website || '';
+  const email = school?.address?.email || school?.email || '';
+  const mobile = school?.address?.mobile || school?.mobile || '';
   const city = school?.address?.city || '';
   const fullAddress = school?.address?.fullAddress || '';
-  const mapQuery = encodeURIComponent(`${school?.name || ''}, ${city}`);
+  const mapQuery = encodeURIComponent(`${displayName}, ${city}`);
 
   return (
     <>
@@ -495,15 +574,17 @@ export default function SchoolDetailSection() {
                 {isExternalUrl(school.profileImage || '') ? (
                   <img
                     src={school.profileImage}
-                    alt={school.name}
+                    alt={displayName}
                     width={120}
                     height={120}
                     className="w-full h-full object-contain"
+                    loading="lazy"
+                    decoding="async"
                   />
                 ) : (
                   <Image
                     src={school.profileImage || '/Listing/Logo.png'}
-                    alt={school.name}
+                    alt={displayName}
                     width={120}
                     height={120}
                     className="w-full h-full object-contain"
@@ -514,7 +595,7 @@ export default function SchoolDetailSection() {
               {/* School Information */}
               <div className="flex-1">
                 <h1 className="text-lg sm:text-xl md:text-2xl lg:text-[32px] font-poppins font-medium text-black mb-2 lg:mb-2 leading-tight">
-                  {school.name}
+                  {displayName}
                 </h1>
 
                 {/* City and Rating */}
