@@ -45,7 +45,7 @@ const ProfileDropdown = () => {
   };
 
   const getDashboardRoute = () => {
-    return userRole === 'school' ? '/SchoolDashboard' : '/StudentDashboard';
+    return userRole === 'school' ? '/SchoolDashboard/MySchool' : '/StudentDashboard';
   };
 
   return (

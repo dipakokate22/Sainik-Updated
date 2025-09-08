@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import SchoolCard from '../../Components/SchoolCard';
 import { FaSearch, FaTimes, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { getAllSchools, searchSchools } from '../../../services/schoolServices';
@@ -166,32 +167,36 @@ const SchoolListingPage = () => {
   }, [searchTerm]);
 
   const locations = useMemo(
-  () =>
-    Array.from(new Set(schools.map((s) => s.address?.city)))
-      .filter((v): v is string => Boolean(v)),
-  [schools]
-);
+    () =>
+      Array.from(new Set(schools.map((s) => s.address?.city))).filter(
+        (v): v is string => Boolean(v)
+      ),
+    [schools]
+  );
 
-const boards = useMemo(
-  () =>
-    Array.from(new Set(schools.map((s) => s.overview?.schoolInformation?.board)))
-      .filter((v): v is string => Boolean(v)),
-  [schools]
-);
+  const boards = useMemo(
+    () =>
+      Array.from(
+        new Set(schools.map((s) => s.overview?.schoolInformation?.board))
+      ).filter((v): v is string => Boolean(v)),
+    [schools]
+  );
 
-const mediums = useMemo(
-  () =>
-    Array.from(new Set(schools.map((s) => s.overview?.schoolInformation?.medium)))
-      .filter((v): v is string => Boolean(v)),
-  [schools]
-);
+  const mediums = useMemo(
+    () =>
+      Array.from(
+        new Set(schools.map((s) => s.overview?.schoolInformation?.medium))
+      ).filter((v): v is string => Boolean(v)),
+    [schools]
+  );
 
-const categories = useMemo(
-  () =>
-    Array.from(new Set(schools.map((s) => s.overview?.schoolInformation?.category)))
-      .filter((v): v is string => Boolean(v)),
-  [schools]
-);
+  const categories = useMemo(
+    () =>
+      Array.from(
+        new Set(schools.map((s) => s.overview?.schoolInformation?.category))
+      ).filter((v): v is string => Boolean(v)),
+    [schools]
+  );
 
   // Apply filters
   const filteredSchools = useMemo(() => {
@@ -340,12 +345,18 @@ const categories = useMemo(
           ) : displayedSchools.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {displayedSchools.map((school) => (
-                <SchoolCard
+                <Link
                   key={school.id}
-                  name={school.name}
-                  image={school.profileImage || school.gallery?.[0] || '/default-school.jpg'}
-                  desc={`${school.address?.city || ''} | ${school.overview?.schoolInformation?.board || ''} | ${school.overview?.schoolInformation?.medium || ''} | ${school.overview?.schoolInformation?.category || ''}`}
-                />
+                  href={`/SchoolDetails/${school.id}`}
+                  className="block"
+                  prefetch
+                >
+                  <SchoolCard
+                    name={school.name}
+                    image={school.profileImage || school.gallery?.[0] || '/default-school.jpg'}
+                    desc={`${school.address?.city || ''} | ${school.overview?.schoolInformation?.board || ''} | ${school.overview?.schoolInformation?.medium || ''} | ${school.overview?.schoolInformation?.category || ''}`}
+                  />
+                </Link>
               ))}
             </div>
           ) : (
@@ -372,9 +383,7 @@ const categories = useMemo(
                   key={num}
                   onClick={() => setCurrentPage(num)}
                   className={`w-9 h-9 flex items-center justify-center rounded-md text-[16px] font-normal transition-colors ${
-                    currentPage === num
-                      ? 'bg-[#AA0111] text-white'
-                      : 'text-gray-600 hover:bg-red-100'
+                    currentPage === num ? 'bg-[#AA0111] text-white' : 'text-gray-600 hover:bg-red-100'
                   }`}
                 >
                   {num}

@@ -173,9 +173,9 @@ export default function Navbar() {
             {isExploreOpen && (
               <div className="absolute top-[70px] right-0 w-56 bg-[#1C1F24] text-white rounded-xl shadow-xl p-2 z-50">
                 <ul className="space-y-1 text-sm">
-                  <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
+                  {/* <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/Schools">Recommended Schools</Link>
-                  </li>
+                  </li> */}
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/Listing">School List</Link>
                   </li>

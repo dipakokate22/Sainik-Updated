@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 const menuItems = [
-  { name: 'Dashboard', icon: LayoutDashboard, href: '/SchoolDashboard' },
+  // { name: 'Dashboard', icon: LayoutDashboard, href: '/SchoolDashboard' },
   // { name: 'Profile', icon: User, href: '/SchoolDashboard/Profile' },
   { name: 'My School', icon: GraduationCap, href: '/SchoolDashboard/MySchool' },
   { name: 'Subscription', icon: TrendingUp, href: '/SchoolDashboard/Subscription' },
@@ -159,8 +159,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
         <ul className="flex flex-col gap-1 sm:gap-1.5">
           {menuItems.map((item) => {
             const isActive =
-              item.href === '/SchoolDashboard'
-                ? pathname === '/SchoolDashboard'
+              item.href === '/SchoolDashboard/MySchool'
+                ? pathname === '/SchoolDashboard/MySchool'
                 : pathname === item.href || pathname.startsWith(item.href + '/');
             return (
               <li key={item.name}>
