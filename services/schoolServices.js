@@ -228,6 +228,28 @@ export const searchSchools = async (params = {}) => {
 
 // schoolServices.js
 
+// GET: Categories, Boards, Mediums master payload
+export const getCategoriesBoardMedium = async () => {
+  try {
+    const token = getAuthToken();
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const res = await fetch(`${API_BASE_URL}/categories-board-medium`, {
+      method: 'GET',
+      headers,
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to fetch categories/board/medium');
+    return data;
+  } catch (err) {
+    console.error('Get categories/board/medium error:', err);
+    throw err;
+  }
+};
+
+
 export const getStates = async () => {
   const res = await fetch("https://sainik.codekrafters.in/api/states");
   if (!res.ok) {

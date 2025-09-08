@@ -11,13 +11,18 @@ import {
   Phone,
   Mail,
   Globe,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { FaMapMarkerAlt as FaMapMarkerAltIcon } from "react-icons/fa";
 import {
   getSchoolByUserId,
   updateSchoolById,
-  uploadProfileImage,       // ✅ NEW
-  uploadGalleryImages,getStates,getCities      // ✅ NEW
+  uploadProfileImage,
+  uploadGalleryImages,
+  getStates,
+  getCities,
+  getCategoriesBoardMedium, // <-- ensure this exists in services/schoolServices
 } from "../../../../services/schoolServices";
 
 /* ================= Map API Payload ================= */
@@ -25,7 +30,6 @@ const mapToPayload = (data: any) => {
   return {
     firstName: data.firstName || "",
     lastName: data.lastName || "",
-    // ✅ accept either property name to avoid losing the uploaded value
     profile_image: data.profileImage || data.profile_image || null,
     latitude: data.location?.latitude || null,
     longitude: data.location?.longitude || null,
@@ -80,6 +84,10 @@ const InlineEdit = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value || "");
+
+  useEffect(() => {
+    setEditValue(value || "");
+  }, [value]);
 
   const handleSave = () => {
     onSave(editValue);
@@ -204,31 +212,7 @@ interface State {
 interface City {
   id: number;
   name: string;
-  stateId: number;
-}
-
-interface AddressSectionProps {
-  school: any;
-  onSave: (updatedAddress: {
-    state: string;
-    city: string;
-    fullAddress: string;
-    latitude: string;
-    longitude: string;
-  }) => void;
-}
-/* ================= Address Section ================= */
-
-
-interface State {
-  id: number;
-  name: string;
-}
-
-interface City {
-  id: number;
-  name: string;
-  stateId: number;
+  stateId?: number;
 }
 
 interface AddressSectionProps {
@@ -245,9 +229,7 @@ interface AddressSectionProps {
 const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
   const [states, setStates] = useState<State[]>([]);
   const [cities, setCities] = useState<City[]>([]);
-  const [selectedStateId, setSelectedStateId] = useState<string>(
-    school?.address?.state ? "" : ""
-  );
+  const [selectedStateId, setSelectedStateId] = useState<string>("");
   const [selectedCityId, setSelectedCityId] = useState<string>("");
   const [address, setAddress] = useState<string>(
     school?.address?.fullAddress || ""
@@ -260,10 +242,13 @@ const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
   );
   const [fetchingLocation, setFetchingLocation] = useState(false);
 
+  // COLLAPSIBLE
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+
   // Load states
   useEffect(() => {
     getStates().then((res) => {
-      const allStates: State[] = res.data || res;
+      const allStates: State[] = res?.data || res || [];
       setStates(allStates);
       if (school?.address?.state) {
         const match = allStates.find((s) => s.name === school.address.state);
@@ -276,7 +261,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
   useEffect(() => {
     if (selectedStateId) {
       getCities(selectedStateId).then((res) => {
-        const allCities: City[] = res.data || res;
+        const allCities: City[] = res?.data || res || [];
         setCities(allCities);
         if (school?.address?.city) {
           const match = allCities.find((c) => c.name === school.address.city);
@@ -332,114 +317,153 @@ const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
   };
 
   return (
-    <div className="space-y-4 p-6 border rounded-xl shadow-sm bg-white mb-6">
-      <h3 className="text-lg font-semibold text-gray-800">School Address</h3>
-
-      {/* State */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1 text-gray-700">
-          State
-        </label>
-        <select
-          value={selectedStateId}
-          onChange={(e) => {
-            setSelectedStateId(e.target.value);
-            setSelectedCityId(""); // reset city
-          }}
-          className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
-        >
-          <option value="">Select State</option>
-          {states.map((s: State) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* City */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1 text-gray-700">
-          City
-        </label>
-        <select
-          value={selectedCityId}
-          onChange={(e) => setSelectedCityId(e.target.value)}
-          className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
-          disabled={!selectedStateId}
-        >
-          <option value="">Select City</option>
-          {cities.map((c: City) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Full Address */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1 text-gray-700">
-          Full Address
-        </label>
-        <textarea
-          rows={3}
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
-        />
-      </div>
-
-      {/* Latitude & Longitude with Button */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Latitude
-          </label>
-          <input
-            type="text"
-            value={latitude}
-            onChange={(e) => setLatitude(e.target.value)}
-            className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
-          />
+    <div className="space-y-4 p-0 border rounded-xl shadow-sm bg-white mb-6 overflow-hidden">
+      {/* Header with toggle */}
+      <div
+        className="flex items-center justify-between p-4 cursor-pointer"
+        onClick={() => setIsOpen((s) => !s)}
+      >
+        <div className="flex items-center gap-3">
+          <FaMapMarkerAltIcon className="text-[#257B5A]" />
+          <div>
+            <h3 className="text-lg font-semibold text-gray-800">School Address</h3>
+            <p className="text-xs text-gray-500">
+              {school?.address?.city ? `${school.address.city}, ${school.address.state}` : "No address set"}
+            </p>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Longitude
-          </label>
-          <input
-            type="text"
-            value={longitude}
-            onChange={(e) => setLongitude(e.target.value)}
-            className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
-          />
-        </div>
-        <div className="flex">
+
+        <div className="flex items-center gap-3">
           <button
-            onClick={fetchCurrentLocation}
-            disabled={fetchingLocation}
-            className="w-full bg-[#257B5A] text-white px-4 py-2 rounded-lg hover:bg-[#1e6249]"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen((s) => !s);
+            }}
+            className="flex items-center gap-2 px-3 py-1 bg-[#257B5A] text-white rounded-lg hover:bg-[#1e6249]"
+            aria-expanded={isOpen}
           >
-            {fetchingLocation ? "Fetching..." : "Use Current Location"}
+            {isOpen ? (
+              <>
+                <span className="hidden sm:inline">Collapse</span>
+                <ChevronUp size={16} />
+              </>
+            ) : (
+              <>
+                <span className="hidden sm:inline">Expand</span>
+                <ChevronDown size={16} />
+              </>
+            )}
           </button>
         </div>
       </div>
 
-      {/* Save */}
-      <button
-        onClick={handleSave}
-        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-      >
-        <Save size={18} /> Save Address
-      </button>
+      {/* Collapsible content */}
+      {isOpen && (
+        <div className="p-6 border-t">
+          {/* State */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              State
+            </label>
+            <select
+              value={selectedStateId}
+              onChange={(e) => {
+                setSelectedStateId(e.target.value);
+                setSelectedCityId(""); // reset city
+              }}
+              className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+            >
+              <option value="">Select State</option>
+              {states.map((s: State) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* City */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              City
+            </label>
+            <select
+              value={selectedCityId}
+              onChange={(e) => setSelectedCityId(e.target.value)}
+              className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+              disabled={!selectedStateId}
+            >
+              <option value="">Select City</option>
+              {cities.map((c: City) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Full Address */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Full Address
+            </label>
+            <textarea
+              rows={3}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+            />
+          </div>
+
+          {/* Latitude & Longitude with Button */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">
+                Latitude
+              </label>
+              <input
+                type="text"
+                value={latitude}
+                onChange={(e) => setLatitude(e.target.value)}
+                className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">
+                Longitude
+              </label>
+              <input
+                type="text"
+                value={longitude}
+                onChange={(e) => setLongitude(e.target.value)}
+                className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+              />
+            </div>
+            <div className="flex">
+              <button
+                onClick={fetchCurrentLocation}
+                disabled={fetchingLocation}
+                className="w-full bg-[#257B5A] text-white px-4 py-2 rounded-lg hover:bg-[#1e6249]"
+              >
+                {fetchingLocation ? "Fetching..." : "Use Current Location"}
+              </button>
+            </div>
+          </div>
+
+          {/* Save */}
+          <div className="flex justify-end">
+            <button
+              onClick={handleSave}
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            >
+              <Save size={18} /> Save Address
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
-
-
-
-
-
 
 /* ================= Tabs ================= */
 const OverviewTab = ({
@@ -660,7 +684,6 @@ const GalleryTab = ({
   );
 };
 
-
 const ReviewsTab = () => (
   <div className="bg-white rounded-lg border p-6 shadow-sm text-gray-600">
     No reviews yet
@@ -680,6 +703,15 @@ export default function MySchool() {
   const [schoolData, setSchoolData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  // metadata lists
+  const [categories, setCategories] = useState<any[]>([]);
+  const [boards, setBoards] = useState<any[]>([]);
+  const [mediums, setMediums] = useState<any[]>([]);
+
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+  const [selectedBoardId, setSelectedBoardId] = useState<string>("");
+  const [selectedMediumId, setSelectedMediumId] = useState<string>("");
+
   useEffect(() => {
     const fetchSchoolData = async () => {
       try {
@@ -696,6 +728,57 @@ export default function MySchool() {
     fetchSchoolData();
   }, []);
 
+  // fetch categories/boards/mediums
+  useEffect(() => {
+    const fetchMeta = async () => {
+      try {
+        const res: any = await getCategoriesBoardMedium();
+        const data = res?.data || res || {};
+        setCategories(data.categories || []);
+        setBoards(data.boards || []);
+        setMediums(data.mediums || []);
+      } catch (err) {
+        console.error("Failed to fetch categories/boards/mediums:", err);
+      }
+    };
+    fetchMeta();
+  }, []);
+
+  // when schoolData or meta lists change, try to sync selected ids
+  useEffect(() => {
+    if (!schoolData) return;
+
+    const info = schoolData.overview?.schoolInformation || {};
+
+    const findId = (list: any[], val: any) => {
+      if (val == null) return "";
+      if (typeof val === "number" || /^\d+$/.test(String(val))) {
+        const match = list.find((l) => String(l.id) === String(val));
+        if (match) return String(match.id);
+      }
+      const matchByName = list.find(
+        (l) => String(l.name).toLowerCase() === String(val).toLowerCase()
+      );
+      if (matchByName) return String(matchByName.id);
+      return "";
+    };
+
+    const catVal =
+      info.category ?? schoolData.category ?? schoolData?.overview?.category;
+    const boardVal =
+      info.board ?? schoolData.board ?? schoolData?.overview?.board;
+    const mediumVal =
+      info.medium ?? schoolData.medium ?? schoolData?.overview?.medium;
+
+    const cId = findId(categories, catVal);
+    const bId = findId(boards, boardVal);
+    const mId = findId(mediums, mediumVal);
+
+    if (cId) setSelectedCategoryId(cId);
+    if (bId) setSelectedBoardId(bId);
+    if (mId) setSelectedMediumId(mId);
+  }, [schoolData, categories, boards, mediums]);
+
   const handleDataUpdate = async (field: string, value: any) => {
     if (!schoolData) return;
     const keys = field.split(".");
@@ -710,6 +793,48 @@ export default function MySchool() {
       await updateSchoolById(updatedData.id, payload);
     } catch (error) {
       console.error("Error updating school:", error);
+    }
+  };
+
+  // New handler for category/board/medium selects:
+  const handleSelectChange = async (
+    type: "category" | "board" | "medium",
+    selectedId: string
+  ) => {
+    if (!schoolData) return;
+
+    const listMap: any = {
+      category: categories,
+      board: boards,
+      medium: mediums,
+    };
+    const list = listMap[type] || [];
+    const selectedObj = list.find((l: any) => String(l.id) === String(selectedId));
+    const selectedName = selectedObj ? selectedObj.name : "";
+
+    const updatedData = {
+      ...schoolData,
+      overview: {
+        ...(schoolData.overview || {}),
+        schoolInformation: {
+          ...(schoolData.overview?.schoolInformation || {}),
+          [type]: selectedName,
+        },
+      },
+      [type]: selectedName,
+    };
+
+    setSchoolData(updatedData);
+
+    if (type === "category") setSelectedCategoryId(selectedId);
+    if (type === "board") setSelectedBoardId(selectedId);
+    if (type === "medium") setSelectedMediumId(selectedId);
+
+    try {
+      const payload = mapToPayload(updatedData);
+      await updateSchoolById(updatedData.id, payload);
+    } catch (err) {
+      console.error(`Failed to update ${type}:`, err);
     }
   };
 
@@ -748,7 +873,6 @@ export default function MySchool() {
             <div className="w-32 h-32 bg-gray-100 rounded-2xl p-2 flex-shrink-0 relative overflow-hidden">
               <label className="cursor-pointer block w-full h-full">
                 <img
-                  // ✅ support either field name – whatever your API returns
                   src={
                     schoolData.profileImage ||
                     schoolData.profile_image ||
@@ -765,7 +889,6 @@ export default function MySchool() {
                     const file = e.target.files?.[0];
                     if (!file) return;
                     try {
-                      // ✅ use new API for profile image upload
                       const res: any = await uploadProfileImage(
                         schoolData.id,
                         file
@@ -775,7 +898,6 @@ export default function MySchool() {
                         res?.data?.profile_image ?? res?.profile_image;
 
                       if (newUrl) {
-                        // keep both keys in sync to avoid UI mismatches
                         setSchoolData((prev: any) => ({
                           ...prev,
                           profileImage: newUrl,
@@ -785,7 +907,6 @@ export default function MySchool() {
                     } catch (err) {
                       console.error("Error uploading profile image:", err);
                     } finally {
-                      // reset input so same file can be reselected
                       e.currentTarget.value = "";
                     }
                   }}
@@ -806,7 +927,7 @@ export default function MySchool() {
                   placeholder="Enter School Name"
                 />
               </h1>
-               <h1 className="text-2xl font-medium text-black mb-2">
+              <h1 className="text-2xl font-medium text-black mb-2">
                 <InlineEdit
                   value={schoolData.lastName}
                   onSave={(val) => handleDataUpdate("lastName", val)}
@@ -857,33 +978,109 @@ export default function MySchool() {
             </div>
           </div>
         </div>
-<AddressSection
-  school={schoolData}
-  onSave={async (updatedAddress) => {
-    const updatedData = {
-      ...schoolData,
-      address: {
-        ...schoolData.address,
-        ...updatedAddress,
-      },
-      location: {
-        latitude: updatedAddress.latitude,
-        longitude: updatedAddress.longitude,
-      },
-    };
-    setSchoolData(updatedData);
-    try {
-      const payload = mapToPayload(updatedData);
-      await updateSchoolById(updatedData.id, payload);
-    } catch (error) {
-      console.error("Error updating address:", error);
-    }
-  }}
-/>
 
+        {/* School Details - Category / Board / Medium */}
+        <div className="bg-white rounded-lg border p-6 mb-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            School Details
+          </h3>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">
+                Category
+              </label>
+              <select
+                value={selectedCategoryId}
+                onChange={(e) => handleSelectChange("category", e.target.value)}
+                className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+              >
+                <option value="">Select Category</option>
+                {categories.map((c: any) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              {categories.length === 0 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  No categories loaded.
+                </p>
+              )}
+            </div>
 
-        
+            {/* Board */}
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">
+                Board
+              </label>
+              <select
+                value={selectedBoardId}
+                onChange={(e) => handleSelectChange("board", e.target.value)}
+                className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+              >
+                <option value="">Select Board</option>
+                {boards.map((b: any) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+              {boards.length === 0 && (
+                <p className="text-xs text-gray-500 mt-1">No boards loaded.</p>
+              )}
+            </div>
+
+            {/* Medium */}
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">
+                Medium
+              </label>
+              <select
+                value={selectedMediumId}
+                onChange={(e) => handleSelectChange("medium", e.target.value)}
+                className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+              >
+                <option value="">Select Medium</option>
+                {mediums.map((m: any) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
+                ))}
+              </select>
+              {mediums.length === 0 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  No mediums loaded.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <AddressSection
+          school={schoolData}
+          onSave={async (updatedAddress) => {
+            const updatedData = {
+              ...schoolData,
+              address: {
+                ...schoolData.address,
+                ...updatedAddress,
+              },
+              location: {
+                latitude: updatedAddress.latitude,
+                longitude: updatedAddress.longitude,
+              },
+            };
+            setSchoolData(updatedData);
+            try {
+              const payload = mapToPayload(updatedData);
+              await updateSchoolById(updatedData.id, payload);
+            } catch (error) {
+              console.error("Error updating address:", error);
+            }
+          }}
+        />
 
         {/* Tabs */}
         <div className="bg-white border rounded-lg mb-6 overflow-x-auto shadow-sm">
@@ -911,17 +1108,11 @@ export default function MySchool() {
             switch (activeTab) {
               case "Overview":
                 return (
-                  <OverviewTab
-                    data={schoolData}
-                    onUpdate={handleDataUpdate}
-                  />
+                  <OverviewTab data={schoolData} onUpdate={handleDataUpdate} />
                 );
               case "Facilities":
                 return (
-                  <FacilitiesTab
-                    data={schoolData}
-                    onUpdate={handleDataUpdate}
-                  />
+                  <FacilitiesTab data={schoolData} onUpdate={handleDataUpdate} />
                 );
               case "Fees":
                 return <FeesTab data={schoolData} onUpdate={handleDataUpdate} />;

@@ -631,36 +631,55 @@ const {
         <section className="max-w-[1440px] w-full mx-auto bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-14 pb-8 sm:pb-12 md:pb-16">
           <div className="max-w-[1440px] w-full mx-auto pt-4 sm:pt-6">
             {/* Top Bar with Contact Info and Register Button */}
-            <div className="border border-[#257B5A] rounded-lg px-3 sm:px-4 md:px-6 lg:px-[26px] py-3 sm:py-4 lg:py-[25px] mb-4 sm:mb-6">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
-                {/* School Info */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 lg:gap-6">
-                  <div className="flex items-center gap-1">
-                    <FaMapMarkerAlt className="text-[#257B5A] text-sm sm:text-base" />
-                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">
-                      {fullAddress}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <FaPhone className="text-[#257B5A] text-sm sm:text-base" />
-                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700">{mobile}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <FaEnvelope className="text-[#257B5A] text-sm sm:text-base" />
-                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{email}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <FaGlobe className="text-[#257B5A] text-sm sm:text-base" />
-                    <span className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate">{website}</span>
-                  </div>
-                </div>
+           {/* Top Bar with Contact Info and Register Button */}
+<div className="border border-[#257B5A] rounded-lg px-3 sm:px-4 md:px-6 lg:px-[26px] py-3 sm:py-4 lg:py-[25px] mb-4 sm:mb-6">
+  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:flex-nowrap gap-3 sm:gap-4 lg:gap-6">
+    {/* School Info */}
+    <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-2 sm:gap-4 lg:gap-6 flex-1 min-w-0">
+      <div className="flex items-center gap-1 min-w-0">
+        <FaMapMarkerAlt className="text-[#257B5A] text-sm sm:text-base" />
+        <span
+          className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate min-w-0"
+          title={fullAddress}
+        >
+          {fullAddress}
+        </span>
+      </div>
+      <div className="flex items-center gap-1 min-w-0">
+        <FaPhone className="text-[#257B5A] text-sm sm:text-base" />
+        <span
+          className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate min-w-0"
+          title={mobile}
+        >
+          {mobile}
+        </span>
+      </div>
+      <div className="flex items-center gap-1 min-w-0">
+        <FaEnvelope className="text-[#257B5A] text-sm sm:text-base" />
+        <span
+          className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate min-w-0"
+          title={email}
+        >
+          {email}
+        </span>
+      </div>
+      <div className="flex items-center gap-1 min-w-0">
+        <FaGlobe className="text-[#257B5A] text-sm sm:text-base" />
+        <span
+          className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate min-w-0"
+          title={website}
+        >
+          {website}
+        </span>
+      </div>
+    </div>
 
-                {/* Register Button */}
-                <button className="bg-[#257B5A] text-white px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full hover:bg-[#1e6b4a] transition-colors duration-300 font-medium text-xs sm:text-sm lg:text-base whitespace-nowrap">
-                  📝 Register for Admission
-                </button>
-              </div>
-            </div>
+    {/* Register Button */}
+    <button className="bg-[#257B5A] text-white px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full hover:bg-[#1e6b4a] transition-colors duration-300 font-medium text-xs sm:text-sm lg:text-base whitespace-nowrap flex-shrink-0">
+      📝 Register for Admission
+    </button>
+  </div>
+</div>
 
             {/* Tab Navigation */}
             <div className="bg-white border rounded-lg mb-4 sm:mb-6 overflow-x-auto">

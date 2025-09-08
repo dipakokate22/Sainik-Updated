@@ -25,17 +25,31 @@ const invoiceHistory = [
   { invoice: '#0039', amount: '₹ 2,400', status: 'Paid', date: '3 June 2019' },
 ];
 
+// UTC-safe helpers to avoid timezone/DST off-by-one
 function daysBetweenISO(from?: string, to?: string) {
   if (!from || !to) return 0;
-  const a = new Date(from).getTime();
-  const b = new Date(to).getTime();
-  const days = Math.ceil((b - a) / (1000 * 60 * 60 * 24));
+  const a = new Date(from);
+  const b = new Date(to);
+  const utcA = Date.UTC(a.getUTCFullYear(), a.getUTCMonth(), a.getUTCDate());
+  const utcB = Date.UTC(b.getUTCFullYear(), b.getUTCMonth(), b.getUTCDate());
+  const days = Math.ceil((utcB - utcA) / (1000 * 60 * 60 * 24));
   return Math.max(0, days);
 }
 
-function daysBetweenDates(a: Date, b: Date) {
-  const days = Math.ceil((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
+function daysBetweenDatesUTC(a: Date, b: Date) {
+  const utcA = Date.UTC(a.getUTCFullYear(), a.getUTCMonth(), a.getUTCDate());
+  const utcB = Date.UTC(b.getUTCFullYear(), b.getUTCMonth(), b.getUTCDate());
+  const days = Math.ceil((utcB - utcA) / (1000 * 60 * 60 * 24));
   return Math.max(0, days);
+}
+
+// Always pick latest subscription from API response
+function pickCurrentSubscription(input: any) {
+  const payload = input?.data ?? input;
+  if (Array.isArray(payload)) {
+    return payload.length > 0 ? payload[0] : null; // ✅ pick first subscription
+  }
+  return payload ?? null;
 }
 
 const SubscriptionAndBillingSection = () => {
@@ -47,15 +61,11 @@ const SubscriptionAndBillingSection = () => {
     const fetchSubscription = async () => {
       try {
         const res = await getSchoolSubscriptionsByUserId();
-        if (res?.status && Array.isArray(res?.data) && res.data.length > 0) {
-          setSubscription(res.data);
-        } else if (res?.status && res?.data) {
-          setSubscription(res.data);
-        } else {
-          setSubscription(null);
-        }
+        const current = pickCurrentSubscription(res);
+        setSubscription(current);
       } catch (err) {
         console.error('Error fetching subscription:', err);
+        setSubscription(null);
       } finally {
         setLoading(false);
       }
@@ -69,7 +79,8 @@ const SubscriptionAndBillingSection = () => {
     setSubscribing(true);
     try {
       const res = await purchaseSubscription(schoolId);
-      setSubscription(Array.isArray(res?.data) ? (res.data || null) : res?.data || null);
+      const current = pickCurrentSubscription(res);
+      setSubscription(current);
     } catch (err) {
       console.error('Subscribe error:', err);
     } finally {
@@ -84,9 +95,13 @@ const SubscriptionAndBillingSection = () => {
     const { start_date, end_date, subscription_amount } = subscription || {};
     const totalDays = daysBetweenISO(start_date, end_date) || 365;
     const today = new Date();
-    const elapsedDays = start_date ? Math.min(totalDays, daysBetweenDates(new Date(start_date), today)) : 0;
-    const daysRemaining = end_date ? Math.max(0, daysBetweenDates(today, new Date(end_date))) : 0;
-    const amountYear = parseInt(subscription_amount || '0', 10) || 0;
+    const elapsedDays = start_date
+      ? Math.min(totalDays, daysBetweenDatesUTC(new Date(start_date), today))
+      : 0;
+    const daysRemaining = end_date
+      ? Math.max(0, daysBetweenDatesUTC(today, new Date(end_date)))
+      : 0;
+    const amountYear = Number(subscription_amount) || 0; // keep decimals
     return { totalDays, elapsedDays, daysRemaining, amountYear };
   }, [subscription]);
 
