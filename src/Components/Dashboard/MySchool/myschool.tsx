@@ -25,6 +25,46 @@ import {
   getCategoriesBoardMedium, // <-- ensure this exists in services/schoolServices
 } from "../../../../services/schoolServices";
 
+/* ================= Types ================= */
+type Faq = { question: string; answer: string };
+
+/* ================= Normalizers (no generics in .tsx) ================= */
+function normalizeStringArray(input: unknown): string[] {
+  try {
+    if (Array.isArray(input)) return input.filter((x) => typeof x === "string") as string[];
+    if (typeof input === "string") {
+      const t = input.trim();
+      if (t.startsWith("[") || t.startsWith("{")) {
+        const parsed = JSON.parse(t);
+        return Array.isArray(parsed)
+          ? parsed.filter((x) => typeof x === "string")
+          : [];
+      }
+      return [];
+    }
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+function normalizeFaqs(input: unknown): Faq[] {
+  try {
+    const arr = Array.isArray(input)
+      ? input
+      : typeof input === "string"
+      ? JSON.parse(input || "[]")
+      : [];
+    if (!Array.isArray(arr)) return [];
+    return arr.map((f: any) => ({
+      question: typeof f?.question === "string" ? f.question : "",
+      answer: typeof f?.answer === "string" ? f.answer : "",
+    }));
+  } catch {
+    return [];
+  }
+}
+
 /* ================= Map API Payload ================= */
 const mapToPayload = (data: any) => {
   return {
@@ -44,25 +84,28 @@ const mapToPayload = (data: any) => {
     board: data.board || "",
     category: data.category || "",
     welcome_note: data.overview?.welcomeNote || "",
-    key_highlights: data.overview?.keyHighlights || [],
-    admission_criteria_eligibility:
-      data.overview?.admissionCriteriaEligibility || [],
-    school_hours: data.overview?.schoolHours || [],
-    annual_fee_structure: data.fees?.annualFeeStructure || [],
-    additional_fees: data.fees?.additionalFees || [],
-    academic_facilities: data.facilities?.academic || [],
-    sports_recreation_facilities: data.facilities?.sportsRecreation || [],
-    infrastructure_facilities: data.facilities?.infrastructure || [],
+    key_highlights: normalizeStringArray(data.overview?.keyHighlights),
+    admission_criteria_eligibility: normalizeStringArray(
+      data.overview?.admissionCriteriaEligibility
+    ),
+    school_hours: normalizeStringArray(data.overview?.schoolHours),
+    annual_fee_structure: normalizeStringArray(data.fees?.annualFeeStructure),
+    additional_fees: normalizeStringArray(data.fees?.additionalFees),
+    academic_facilities: normalizeStringArray(data.facilities?.academic),
+    sports_recreation_facilities: normalizeStringArray(
+      data.facilities?.sportsRecreation
+    ),
+    infrastructure_facilities: normalizeStringArray(
+      data.facilities?.infrastructure
+    ),
     gallery: Array.isArray(data.gallery)
       ? data.gallery
       : typeof data.gallery === "string"
       ? JSON.parse(data.gallery || "[]")
       : [],
-    tags: Array.isArray(data.tags)
-      ? data.tags
-      : typeof data.tags === "string"
-      ? JSON.parse(data.tags || "[]")
-      : [],
+    tags: normalizeStringArray(data.tags),
+    // NEW: normalized FAQs
+    faqs: normalizeFaqs(data.faqs),
   };
 };
 
@@ -152,7 +195,7 @@ const InlineEdit = ({
   );
 };
 
-/* ================= Editable List ================= */
+/* ================= Editable List (strings) ================= */
 const EditableList = ({
   items,
   onChange,
@@ -162,11 +205,17 @@ const EditableList = ({
   onChange: (items: string[]) => void;
   placeholder: string;
 }) => {
-  const safeItems: string[] = Array.isArray(items)
-    ? items
-    : typeof items === "string" && items.startsWith("[")
-    ? JSON.parse(items)
-    : [];
+  let safeItems: string[] = [];
+  try {
+    safeItems = Array.isArray(items)
+      ? (items as string[])
+      : typeof items === "string" && items.trim().startsWith("[")
+      ? JSON.parse(items)
+      : [];
+    if (!Array.isArray(safeItems)) safeItems = [];
+  } catch {
+    safeItems = [];
+  }
 
   const handleEdit = (index: number, newVal: string) => {
     const updated = [...safeItems];
@@ -197,6 +246,85 @@ const EditableList = ({
         className="mt-2 flex items-center gap-2 px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600"
       >
         <Plus size={14} /> Add
+      </button>
+    </div>
+  );
+};
+
+/* ================= Editable FAQs List (Q/A pairs) ================= */
+const EditableFaqsList = ({
+  items,
+  onChange,
+}: {
+  items: any;
+  onChange: (items: Faq[]) => void;
+}) => {
+  const safeFaqs: Faq[] = normalizeFaqs(items);
+
+  const handleEdit = (index: number, field: keyof Faq, value: string) => {
+    const updated = [...safeFaqs];
+    updated[index] = { ...updated[index], [field]: value };
+    onChange(updated);
+  };
+
+  const handleRemove = (index: number) => {
+    const updated = safeFaqs.filter((_, i) => i !== index);
+    onChange(updated);
+  };
+
+  const handleAdd = () => {
+    onChange([...safeFaqs, { question: "", answer: "" }]);
+  };
+
+  return (
+    <div className="space-y-4">
+      {safeFaqs.map((faq, idx) => (
+        <div key={idx} className="border rounded-lg p-4 bg-white shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-semibold text-gray-800">
+              FAQ {idx + 1}
+            </h4>
+            <button
+              onClick={() => handleRemove(idx)}
+              className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+              title="Remove FAQ"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+
+          <div className="mb-3">
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Question
+            </label>
+            <InlineEdit
+              value={faq.question}
+              onSave={(val) => handleEdit(idx, "question", val)}
+              placeholder="e.g., What is the admission process?"
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Answer
+            </label>
+            <InlineEdit
+              value={faq.answer}
+              onSave={(val) => handleEdit(idx, "answer", val)}
+              placeholder="e.g., Contact school for details"
+              multiline
+              className="w-full"
+            />
+          </div>
+        </div>
+      ))}
+
+      <button
+        onClick={handleAdd}
+        className="mt-2 flex items-center gap-2 px-3 py-2 bg-[#257B5A] text-white rounded-lg hover:bg-[#1e6249]"
+      >
+        <Plus size={16} /> Add FAQ
       </button>
     </div>
   );
@@ -689,17 +817,35 @@ const ReviewsTab = () => (
     No reviews yet
   </div>
 );
-const FAQsTab = () => (
-  <div className="bg-white rounded-lg border p-6 shadow-sm text-gray-600">
-    No FAQs yet
-  </div>
-);
+
+/* ================= NEW: FAQs Tab with editor ================= */
+const FAQsTab = ({
+  data,
+  onUpdate,
+}: {
+  data: any;
+  onUpdate: (field: string, value: any) => void;
+}) => {
+  return (
+    <div className="bg-white rounded-lg border p-6 shadow-sm">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4">FAQs</h3>
+      <EditableFaqsList
+        items={data.faqs || []}
+        onChange={(list) => onUpdate("faqs", list)}
+      />
+      <p className="text-xs text-gray-500 mt-3">
+        Tip: Save each question and answer with the green button inside the field to persist the change.
+      </p>
+    </div>
+  );
+};
 
 /* ================= Main Component ================= */
 const TABS = ["Overview", "Facilities", "Fees", "Gallery", "Reviews", "FAQs"];
 
 export default function MySchool() {
-  const [activeTab, setActiveTab] = useState(TABS[0]);
+  // FIX: activeTab is a string, not an array
+  const [activeTab, setActiveTab] = useState<string>(TABS[0]);
   const [schoolData, setSchoolData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -784,7 +930,10 @@ export default function MySchool() {
     const keys = field.split(".");
     const updatedData = { ...schoolData };
     let current: any = updatedData;
-    for (let i = 0; i < keys.length - 1; i++) current = current[keys[i]];
+    for (let i = 0; i < keys.length - 1; i++) {
+      current[keys[i]] = current[keys[i]] ?? {};
+      current = current[keys[i]];
+    }
     current[keys[keys.length - 1]] = value;
     setSchoolData(updatedData);
 
@@ -798,7 +947,7 @@ export default function MySchool() {
 
   // New handler for category/board/medium selects:
   const handleSelectChange = async (
-    type: "category" | "board" | "medium",
+    kind: "category" | "board" | "medium",
     selectedId: string
   ) => {
     if (!schoolData) return;
@@ -808,7 +957,7 @@ export default function MySchool() {
       board: boards,
       medium: mediums,
     };
-    const list = listMap[type] || [];
+    const list = listMap[kind] || [];
     const selectedObj = list.find((l: any) => String(l.id) === String(selectedId));
     const selectedName = selectedObj ? selectedObj.name : "";
 
@@ -818,23 +967,23 @@ export default function MySchool() {
         ...(schoolData.overview || {}),
         schoolInformation: {
           ...(schoolData.overview?.schoolInformation || {}),
-          [type]: selectedName,
+          [kind]: selectedName,
         },
       },
-      [type]: selectedName,
+      [kind]: selectedName,
     };
 
     setSchoolData(updatedData);
 
-    if (type === "category") setSelectedCategoryId(selectedId);
-    if (type === "board") setSelectedBoardId(selectedId);
-    if (type === "medium") setSelectedMediumId(selectedId);
+    if (kind === "category") setSelectedCategoryId(selectedId);
+    if (kind === "board") setSelectedBoardId(selectedId);
+    if (kind === "medium") setSelectedMediumId(selectedId);
 
     try {
       const payload = mapToPayload(updatedData);
       await updateSchoolById(updatedData.id, payload);
     } catch (err) {
-      console.error(`Failed to update ${type}:`, err);
+      console.error(`Failed to update ${kind}:`, err);
     }
   };
 
@@ -1123,7 +1272,7 @@ export default function MySchool() {
               case "Reviews":
                 return <ReviewsTab />;
               case "FAQs":
-                return <FAQsTab />;
+                return <FAQsTab data={schoolData} onUpdate={handleDataUpdate} />;
               default:
                 return null;
             }

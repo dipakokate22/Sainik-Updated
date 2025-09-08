@@ -101,6 +101,29 @@ function parseArray(value: any): any[] {
   return [];
 }
 
+type Faq = { question: string; answer: string };
+
+function parseFaqs(value: any): Faq[] {
+  try {
+    const toArray = (v: any): any[] =>
+      Array.isArray(v)
+        ? v
+        : typeof v === "string"
+        ? JSON.parse(v.trim() || "[]")
+        : [];
+
+    const raw = toArray(value);
+    if (!Array.isArray(raw)) return [];
+    return raw.map((f: any) => ({
+      question: typeof f?.question === "string" ? f.question : "",
+      answer: typeof f?.answer === "string" ? f.answer : "",
+    }));
+  } catch {
+    return [];
+  }
+}
+
+
 export default function SchoolDetailSection() {
   const { id } = useParams() as { id: string };
   const router = useRouter();
@@ -173,7 +196,7 @@ const {
 
   const gallery = Array.isArray(school?.gallery) ? school.gallery : [];
   const reviews = Array.isArray(school?.reviews) ? school.reviews : [];
-  const faqs = Array.isArray(school?.faqs) ? school.faqs : [];
+const faqs = parseFaqs(school?.faqs);
 
   const infoObj = school?.overview?.schoolInformation || {};
   const schoolInfoEntries = Object.entries(infoObj || {}).filter(([, v]) => v);
