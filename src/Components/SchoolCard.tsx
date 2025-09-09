@@ -5,15 +5,16 @@ interface SchoolCardProps {
   image: string;
   desc: string;
   logo?: string; // optional logo
+  distance?: string; // Add distance prop
 }
 
-export default function SchoolCard({ name, image, desc, logo }: SchoolCardProps) {
+export default function SchoolCard({ name, image, desc, logo, distance }: SchoolCardProps) {
   const getInitial = (name: string) => name?.charAt(0)?.toUpperCase();
 
   return (
     <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
       {/* Banner Image */}
-      <div className="w-full h-48 overflow-hidden rounded-t-2xl">
+      <div className="w-full h-48 overflow-hidden rounded-t-2xl relative">
         <Image
           src={image}
           alt={name}
@@ -21,6 +22,18 @@ export default function SchoolCard({ name, image, desc, logo }: SchoolCardProps)
           height={130}
           className="object-cover w-full h-full"
         />
+        {/* Distance Badge */}
+        {distance && (
+          <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-md">
+            <div className="flex items-center gap-1 text-sm font-medium text-[#10744E]">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="#10744E"/>
+                <circle cx="12" cy="10" r="3" fill="white"/>
+              </svg>
+              <span>{distance}</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Content */}

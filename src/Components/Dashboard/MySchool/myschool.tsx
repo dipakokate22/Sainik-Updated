@@ -26,7 +26,7 @@ import {
 } from "../../../../services/schoolServices";
 
 // NEW: import the Google search service (adjust path if needed)
-import { googleSearch } from "../../../../services/googleServices";
+import { googleSearch ,diagnosGoogleMapsSetup } from "../../../../services/googleServices";
 
 /* ================= Types ================= */
 type Faq = { question: string; answer: string };
@@ -49,6 +49,11 @@ type GSearchResponse = {
   results?: GPlaceResult[];
   candidates?: GPlaceResult[];
 };
+
+useEffect(() => {
+  // Run diagnostic on component mount
+  diagnosGoogleMapsSetup();
+}, []);
 
 function useDebounce<T>(value: T, delay = 400) {
   const [debounced, setDebounced] = React.useState(value);

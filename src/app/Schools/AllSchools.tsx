@@ -69,6 +69,7 @@ interface School {
     question: string;
     answer: string;
   }>;
+  distance?: string; // Add distance field
   isRegistered: boolean;
 }
 
@@ -183,36 +184,35 @@ const SchoolListSection = () => {
   };
   
   // Fetch schools data on component mount
-useEffect(() => {
-  const fetchSchools = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await getAllSchools();
-      
-      if (response.status && response.data) {
-        setSchools(response.data);
+  useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await getAllSchools();
+        
+        if (response.status && response.data) {
+          setSchools(response.data);
 
-        // ✅ Pick schools with isFeatured = true
-        const featured = response.data.filter((school: School) => school.isFeatured);
+          // ✅ Pick schools with isFeatured = true
+          const featured = response.data.filter((school: School) => school.isFeatured);
 
-        setFeaturedSchools(featured.length > 0 ? featured : response.data.slice(0, 6));
+          setFeaturedSchools(featured.length > 0 ? featured : response.data.slice(0, 6));
 
-      } else {
-        setError('Failed to fetch schools data');
+        } else {
+          setError('Failed to fetch schools data');
+        }
+      } catch (err) {
+        console.error('Error fetching schools:', err);
+        setError(err instanceof Error ? err.message : 'An error occurred while fetching schools');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error('Error fetching schools:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred while fetching schools');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchSchools();
-}, []);
+    fetchSchools();
+  }, []);
 
-  
   // Sync searchTerm with URL param on mount and when param changes
   useEffect(() => {
     if (searchParams) {
@@ -267,27 +267,6 @@ useEffect(() => {
     }
     return () => clearTimeout(timeoutId);
   }, [searchTerm, searchParams]);
-  
-  // Scroll functions for featured schools (MOVE THESE INSIDE THE COMPONENT)
-  // DELETE THESE LINES FROM THE BOTTOM OF THE FILE:
-  // Scroll functions for featured schools
-  // const scrollFeaturedLeft = () => {
-  //   if (featuredScrollRef.current) {
-  //     featuredScrollRef.current.scrollBy({
-  //       left: -300,
-  //       behavior: 'smooth'
-  //     });
-  //   }
-  // };
-  
-  // const scrollFeaturedRight = () => {
-  //   if (featuredScrollRef.current) {
-  //     featuredScrollRef.current.scrollBy({
-  //       left: 300,
-  //       behavior: 'smooth'
-  //     });
-  //   }
-  // };
   
   // Expanded states for filter sections - ALL OPEN BY DEFAULT
   const [expandedSections, setExpandedSections] = useState({
@@ -795,18 +774,6 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Show Schools Near Me Button - left aligned, with margin */}
-              {/* <div className="mb-6">
-                <button
-                  onClick={getUserLocation}
-                  disabled={locationLoading}
-                  className="px-5 py-2 bg-[#257B5A] text-white rounded-lg hover:bg-[#1e6248] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
-                  style={{ marginLeft: 0 }}
-                >
-                  {locationLoading ? 'Getting Location...' : 'Show Schools Near Me'}
-                </button>
-              </div> */}
-
               {/* Conditional: Schools Near Me OR All Schools */}
               {nearbySchools.length > 0 ? (
                 <div ref={nearMeSectionRef}>
@@ -842,6 +809,7 @@ useEffect(() => {
                           name={school.name}
                           image={school.profileImage || school.gallery?.[0] || '/default-school.jpg'}
                           desc={`${school.address?.city || ''} | ${school.overview?.schoolInformation?.board || ''} | ${school.overview?.schoolInformation?.medium || ''} | ${school.overview?.schoolInformation?.category || ''}`}
+                          distance={school.distance} // Add distance prop here
                         />
                       </div>
                     ))}
