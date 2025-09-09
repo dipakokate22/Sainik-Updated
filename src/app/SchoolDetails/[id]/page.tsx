@@ -641,10 +641,10 @@ const faqs = parseFaqs(school?.faqs);
                 </div>
 
                 {/* Add to Compare Button */}
-                <button className="flex items-center gap-2 border border-[#10744E] text-[#10744E] px-4 py-2 rounded-full hover:bg-[#10744E] hover:text-white transition-colors duration-300 font-medium">
+{/*                 <button className="flex items-center gap-2 border border-[#10744E] text-[#10744E] px-4 py-2 rounded-full hover:bg-[#10744E] hover:text-white transition-colors duration-300 font-medium">
                   <FaPlus className="w-4 h-4" />
                   <span>Add to Compare</span>
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
@@ -698,9 +698,9 @@ const faqs = parseFaqs(school?.faqs);
     </div>
 
     {/* Register Button */}
-    <button className="bg-[#257B5A] text-white px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full hover:bg-[#1e6b4a] transition-colors duration-300 font-medium text-xs sm:text-sm lg:text-base whitespace-nowrap flex-shrink-0">
+{/*     <button className="bg-[#257B5A] text-white px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full hover:bg-[#1e6b4a] transition-colors duration-300 font-medium text-xs sm:text-sm lg:text-base whitespace-nowrap flex-shrink-0">
       📝 Register for Admission
-    </button>
+    </button> */}
   </div>
 </div>
 
