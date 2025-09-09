@@ -22,13 +22,58 @@ import {
   uploadGalleryImages,
   getStates,
   getCities,
-  getCategoriesBoardMedium, // <-- ensure this exists in services/schoolServices
+  getCategoriesBoardMedium,
 } from "../../../../services/schoolServices";
+
+// NEW: import the Google search service (adjust path if needed)
+import { googleSearch } from "../../../../services/googleServices";
 
 /* ================= Types ================= */
 type Faq = { question: string; answer: string };
 
-/* ================= Normalizers (no generics in .tsx) ================= */
+/* ================= Google types + helpers ================= */
+type GAddressComponent = {
+  long_name: string;
+  short_name: string;
+  types: string[];
+};
+
+type GPlaceResult = {
+  formatted_address?: string;
+  address_components?: GAddressComponent[];
+  geometry?: { location?: { lat?: number; lng?: number } };
+  place_id?: string;
+};
+
+type GSearchResponse = {
+  results?: GPlaceResult[];
+  candidates?: GPlaceResult[];
+};
+
+function useDebounce<T>(value: T, delay = 400) {
+  const [debounced, setDebounced] = React.useState(value);
+  React.useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+  return debounced;
+}
+
+function pickComponent(components: GAddressComponent[] = [], type: string) {
+  return components.find((c) => c.types.includes(type))?.long_name || "";
+}
+
+function parseCityState(components: GAddressComponent[] = []) {
+  const city =
+    pickComponent(components, "locality") ||
+    pickComponent(components, "sublocality_level_1") ||
+    pickComponent(components, "administrative_area_level_3") ||
+    "";
+  const state = pickComponent(components, "administrative_area_level_1") || "";
+  return { city, state };
+}
+
+/* ================= Normalizers ================= */
 function normalizeStringArray(input: unknown): string[] {
   try {
     if (Array.isArray(input)) return input.filter((x) => typeof x === "string") as string[];
@@ -36,9 +81,7 @@ function normalizeStringArray(input: unknown): string[] {
       const t = input.trim();
       if (t.startsWith("[") || t.startsWith("{")) {
         const parsed = JSON.parse(t);
-        return Array.isArray(parsed)
-          ? parsed.filter((x) => typeof x === "string")
-          : [];
+        return Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string") : [];
       }
       return [];
     }
@@ -104,7 +147,6 @@ const mapToPayload = (data: any) => {
       ? JSON.parse(data.gallery || "[]")
       : [],
     tags: normalizeStringArray(data.tags),
-    // NEW: normalized FAQs
     faqs: normalizeFaqs(data.faqs),
   };
 };
@@ -182,9 +224,7 @@ const InlineEdit = ({
 
   return (
     <div className="group flex items-center gap-2 w-full">
-      <span className={`flex-1 text-gray-700 ${className}`}>
-        {value || placeholder}
-      </span>
+      <span className={`flex-1 text-gray-700 ${className}`}>{value || placeholder}</span>
       <button
         onClick={() => setIsEditing(true)}
         className="opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-blue-600 transition-all"
@@ -251,7 +291,7 @@ const EditableList = ({
   );
 };
 
-/* ================= Editable FAQs List (Q/A pairs) ================= */
+/* ================= Editable FAQs List ================= */
 const EditableFaqsList = ({
   items,
   onChange,
@@ -281,9 +321,7 @@ const EditableFaqsList = ({
       {safeFaqs.map((faq, idx) => (
         <div key={idx} className="border rounded-lg p-4 bg-white shadow-sm">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-semibold text-gray-800">
-              FAQ {idx + 1}
-            </h4>
+            <h4 className="text-sm font-semibold text-gray-800">FAQ {idx + 1}</h4>
             <button
               onClick={() => handleRemove(idx)}
               className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
@@ -294,9 +332,7 @@ const EditableFaqsList = ({
           </div>
 
           <div className="mb-3">
-            <label className="block text-xs font-medium text-gray-600 mb-1">
-              Question
-            </label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Question</label>
             <InlineEdit
               value={faq.question}
               onSave={(val) => handleEdit(idx, "question", val)}
@@ -306,9 +342,7 @@ const EditableFaqsList = ({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
-              Answer
-            </label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Answer</label>
             <InlineEdit
               value={faq.answer}
               onSave={(val) => handleEdit(idx, "answer", val)}
@@ -331,7 +365,6 @@ const EditableFaqsList = ({
 };
 
 /* ================= Address Section ================= */
-
 interface State {
   id: number;
   name: string;
@@ -359,16 +392,18 @@ const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
   const [cities, setCities] = useState<City[]>([]);
   const [selectedStateId, setSelectedStateId] = useState<string>("");
   const [selectedCityId, setSelectedCityId] = useState<string>("");
-  const [address, setAddress] = useState<string>(
-    school?.address?.fullAddress || ""
-  );
-  const [latitude, setLatitude] = useState<string>(
-    school?.location?.latitude || ""
-  );
-  const [longitude, setLongitude] = useState<string>(
-    school?.location?.longitude || ""
-  );
+  const [address, setAddress] = useState<string>(school?.address?.fullAddress || "");
+  const [latitude, setLatitude] = useState<string>(school?.location?.latitude || "");
+  const [longitude, setLongitude] = useState<string>(school?.location?.longitude || "");
   const [fetchingLocation, setFetchingLocation] = useState(false);
+
+  // Google search UI state
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const debouncedQuery = useDebounce(searchQuery, 400);
+  const [searching, setSearching] = useState(false);
+  const [results, setResults] = useState<GPlaceResult[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const [pendingCityName, setPendingCityName] = useState<string>("");
 
   // COLLAPSIBLE
   const [isOpen, setIsOpen] = useState<boolean>(true);
@@ -376,7 +411,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
   // Load states
   useEffect(() => {
     getStates().then((res) => {
-      const allStates: State[] = res?.data || res || [];
+      const allStates: State[] = (res as any)?.data || (res as any) || [];
       setStates(allStates);
       if (school?.address?.state) {
         const match = allStates.find((s) => s.name === school.address.state);
@@ -385,11 +420,11 @@ const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
     });
   }, [school]);
 
-  // Load cities
+  // Load cities for selected state
   useEffect(() => {
     if (selectedStateId) {
       getCities(selectedStateId).then((res) => {
-        const allCities: City[] = res?.data || res || [];
+        const allCities: City[] = (res as any)?.data || (res as any) || [];
         setCities(allCities);
         if (school?.address?.city) {
           const match = allCities.find((c) => c.name === school.address.city);
@@ -398,10 +433,20 @@ const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
       });
     } else {
       setCities([]);
+      setSelectedCityId("");
     }
   }, [selectedStateId, school]);
 
-  // Fetch current location
+  // Resolve pending city after cities load
+  useEffect(() => {
+    if (!pendingCityName || cities.length === 0) return;
+    const match = cities.find((c) => c.name.toLowerCase() === pendingCityName.toLowerCase());
+    if (match) {
+      setSelectedCityId(String(match.id));
+      setPendingCityName("");
+    }
+  }, [cities, pendingCityName]);
+
   const fetchCurrentLocation = () => {
     if (!navigator.geolocation) {
       alert("Geolocation not supported by your browser");
@@ -422,16 +467,68 @@ const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
     );
   };
 
+  // Google search effect
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      if (!debouncedQuery || debouncedQuery.trim().length < 3) {
+        if (!cancelled) {
+          setResults([]);
+          setShowResults(false);
+        }
+        return;
+      }
+      try {
+        setSearching(true);
+        const data: GSearchResponse = await googleSearch(debouncedQuery.trim());
+        const raw = (data.results || data.candidates || []) as GPlaceResult[];
+        if (!cancelled) {
+          setResults(raw);
+          setShowResults(true);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setResults([]);
+          setShowResults(false);
+        }
+      } finally {
+        if (!cancelled) setSearching(false);
+      }
+    };
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedQuery]);
+
+  const applySuggestion = (place: GPlaceResult) => {
+    const formatted = place.formatted_address || "";
+    const lat = place.geometry?.location?.lat;
+    const lng = place.geometry?.location?.lng;
+    const { city, state } = parseCityState(place.address_components || []);
+
+    if (formatted) setAddress(formatted);
+    if (typeof lat === "number") setLatitude(String(lat));
+    if (typeof lng === "number") setLongitude(String(lng));
+
+    if (state) {
+      const st = states.find((s) => s.name.toLowerCase() === state.toLowerCase());
+      if (st) setSelectedStateId(String(st.id)); // triggers cities load
+    }
+
+    if (city) setPendingCityName(city);
+
+    setShowResults(false);
+    setSearchQuery(formatted || "");
+  };
+
   const handleSave = () => {
     if (!selectedStateId || !selectedCityId || !address.trim()) {
       alert("Please select state, city and enter address");
       return;
     }
-
-    const stateName =
-      states.find((s) => String(s.id) === selectedStateId)?.name || "";
-    const cityName =
-      cities.find((c) => String(c.id) === selectedCityId)?.name || "";
+    const stateName = states.find((s) => String(s.id) === selectedStateId)?.name || "";
+    const cityName = cities.find((c) => String(c.id) === selectedCityId)?.name || "";
 
     const updatedAddress = {
       state: stateName,
@@ -445,10 +542,11 @@ const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
   };
 
   return (
-    <div className="space-y-4 p-0 border rounded-xl shadow-sm bg-white mb-6 overflow-hidden">
-      {/* Header with toggle */}
+    // allow dropdown to overflow card
+    <div className="space-y-3 p-3 border rounded-xl shadow-sm bg-white mb-6 overflow-visible">
+      {/* Header */}
       <div
-        className="flex items-center justify-between p-4 cursor-pointer"
+        className="flex items-center justify-between p-2 cursor-pointer"
         onClick={() => setIsOpen((s) => !s)}
       >
         <div className="flex items-center gap-3">
@@ -485,107 +583,134 @@ const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
         </div>
       </div>
 
-      {/* Collapsible content */}
+      {/* Content */}
       {isOpen && (
-        <div className="p-6 border-t">
-          {/* State */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              State
-            </label>
-            <select
-              value={selectedStateId}
+        <div className="p-3 border-t">
+          {/* Search */}
+          <div className="mb-3 relative">
+            <label className="block text-sm font-medium mb-1 text-gray-700">Search Address (Google)</label>
+            <input
+              type="text"
+              value={searchQuery}
               onChange={(e) => {
-                setSelectedStateId(e.target.value);
-                setSelectedCityId(""); // reset city
+                setSearchQuery(e.target.value);
+                setShowResults(true);
               }}
-              className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
-            >
-              <option value="">Select State</option>
-              {states.map((s: State) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
+              placeholder="Type address, landmark, or place..."
+              className="w-full border border-gray-300 p-2 rounded-md text-sm text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+            />
+            {showResults && (results.length > 0 || searching) && (
+              <div className="absolute z-50 mt-1 w-full bg-white border rounded-lg shadow max-h-56 overflow-auto">
+                {searching && <div className="px-3 py-2 text-sm text-gray-500">Searching…</div>}
+                {!searching && results.length === 0 && (
+                  <div className="px-3 py-2 text-sm text-gray-500">No results</div>
+                )}
+                {!searching &&
+                  results.map((r, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => applySuggestion(r)}
+                      className="w-full text-left px-3 py-2 text-sm text-gray-800 bg-white hover:bg-gray-50 focus:bg-gray-100 transition"
+                    >
+                      {r.formatted_address}
+                    </button>
+                  ))}
+              </div>
+            )}
           </div>
 
-          {/* City */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              City
-            </label>
-            <select
-              value={selectedCityId}
-              onChange={(e) => setSelectedCityId(e.target.value)}
-              className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
-              disabled={!selectedStateId}
-            >
-              <option value="">Select City</option>
-              {cities.map((c: City) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+          {/* State + City (side-by-side on md+) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">State</label>
+              <select
+                value={selectedStateId}
+                onChange={(e) => {
+                  setSelectedStateId(e.target.value);
+                  setSelectedCityId("");
+                }}
+                className="w-full border border-gray-300 p-2 rounded-md text-sm text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+              >
+                <option value="">Select State</option>
+                {states.map((s: State) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">City</label>
+              <select
+                value={selectedCityId}
+                onChange={(e) => setSelectedCityId(e.target.value)}
+                className="w-full border border-gray-300 p-2 rounded-md text-sm text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+                disabled={!selectedStateId}
+              >
+                <option value="">Select City</option>
+                {cities.map((c: City) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Full Address */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Full Address
-            </label>
+          <div className="mb-3">
+            <label className="block text-sm font-medium mb-1 text-gray-700">Full Address</label>
             <textarea
-              rows={3}
+              rows={2}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+              className="w-full border border-gray-300 p-2 rounded-md text-sm text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
             />
           </div>
 
-          {/* Latitude & Longitude with Button */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+          {/* Lat/Lng + Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end mb-3">
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">
-                Latitude
-              </label>
+              <label className="block text-sm font-medium mb-1 text-gray-700">Latitude</label>
               <input
                 type="text"
                 value={latitude}
                 onChange={(e) => setLatitude(e.target.value)}
-                className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+                className="w-full border border-gray-300 p-2 rounded-md text-sm text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">
-                Longitude
-              </label>
+              <label className="block text-sm font-medium mb-1 text-gray-700">Longitude</label>
               <input
                 type="text"
                 value={longitude}
                 onChange={(e) => setLongitude(e.target.value)}
-                className="w-full border border-gray-300 p-3 rounded-lg text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
+                className="w-full border border-gray-300 p-2 rounded-md text-sm text-gray-700 focus:ring-2 focus:ring-[#257B5A] focus:border-[#257B5A]"
               />
             </div>
-            <div className="flex">
+
+            {/* Action row: Use Current Location (left on md), Save (right) */}
+            <div className="flex gap-3">
               <button
                 onClick={fetchCurrentLocation}
                 disabled={fetchingLocation}
-                className="w-full bg-[#257B5A] text-white px-4 py-2 rounded-lg hover:bg-[#1e6249]"
+                className="flex-1 bg-[#257B5A] text-white px-3 py-2 rounded-lg text-sm hover:bg-[#1e6249] disabled:opacity-60"
               >
                 {fetchingLocation ? "Fetching..." : "Use Current Location"}
               </button>
-            </div>
-          </div>
 
-          {/* Save */}
-          <div className="flex justify-end">
-            <button
-              onClick={handleSave}
-              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              <Save size={18} /> Save Address
-            </button>
+              <button
+                onClick={handleSave}
+                className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <Save size={16} /> Save
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -607,8 +732,7 @@ const OverviewTab = ({
         label: "Welcome Note",
         field: "overview.welcomeNote",
         multiline: true,
-        placeholder:
-          "Write a welcome message (e.g., 'Welcome to ABC School!')",
+        placeholder: "Write a welcome message (e.g., 'Welcome to ABC School!')",
       },
       {
         label: "Key Highlights",
@@ -630,9 +754,7 @@ const OverviewTab = ({
       },
     ].map((section, idx) => (
       <div key={idx} className="bg-white rounded-lg border p-6 shadow-sm">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">
-          {section.label}
-        </h3>
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">{section.label}</h3>
         {section.list ? (
           <EditableList
             items={data.overview?.[section.field.split(".")[1]] || []}
@@ -679,9 +801,7 @@ const FacilitiesTab = ({
       },
     ].map((section, idx) => (
       <div key={idx} className="bg-white rounded-lg border p-6 shadow-sm">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">
-          {section.label}
-        </h3>
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">{section.label}</h3>
         <EditableList
           items={data.facilities?.[section.field.split(".")[1]] || []}
           onChange={(list) => onUpdate(section.field, list)}
@@ -713,9 +833,7 @@ const FeesTab = ({
       },
     ].map((section, idx) => (
       <div key={idx} className="bg-white rounded-lg border p-6 shadow-sm">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">
-          {section.label}
-        </h3>
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">{section.label}</h3>
         <EditableList
           items={data.fees?.[section.field.split(".")[1]] || []}
           onChange={(list) => onUpdate(section.field, list)}
@@ -750,8 +868,7 @@ const GalleryTab = ({
 
     try {
       const res: any = await uploadGalleryImages(data.id, files);
-      const updatedGallery =
-        res?.data?.gallery ?? res?.gallery ?? galleryItems;
+      const updatedGallery = res?.data?.gallery ?? res?.gallery ?? galleryItems;
       onUpdate("gallery", updatedGallery);
     } catch (err) {
       console.error("Error uploading gallery images:", err);
@@ -818,7 +935,7 @@ const ReviewsTab = () => (
   </div>
 );
 
-/* ================= NEW: FAQs Tab with editor ================= */
+/* ================= FAQs Tab ================= */
 const FAQsTab = ({
   data,
   onUpdate,
@@ -829,12 +946,10 @@ const FAQsTab = ({
   return (
     <div className="bg-white rounded-lg border p-6 shadow-sm">
       <h3 className="text-xl font-semibold text-gray-800 mb-4">FAQs</h3>
-      <EditableFaqsList
-        items={data.faqs || []}
-        onChange={(list) => onUpdate("faqs", list)}
-      />
+      <EditableFaqsList items={data.faqs || []} onChange={(list) => onUpdate("faqs", list)} />
       <p className="text-xs text-gray-500 mt-3">
-        Tip: Save each question and answer with the green button inside the field to persist the change.
+        Tip: Save each question and answer with the green button inside the field to persist the
+        change.
       </p>
     </div>
   );
@@ -844,7 +959,6 @@ const FAQsTab = ({
 const TABS = ["Overview", "Facilities", "Fees", "Gallery", "Reviews", "FAQs"];
 
 export default function MySchool() {
-  // FIX: activeTab is a string, not an array
   const [activeTab, setActiveTab] = useState<string>(TABS[0]);
   const [schoolData, setSchoolData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -890,7 +1004,7 @@ export default function MySchool() {
     fetchMeta();
   }, []);
 
-  // when schoolData or meta lists change, try to sync selected ids
+  // sync selected ids from data/meta
   useEffect(() => {
     if (!schoolData) return;
 
@@ -936,7 +1050,6 @@ export default function MySchool() {
     }
     current[keys[keys.length - 1]] = value;
     setSchoolData(updatedData);
-
     try {
       const payload = mapToPayload(updatedData);
       await updateSchoolById(updatedData.id, payload);
@@ -945,7 +1058,6 @@ export default function MySchool() {
     }
   };
 
-  // New handler for category/board/medium selects:
   const handleSelectChange = async (
     kind: "category" | "board" | "medium",
     selectedId: string
@@ -1010,8 +1122,8 @@ export default function MySchool() {
         <div className="mb-6">
           <h2 className="text-3xl font-bold text-gray-800">My School</h2>
           <p className="mt-1 text-gray-600">
-            Manage and showcase your school's identity, facilities, fee
-            structure, and achievements — all in one place.
+            Manage and showcase your school's identity, facilities, fee structure, and
+            achievements — all in one place.
           </p>
         </div>
 
@@ -1038,14 +1150,8 @@ export default function MySchool() {
                     const file = e.target.files?.[0];
                     if (!file) return;
                     try {
-                      const res: any = await uploadProfileImage(
-                        schoolData.id,
-                        file
-                      );
-
-                      const newUrl =
-                        res?.data?.profile_image ?? res?.profile_image;
-
+                      const res: any = await uploadProfileImage(schoolData.id, file);
+                      const newUrl = res?.data?.profile_image ?? res?.profile_image;
                       if (newUrl) {
                         setSchoolData((prev: any) => ({
                           ...prev,
@@ -1089,9 +1195,7 @@ export default function MySchool() {
                   <FaMapMarkerAltIcon className="text-[#257B5A]" />
                   <InlineEdit
                     value={schoolData.address?.fullAddress}
-                    onSave={(val) =>
-                      handleDataUpdate("address.fullAddress", val)
-                    }
+                    onSave={(val) => handleDataUpdate("address.fullAddress", val)}
                     className="text-gray-700"
                     placeholder="Full Address (e.g., 123 Main Street, NY)"
                   />
@@ -1130,9 +1234,7 @@ export default function MySchool() {
 
         {/* School Details - Category / Board / Medium */}
         <div className="bg-white rounded-lg border p-6 mb-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            School Details
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">School Details</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Category */}
@@ -1153,9 +1255,7 @@ export default function MySchool() {
                 ))}
               </select>
               {categories.length === 0 && (
-                <p className="text-xs text-gray-500 mt-1">
-                  No categories loaded.
-                </p>
+                <p className="text-xs text-gray-500 mt-1">No categories loaded.</p>
               )}
             </div>
 
@@ -1199,14 +1299,13 @@ export default function MySchool() {
                 ))}
               </select>
               {mediums.length === 0 && (
-                <p className="text-xs text-gray-500 mt-1">
-                  No mediums loaded.
-                </p>
+                <p className="text-xs text-gray-500 mt-1">No mediums loaded.</p>
               )}
             </div>
           </div>
         </div>
 
+        {/* Address Section */}
         <AddressSection
           school={schoolData}
           onSave={async (updatedAddress) => {
@@ -1256,19 +1355,13 @@ export default function MySchool() {
           {(() => {
             switch (activeTab) {
               case "Overview":
-                return (
-                  <OverviewTab data={schoolData} onUpdate={handleDataUpdate} />
-                );
+                return <OverviewTab data={schoolData} onUpdate={handleDataUpdate} />;
               case "Facilities":
-                return (
-                  <FacilitiesTab data={schoolData} onUpdate={handleDataUpdate} />
-                );
+                return <FacilitiesTab data={schoolData} onUpdate={handleDataUpdate} />;
               case "Fees":
                 return <FeesTab data={schoolData} onUpdate={handleDataUpdate} />;
               case "Gallery":
-                return (
-                  <GalleryTab data={schoolData} onUpdate={handleDataUpdate} />
-                );
+                return <GalleryTab data={schoolData} onUpdate={handleDataUpdate} />;
               case "Reviews":
                 return <ReviewsTab />;
               case "FAQs":

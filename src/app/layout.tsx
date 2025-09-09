@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script"; // <-- ADDED
 import { Poppins } from 'next/font/google';
 import './globals.css';
 import Navbar from "@/Components/NavBar";
@@ -11,7 +12,7 @@ const poppins = Poppins({
 
 // const geistMono = Geist_Mono({
 //   variable: "--font-geist-mono",
-//   subsets: ["latin"],
+//   subsets: ["latin"],A
 // });
 
 export const metadata: Metadata = {
@@ -26,6 +27,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+    <head>
+      {/* Load Maps JS SDK with Places library early so client components can use window.google */}
+      <Script
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+        strategy="beforeInteractive"
+      />
+    </head>
     {/* Apply the font class to the body */}
     <body className={poppins.className}>
       {children}

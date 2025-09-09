@@ -265,6 +265,66 @@ export const getCities = async (stateId) => {
   }
   return await res.json();
 };
+export const getSubscriptionTransactionsByUserId = async (userId) => {
+  try {
+    const uid = userId ?? getUserId();
+    if (!uid) throw new Error("User ID not found. Please login.");
+
+    const token = getAuthToken();
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const res = await fetch(`${API_BASE_URL}/subscription/transactions/${uid}`, {
+      method: "GET",
+      headers,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error((data && data.message) || "Failed to fetch subscription transactions");
+    }
+
+    return data; // raw response { success, message, data }
+  } catch (err) {
+    console.error("getSubscriptionTransactionsByUserId error:", err);
+    throw err;
+  }
+};
+/* ================== INVOICE (Mock) ================== */
+
+// ✅ Mock: Download Invoice by Transaction ID
+/* ================== INVOICE (Mock) ================== */
+
+// ✅ Mock: Download Invoice by Transaction ID
+export const downloadInvoiceByTransactionId = async (transactionId) => {
+  try {
+    // 🔹 Fake invoice content (you can make it richer if needed)
+    const mockInvoiceContent = `
+      INVOICE #: INV-${transactionId}
+      Date: ${new Date().toLocaleDateString()}
+      
+      Billed To:
+      John Doe
+      johndoe@example.com
+      
+      School: Sainik School Example
+      Plan: Premium
+      Amount: ₹999
+      Period: 01-Sep-2025 to 01-Sep-2026
+      
+      Thank you for your purchase!
+    `;
+
+    // 🔹 Return a Blob (pretend it's a PDF)
+    const blob = new Blob([mockInvoiceContent], { type: "application/pdf" });
+
+    return blob; // ⚡ Now your handleDownloadInvoice() can consume this
+  } catch (err) {
+    console.error("Download invoice (mock) error:", err);
+    throw err;
+  }
+};
 
 
 // Helpers

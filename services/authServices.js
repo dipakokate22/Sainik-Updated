@@ -1,36 +1,36 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
+import toast from "react-hot-toast";
 
-// Register API
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://sainik.codekrafters.in/api";
+
+const GOOGLE_MAPS_API_KEY =
+  process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
+  "AIzaSyBXm5uF-ladXhm6MijlNeEFxyrSHO8MpCw";
+
+// ================= REGISTER =================
 export const registerUser = async (userData) => {
   try {
     let response, data;
-    // If image is present, use FormData
+
     if (userData.image) {
       const formData = new FormData();
-      formData.append('firstName', userData.firstName);
-      formData.append('lastName', userData.lastName);
-      formData.append('mobile', userData.mobile);
-      formData.append('email', userData.email);
-      formData.append('role', userData.role);
-      formData.append('password', userData.password);
-      formData.append('image', userData.image);
-      // Optional fields
-      if (userData.website) {
-        formData.append('website', userData.website);
-      }
-      if (userData.current_class) {
-        formData.append('current_class', userData.current_class);
-      }
+      formData.append("firstName", userData.firstName);
+      formData.append("lastName", userData.lastName);
+      formData.append("mobile", userData.mobile);
+      formData.append("email", userData.email);
+      formData.append("role", userData.role);
+      formData.append("password", userData.password);
+      formData.append("image", userData.image);
+
+      if (userData.website) formData.append("website", userData.website);
+      if (userData.current_class)
+        formData.append("current_class", userData.current_class);
 
       response = await fetch(`${API_BASE_URL}/register`, {
-        method: 'POST',
-        body: formData
+        method: "POST",
+        body: formData,
       });
-      try {
-        data = await response.json();
-      } catch (jsonError) {
-        throw new Error('Server error: Invalid response format');
-      }
+      data = await response.json();
     } else {
       const payload = {
         firstName: userData.firstName,
@@ -41,223 +41,217 @@ export const registerUser = async (userData) => {
         password: userData.password,
       };
 
-      // Conditionally include optional fields
-      if (userData.website) {
-        payload.website = userData.website;
-      }
-      if (userData.current_class) {
-        payload.current_class = userData.current_class;
-      }
+      if (userData.website) payload.website = userData.website;
+      if (userData.current_class) payload.current_class = userData.current_class;
 
       response = await fetch(`${API_BASE_URL}/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
-
-      try {
-        data = await response.json();
-      } catch (jsonError) {
-        // If response is not JSON, show a generic error
-        throw new Error('Server error: Invalid response format');
-      }
+      data = await response.json();
     }
 
     if (!response.ok) {
-      throw new Error(data.message || 'Registration failed');
+      toast.error(data.message || "Registration failed");
+      throw new Error(data.message || "Registration failed");
     }
 
-    // Store response in localStorage (similar to login)
     if (data && data.jwttoken) {
-      localStorage.setItem('authToken', data.jwttoken);
-      localStorage.setItem('userRole', data.role);
-      localStorage.setItem('userId', data.id);
-      localStorage.setItem('firstName', data.firstName || '');
-      localStorage.setItem('lastName', data.lastName || '');
-      localStorage.setItem('email', data.email || '');
-      localStorage.setItem('mobile', data.mobile || '');
-      // Optionally store image URL if returned
-      if (data.image) {
-        localStorage.setItem('image', data.image);
-      }
+      localStorage.setItem("authToken", data.jwttoken);
+      localStorage.setItem("userRole", data.role);
+      localStorage.setItem("userId", data.id);
+      localStorage.setItem("firstName", data.firstName || "");
+      localStorage.setItem("lastName", data.lastName || "");
+      localStorage.setItem("email", data.email || "");
+      localStorage.setItem("mobile", data.mobile || "");
+      if (data.image) localStorage.setItem("image", data.image);
     }
 
+    toast.success("Registration successful");
     return data;
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
+    toast.error("Something went wrong while registering");
     throw error;
   }
 };
 
-// School Login API
+// ================= SCHOOL LOGIN =================
 export const schoolLogin = async (loginData) => {
   try {
     const response = await fetch(`${API_BASE_URL}/school-login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: loginData.email,
         role: loginData.role,
-        password: loginData.password
-      })
+        password: loginData.password,
+      }),
     });
 
     const data = await response.json();
-    
+
     if (!response.ok) {
-      throw new Error(data.message || 'School login failed');
+      toast.error(data.message || "School login failed");
+      throw new Error(data.message || "School login failed");
     }
 
-    // Store JWT token and user info in localStorage if login successful
     if (data.login && data.jwttoken) {
-      localStorage.setItem('authToken', data.jwttoken);
-      localStorage.setItem('userRole', data.role);
-      localStorage.setItem('userId', data.id);
-      localStorage.setItem('firstName', data.firstName || '');
-      localStorage.setItem('lastName', data.lastName || '');
-      localStorage.setItem('email', data.email || '');
-      localStorage.setItem('mobile', data.mobile || '');
-      // Store image URL if present
-      if (data.image) {
-        localStorage.setItem('image', data.image);
-      }
-      // Store school object for sidebar display
+      localStorage.setItem("authToken", data.jwttoken);
+      localStorage.setItem("userRole", data.role);
+      localStorage.setItem("userId", data.id);
+      localStorage.setItem("firstName", data.firstName || "");
+      localStorage.setItem("lastName", data.lastName || "");
+      localStorage.setItem("email", data.email || "");
+      localStorage.setItem("mobile", data.mobile || "");
+      if (data.image) localStorage.setItem("image", data.image);
       if (data.school) {
-        localStorage.setItem('school', JSON.stringify(data.school));
+        localStorage.setItem("school", JSON.stringify(data.school));
       }
-      
-      // Trigger custom event to update sidebar immediately
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new Event('userInfoUpdated'));
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("userInfoUpdated"));
       }
     }
 
+    toast.success("School login successful");
     return data;
   } catch (error) {
-    console.error('School login error:', error);
+    console.error("School login error:", error);
+    toast.error("Something went wrong during school login");
     throw error;
   }
 };
 
-// Student Login API
+// ================= STUDENT LOGIN =================
 export const studentLogin = async (loginData) => {
   try {
     const response = await fetch(`${API_BASE_URL}/student-login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: loginData.email,
         role: loginData.role,
-        password: loginData.password
-      })
+        password: loginData.password,
+      }),
     });
 
     const data = await response.json();
-    
+
     if (!response.ok) {
-      throw new Error(data.message || 'Student login failed');
+      toast.error(data.message || "Student login failed");
+      throw new Error(data.message || "Student login failed");
     }
 
-    // Store JWT token in localStorage if login successful
     if (data.login && data.jwttoken) {
-      localStorage.setItem('authToken', data.jwttoken);
-      localStorage.setItem('userRole', data.role);
-      localStorage.setItem('userId', data.id);
-      localStorage.setItem('firstName', data.firstName || '');
-      localStorage.setItem('lastName', data.lastName || '');
-      localStorage.setItem('email', data.email || '');
-      localStorage.setItem('mobile', data.mobile || '');
-      // Store studentId and signupDate for sidebar
-      localStorage.setItem('studentId', data.id ? String(data.id) : '');
-      localStorage.setItem('signupDate', data.created_at || '');
-      // Store image URL if present
-      if (data.image) {
-        localStorage.setItem('image', data.image);
-      }
-      
-      // Trigger custom event to update sidebar immediately
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new Event('userInfoUpdated'));
+      localStorage.setItem("authToken", data.jwttoken);
+      localStorage.setItem("userRole", data.role);
+      localStorage.setItem("userId", data.id);
+      localStorage.setItem("firstName", data.firstName || "");
+      localStorage.setItem("lastName", data.lastName || "");
+      localStorage.setItem("email", data.email || "");
+      localStorage.setItem("mobile", data.mobile || "");
+      localStorage.setItem("studentId", data.id ? String(data.id) : "");
+      localStorage.setItem("signupDate", data.created_at || "");
+      if (data.image) localStorage.setItem("image", data.image);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("userInfoUpdated"));
       }
     }
 
+    toast.success("Student login successful");
     return data;
   } catch (error) {
-    console.error('Student login error:', error);
+    console.error("Student login error:", error);
+    toast.error("Something went wrong during student login");
     throw error;
   }
 };
 
-// Utility function to get stored auth token
+// ================= GOOGLE SEARCH =================
+export const googleSearch = async (query) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/google-search`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query,
+        apiKey: GOOGLE_MAPS_API_KEY,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.message || "Google search failed");
+      throw new Error(data.message || "Google search failed");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Google search error:", error);
+    toast.error("Something went wrong while fetching Google results");
+    throw error;
+  }
+};
+
+// ================= AUTH UTILS =================
 export const getAuthToken = () => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('authToken');
-  }
+  if (typeof window !== "undefined") return localStorage.getItem("authToken");
   return null;
 };
 
-// Utility function to get user role
 export const getUserRole = () => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('userRole');
-  }
+  if (typeof window !== "undefined") return localStorage.getItem("userRole");
   return null;
 };
 
-// Utility function to get user ID
 export const getUserId = () => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('userId');
-  }
+  if (typeof window !== "undefined") return localStorage.getItem("userId");
   return null;
 };
 
-// Logout function
 export const logout = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userId');
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userId");
+    toast.success("Logged out successfully");
   }
 };
 
-// Check if user is authenticated
 export const isAuthenticated = () => {
   return !!getAuthToken();
 };
 
-// Contact Form API
+// ================= CONTACT FORM =================
 export const submitContactForm = async (contactData) => {
   try {
-    // Create payload with exact field names matching the API requirements
     const payload = {
       name: contactData.name,
       email: contactData.email,
       number: contactData.number,
-      message: contactData.message
-      // Category is omitted as it's not in the required payload format
+      message: contactData.message,
     };
-    
+
     const response = await fetch(`${API_BASE_URL}/contact`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+
     const data = await response.json();
+
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to submit contact form');
+      toast.error(data.message || "Failed to submit contact form");
+      throw new Error(data.message || "Failed to submit contact form");
     }
+
+    toast.success("Message sent successfully");
     return data;
   } catch (error) {
-    console.error('Contact form error:', error);
+    console.error("Contact form error:", error);
+    toast.error("Something went wrong while sending message");
     throw error;
   }
 };
