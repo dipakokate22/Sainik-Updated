@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Script from "next/script"; // <-- ADDED
+import Script from "next/script";
 import { Poppins } from 'next/font/google';
 import './globals.css';
 import Navbar from "@/Components/NavBar";
@@ -7,13 +7,8 @@ import Footer from "@/Components/Footer";
 
 const poppins = Poppins({
   subsets: ['latin'],
-  weight: ['400', '700'] // Include weights you need, e.g., 400 for regular, 700 for bold
+  weight: ['400', '700']
 });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],A
-// });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,13 +23,11 @@ export default function RootLayout({
   return (
     <html lang="en">
     <head>
-      {/* Load Maps JS SDK with Places library early so client components can use window.google */}
       <Script
-        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyBXm5uF-ladXhm6MijlNeEFxyrSHO8MpCw'}&libraries=places&loading=async`}
         strategy="beforeInteractive"
       />
     </head>
-    {/* Apply the font class to the body */}
     <body className={poppins.className}>
       {children}
     </body>
@@ -46,7 +39,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="bg-[#F7F1EE] min-h-screen">
       <Navbar />
-      {/* Add top padding to account for fixed navbar */}
       <main className="max-w-full mx-auto pt-24 md:pt-28">
         {children}
       </main>
