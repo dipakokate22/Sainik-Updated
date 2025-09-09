@@ -50,10 +50,6 @@ type GSearchResponse = {
   candidates?: GPlaceResult[];
 };
 
-useEffect(() => {
-  // Run diagnostic on component mount
-  diagnosGoogleMapsSetup();
-}, []);
 
 function useDebounce<T>(value: T, delay = 400) {
   const [debounced, setDebounced] = React.useState(value);
@@ -472,6 +468,10 @@ const AddressSection: React.FC<AddressSectionProps> = ({ school, onSave }) => {
     );
   };
 
+useEffect(() => {
+  // Run diagnostic on component mount
+  diagnosGoogleMapsSetup();
+}, []);
   // Google search effect
   useEffect(() => {
     let cancelled = false;
