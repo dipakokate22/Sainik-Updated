@@ -7,13 +7,13 @@ import { getAllSchools, searchSchools, searchSchoolsByCoordinates } from '../../
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-// School data interface
+// School data interface (same as before)
 interface School {
-  id: number; // <-- Added
+  id: number;
   slug: string;
   name: string;
   isFeatured?: boolean;
-  profileImage?: string; // <-- Added
+  profileImage?: string;
   location: {
     latitude: number;
     longitude: number;
@@ -69,13 +69,12 @@ interface School {
     question: string;
     answer: string;
   }>;
-  distance?: string; // Add distance field
+  distance?: string;
   isRegistered: boolean;
 }
 
 const ratingList = ['1', '2', '3', '4', '5'];
 
-// Define proper types for FilterSection props
 interface FilterSectionProps {
   title: string;
   items: string[];
@@ -88,9 +87,9 @@ interface FilterSectionProps {
   onToggle: () => void;
   showCount?: boolean;
   field: 'board' | 'medium' | 'category' | 'location' | 'rating';
+  schools: School[]; // Add schools prop for counting
 }
 
-// Create context for schools
 export const SchoolsContext = createContext<School[]>([]);
 
 const SchoolListSection = () => {
@@ -113,7 +112,7 @@ const SchoolListSection = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [selectedRatings, setSelectedRatings] = useState<string[]>([]);
-  const [range, setRange] = useState<number>(1);
+  const [range, setRange] = useState<number>(50); // Changed default to 50km for distance
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [boardSearch, setBoardSearch] = useState('');
@@ -142,13 +141,12 @@ const SchoolListSection = () => {
         setUserLocation({ latitude, longitude });
         
         try {
-          // Fetch nearby schools using coordinates
           const response = await searchSchoolsByCoordinates(latitude, longitude);
           setNearbySchoolsSearched(true);
           if (response.status && response.data) {
-            setNearbySchools(response.data.slice(0, 6)); // Limit to 6 schools
+            setNearbySchools(response.data.slice(0, 20)); // Increased limit for better filtering
           } else {
-            setNearbySchools([]); // Explicitly set empty array
+            setNearbySchools([]);
           }
         } catch (err) {
           console.error('Error fetching nearby schools:', err);
@@ -178,7 +176,7 @@ const SchoolListSection = () => {
       {
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 300000 // 5 minutes
+        maximumAge: 300000
       }
     );
   };
@@ -193,12 +191,8 @@ const SchoolListSection = () => {
         
         if (response.status && response.data) {
           setSchools(response.data);
-
-          // ✅ Pick schools with isFeatured = true
           const featured = response.data.filter((school: School) => school.isFeatured);
-
           setFeaturedSchools(featured.length > 0 ? featured : response.data.slice(0, 6));
-
         } else {
           setError('Failed to fetch schools data');
         }
@@ -221,8 +215,10 @@ const SchoolListSection = () => {
     }
   }, [searchParams]);
 
-  // Search functionality with API (instant for param change, debounce for typing)
+  // Search functionality - only for all schools, not nearby schools
   useEffect(() => {
+    if (nearbySchools.length > 0) return; // Don't search if showing nearby schools
+    
     let timeoutId: NodeJS.Timeout;
     const performSearch = async () => {
       if (searchTerm.trim()) {
@@ -241,7 +237,6 @@ const SchoolListSection = () => {
           setLoading(false);
         }
       } else {
-        // If search term is empty, fetch all schools again
         try {
           setLoading(true);
           const response = await getAllSchools();
@@ -258,17 +253,15 @@ const SchoolListSection = () => {
       }
     };
 
-    // If searchTerm comes from URL param, search instantly
     if (searchParams && searchParams.get('search') === searchTerm) {
       performSearch();
     } else {
-      // Debounce for typing
       timeoutId = setTimeout(performSearch, 500);
     }
     return () => clearTimeout(timeoutId);
-  }, [searchTerm, searchParams]);
+  }, [searchTerm, searchParams, nearbySchools.length]);
   
-  // Expanded states for filter sections - ALL OPEN BY DEFAULT
+  // Expanded states for filter sections
   const [expandedSections, setExpandedSections] = useState({
     board: true,
     medium: true,
@@ -303,63 +296,98 @@ const SchoolListSection = () => {
     setCurrentPage(1);
   };
 
-  // Filter functionality with API integration
-  useEffect(() => {
-    const applyFilters = async () => {
-      if (selectedBoards.length > 0 || selectedMediums.length > 0 || selectedCategories.length > 0 || selectedLocations.length > 0 || selectedRatings.length > 0 || range < 10) {
-        try {
-          setLoading(true);
-          const searchParams: any = {};
-          
-          if (selectedBoards.length > 0) searchParams.board = selectedBoards.join(',');
-          if (selectedMediums.length > 0) searchParams.medium = selectedMediums.join(',');
-          if (selectedCategories.length > 0) searchParams.category = selectedCategories.join(',');
-          if (selectedLocations.length > 0) searchParams.location = selectedLocations.join(',');
-          if (range < 10) searchParams.max_fees = range * 100000;
-          
-          const response = await searchSchools(searchParams);
-          
-          if (response.status && response.data) {
-            setSchools(response.data);
-          }
-        } catch (err) {
-          console.error('Error filtering schools:', err);
-          setError(err instanceof Error ? err.message : 'Filter failed');
-        } finally {
-          setLoading(false);
-        }
-      } else if (!searchTerm.trim()) {
-        // If no filters and no search, fetch all schools
-        try {
-          setLoading(true);
-          const response = await getAllSchools();
-          
-          if (response.status && response.data) {
-            setSchools(response.data);
-          }
-        } catch (err) {
-          console.error('Error fetching schools:', err);
-        } finally {
-          setLoading(false);
-        }
-      }
+  // Clear all filters when switching between nearby and all schools
+  const clearAllFilters = () => {
+    setSelectedBoards([]);
+    setSelectedMediums([]);
+    setSelectedCategories([]);
+    setSelectedLocations([]);
+    setSelectedRatings([]);
+    setRange(50);
+    setSearchTerm('');
+    setCurrentPage(1);
+  };
+
+  // Helper function to parse distance string to number (for filtering)
+  const parseDistance = (distanceStr: string): number => {
+    if (!distanceStr) return 0;
+    const match = distanceStr.match(/(\d+\.?\d*)/);
+    return match ? parseFloat(match[1]) : 0;
+  };
+
+  // Determine which schools to show and filter
+  const { currentSchoolsList, isShowingNearby } = useMemo(() => {
+    return {
+      currentSchoolsList: nearbySchools.length > 0 ? nearbySchools : schools,
+      isShowingNearby: nearbySchools.length > 0
     };
-    
-    applyFilters();
-  }, [selectedBoards, selectedMediums, selectedCategories, selectedLocations, selectedRatings, range, searchTerm]);
-  
-  // Client-side filtering for rating (since API might not support rating filters)
+  }, [nearbySchools, schools]);
+
+  // Apply filters to current schools list
   const filteredSchools = useMemo(() => {
-    return schools.filter(school => {
-      const matchesRating = selectedRatings.length === 0 || selectedRatings.some(rating => {
-        const ratingNum = parseFloat(rating);
-        return school.reviews && school.reviews.length > 0 && 
-               school.reviews.some(review => review.rating >= ratingNum && review.rating < ratingNum + 1);
+    let filtered = currentSchoolsList;
+
+    // Apply search filter
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(school => 
+        school.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply board filter
+    if (selectedBoards.length > 0) {
+      filtered = filtered.filter(school => 
+        selectedBoards.includes(school.overview?.schoolInformation?.board || '')
+      );
+    }
+
+    // Apply medium filter
+    if (selectedMediums.length > 0) {
+      filtered = filtered.filter(school => 
+        selectedMediums.includes(school.overview?.schoolInformation?.medium || '')
+      );
+    }
+
+    // Apply category filter
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(school => 
+        selectedCategories.includes(school.overview?.schoolInformation?.category || '')
+      );
+    }
+
+    // Apply location filter
+    if (selectedLocations.length > 0) {
+      filtered = filtered.filter(school => 
+        selectedLocations.includes(school.address?.city || '')
+      );
+    }
+
+    // Apply rating filter
+    if (selectedRatings.length > 0) {
+      filtered = filtered.filter(school => {
+        if (!school.reviews || school.reviews.length === 0) return false;
+        return selectedRatings.some(rating => {
+          const ratingNum = parseFloat(rating);
+          return school.reviews.some(review => 
+            review.rating >= ratingNum && review.rating < ratingNum + 1
+          );
+        });
       });
-      
-      return matchesRating;
-    });
-  }, [schools, selectedRatings]);
+    }
+
+    // Apply range filter
+    if (isShowingNearby && range < 50) {
+      // For nearby schools, filter by distance
+      filtered = filtered.filter(school => {
+        if (!school.distance) return true;
+        const distance = parseDistance(school.distance);
+        return distance <= range;
+      });
+    }
+    // Note: For all schools, range filter would be for fees, but that's handled by API
+
+    return filtered;
+  }, [currentSchoolsList, searchTerm, selectedBoards, selectedMediums, selectedCategories, selectedLocations, selectedRatings, range, isShowingNearby]);
 
   const SCHOOLS_PER_PAGE = 9;
   
@@ -371,70 +399,71 @@ const SchoolListSection = () => {
 
   const totalPages = Math.ceil(filteredSchools.length / SCHOOLS_PER_PAGE);
   
-  // Dynamic filter options from API data
+  // Dynamic filter options based on current schools list
   const boardList = useMemo(() => {
     const boardSet = new Set<string>();
-    schools.forEach(school => {
+    currentSchoolsList.forEach(school => {
       if (school.overview?.schoolInformation?.board) {
         boardSet.add(school.overview.schoolInformation.board);
       }
     });
     return Array.from(boardSet).sort();
-  }, [schools]);
+  }, [currentSchoolsList]);
   
   const mediumList = useMemo(() => {
     const mediumSet = new Set<string>();
-    schools.forEach(school => {
+    currentSchoolsList.forEach(school => {
       if (school.overview?.schoolInformation?.medium) {
         mediumSet.add(school.overview.schoolInformation.medium);
       }
     });
     return Array.from(mediumSet).sort();
-  }, [schools]);
+  }, [currentSchoolsList]);
   
   const categoryList = useMemo(() => {
     const categorySet = new Set<string>();
-    schools.forEach(school => {
+    currentSchoolsList.forEach(school => {
       if (school.overview?.schoolInformation?.category) {
         categorySet.add(school.overview.schoolInformation.category);
       }
     });
     return Array.from(categorySet).sort();
-  }, [schools]);
+  }, [currentSchoolsList]);
   
   const locationList = useMemo(() => {
     const locationSet = new Set<string>();
-    schools.forEach(school => {
+    currentSchoolsList.forEach(school => {
       if (school.address?.city) {
         locationSet.add(school.address.city);
       }
     });
     return Array.from(locationSet).sort();
-  }, [schools]);
+  }, [currentSchoolsList]);
   
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedBoards, selectedMediums, selectedCategories, selectedLocations, selectedRatings, range, searchTerm]);
 
+  // Updated getCount function to use currentSchoolsList
   const getCount = (field: 'board' | 'medium' | 'category' | 'location' | 'rating', value: string) => {
     if (field === 'rating') {
-      return schools.filter(school => 
+      return currentSchoolsList.filter(school => 
         school.reviews && school.reviews.length > 0 && 
         school.reviews.some(review => review.rating.toString() === value)
       ).length;
     }
     if (field === 'board') {
-      return schools.filter(school => school.overview?.schoolInformation?.board === value).length;
+      return currentSchoolsList.filter(school => school.overview?.schoolInformation?.board === value).length;
     }
     if (field === 'medium') {
-      return schools.filter(school => school.overview?.schoolInformation?.medium === value).length;
+      return currentSchoolsList.filter(school => school.overview?.schoolInformation?.medium === value).length;
     }
     if (field === 'category') {
-      return schools.filter(school => school.overview?.schoolInformation?.category === value).length;
+      return currentSchoolsList.filter(school => school.overview?.schoolInformation?.category === value).length;
     }
     if (field === 'location') {
-      return schools.filter(school => school.address?.city === value).length;
+      return currentSchoolsList.filter(school => school.address?.city === value).length;
     }
     return 0;
   };
@@ -454,7 +483,8 @@ const SchoolListSection = () => {
 
   const paginationItems = getPaginationItems();
 
-  const FilterSection = ({ title, items, selectedItems, setSelectedItems, searchable = false, searchTerm = '', setSearchTerm, isExpanded, onToggle, field }: FilterSectionProps) => (
+  // Updated FilterSection component
+  const FilterSection = ({ title, items, selectedItems, setSelectedItems, searchable = false, searchTerm = '', setSearchTerm, isExpanded, onToggle, field, schools }: FilterSectionProps) => (
     <div className="border-b border-gray-100 pb-4">
       <button
         onClick={onToggle}
@@ -470,7 +500,6 @@ const SchoolListSection = () => {
         )}
       </button>
       
-      {/* Show applied filters when minimized */}
       {!isExpanded && selectedItems.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1">
           {selectedItems.map((item: string) => (
@@ -537,15 +566,13 @@ const SchoolListSection = () => {
         if (nearMeSectionRef.current) {
           nearMeSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      }, 1200); // Wait for location to be fetched
+      }, 1200);
     }
   }, [searchParams]);
 
-  // Wrap main return with SchoolsContext.Provider
   return (
     <SchoolsContext.Provider value={schools}>
       <>
-        {/* Embedded CSS for hiding scrollbars */}
         <style jsx>{`
           .scrollbar-hide {
             -ms-overflow-style: none;
@@ -564,7 +591,17 @@ const SchoolListSection = () => {
               {/* Header */}
               <div className="p-4 border-b border-gray-100">
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Filters {isShowingNearby && <span className="text-sm text-blue-600">(Nearby)</span>}
+                  </h2>
+                  {(selectedBoards.length > 0 || selectedMediums.length > 0 || selectedCategories.length > 0 || selectedLocations.length > 0 || selectedRatings.length > 0 || range < 50) && (
+                    <button
+                      onClick={clearAllFilters}
+                      className="text-sm text-red-600 hover:text-red-800"
+                    >
+                      Clear All
+                    </button>
+                  )}
                 </div>
                 
                 {/* Search */}
@@ -578,7 +615,12 @@ const SchoolListSection = () => {
                       if (e.key === "Enter") {
                         const value = e.currentTarget.value.trim();
                         if (value) {
-                          router.push(`/Schools?search=${encodeURIComponent(value)}`);
+                          if (isShowingNearby) {
+                            // Just filter current nearby schools
+                            setSearchTerm(value);
+                          } else {
+                            router.push(`/Schools?search=${encodeURIComponent(value)}`);
+                          }
                           e.currentTarget.blur();
                         }
                       }
@@ -603,6 +645,7 @@ const SchoolListSection = () => {
                   onToggle={() => toggleSection('board')}
                   showCount={true}
                   field="board"
+                  schools={currentSchoolsList}
                 />
         
                 {/* Medium */}
@@ -618,6 +661,7 @@ const SchoolListSection = () => {
                   onToggle={() => toggleSection('medium')}
                   showCount={true}
                   field="medium"
+                  schools={currentSchoolsList}
                 />
         
                 {/* Category */}
@@ -630,6 +674,7 @@ const SchoolListSection = () => {
                   onToggle={() => toggleSection('category')}
                   showCount={true}
                   field="category"
+                  schools={currentSchoolsList}
                 />
         
                 {/* Location */}
@@ -645,6 +690,7 @@ const SchoolListSection = () => {
                   onToggle={() => toggleSection('location')}
                   showCount={true}
                   field="location"
+                  schools={currentSchoolsList}
                 />
         
                 {/* Rating */}
@@ -657,15 +703,18 @@ const SchoolListSection = () => {
                   onToggle={() => toggleSection('rating')}
                   showCount={true}
                   field="rating"
+                  schools={currentSchoolsList}
                 />
         
-                {/* Range */}
+                {/* Range - Dynamic based on context */}
                 <div className="border-b border-gray-100 pb-4">
                   <button
                     onClick={() => toggleSection('range')}
                     className="flex items-center justify-between w-full py-2 text-left hover:bg-gray-50 rounded transition-colors"
                   >
-                    <h3 className="text-sm font-medium text-gray-900">Range</h3>
+                    <h3 className="text-sm font-medium text-gray-900">
+                      {isShowingNearby ? 'Distance Range' : 'Fee Range'}
+                    </h3>
                     {expandedSections.range ? (
                       <IoChevronUp className="h-4 w-4 text-gray-600 transition-transform duration-200" />
                     ) : (
@@ -673,15 +722,14 @@ const SchoolListSection = () => {
                     )}
                   </button>
                   
-                  {/* Show range value when minimized */}
-                  {!expandedSections.range && range > 1 && (
+                  {!expandedSections.range && range < 50 && (
                     <div className="mt-2">
                       <div className="flex items-center gap-1 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full w-fit">
-                        <span>{range} km</span>
+                        <span>{range} {isShowingNearby ? 'km' : 'L'}</span>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            setRange(1);
+                            setRange(isShowingNearby ? 50 : 10);
                           }}
                           className="hover:bg-blue-200 rounded-full p-0.5"
                         >
@@ -695,16 +743,17 @@ const SchoolListSection = () => {
                     <div className="mt-3">
                       <input
                         type="range"
-                        min="1"
-                        max="50"
+                        min={isShowingNearby ? "1" : "1"}
+                        max={isShowingNearby ? "50" : "10"}
+                        step={isShowingNearby ? "1" : "1"}
                         value={range}
                         onChange={(e) => setRange(Number(e.target.value))}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                       />
                       <div className="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>1 km</span>
-                        <span>{range} km</span>
-                        <span>50 km</span>
+                        <span>{isShowingNearby ? '1 km' : '1L'}</span>
+                        <span>{range} {isShowingNearby ? 'km' : 'L'}</span>
+                        <span>{isShowingNearby ? '50 km' : '10L'}</span>
                       </div>
                     </div>
                   )}
@@ -715,7 +764,7 @@ const SchoolListSection = () => {
             {/* School Cards */}
             <div className="w-full lg:w-[calc(100%-296px)] flex flex-col gap-6">
               
-              {/* Featured Schools Section - always at the top */}
+              {/* Featured Schools Section */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-2 lg:mb-4">
                   <h2 className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-black leading-tight">
@@ -774,22 +823,22 @@ const SchoolListSection = () => {
                 </div>
               </div>
 
-              {/* Conditional: Schools Near Me OR All Schools */}
+              {/* Main Schools Section */}
               {nearbySchools.length > 0 ? (
                 <div ref={nearMeSectionRef}>
                   <div className="flex items-center justify-between mb-2 lg:mb-4">
                     <h2 className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-black leading-tight">
-                      Schools Near Me
+                      Schools Near Me ({filteredSchools.length})
                     </h2>
-                    {!userLocation && (
-                      <button
-                        onClick={getUserLocation}
-                        disabled={locationLoading}
-                        className="px-4 py-2 bg-[#257B5A] text-white rounded-lg hover:bg-[#1e6248] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
-                      >
-                        {locationLoading ? 'Getting Location...' : 'Get My Location'}
-                      </button>
-                    )}
+                    <button
+                      onClick={() => {
+                        setNearbySchools([]);
+                        clearAllFilters();
+                      }}
+                      className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
+                    >
+                      Show All Schools
+                    </button>
                   </div>
                   {locationError && (
                     <div className="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg">
@@ -797,7 +846,7 @@ const SchoolListSection = () => {
                     </div>
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {nearbySchools.map(school => (
+                    {paginatedSchools.map(school => (
                       <div
                         key={school.id}
                         onClick={() => {
@@ -809,7 +858,7 @@ const SchoolListSection = () => {
                           name={school.name}
                           image={school.profileImage || school.gallery?.[0] || '/default-school.jpg'}
                           desc={`${school.address?.city || ''} | ${school.overview?.schoolInformation?.board || ''} | ${school.overview?.schoolInformation?.medium || ''} | ${school.overview?.schoolInformation?.category || ''}`}
-                          distance={school.distance} // Add distance prop here
+                          distance={school.distance}
                         />
                       </div>
                     ))}
@@ -819,7 +868,7 @@ const SchoolListSection = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2 lg:mb-4">
                     <h2 className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-black leading-tight">
-                      All Schools
+                      All Schools ({filteredSchools.length})
                     </h2>
                     <button
                       onClick={getUserLocation}
@@ -856,30 +905,31 @@ const SchoolListSection = () => {
                       ))}
                     </div>
                   )}
-                  {/* Pagination */}
-                  {totalPages > 1 && (
-                    <div className="flex justify-center mt-6 items-center gap-2">
-                      {paginationItems.map((item, index) =>
-                        typeof item === 'number' ? (
-                          <button
-                            key={index}
-                            onClick={() => {
-                              setCurrentPage(item);
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }}
-                            className={`w-10 h-10 rounded-lg border text-sm font-medium transition-colors duration-200 ${
-                              currentPage === item
-                                ? 'bg-[#AA0111] text-white border-[#AA0111]'
-                                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-                            }`}
-                          >
-                            {item}
-                          </button>
-                        ) : (
-                          <span key={index} className="px-3 py-1 text-gray-400 text-lg">…</span>
-                        )
-                      )}
-                    </div>
+                </div>
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center mt-6 items-center gap-2">
+                  {paginationItems.map((item, index) =>
+                    typeof item === 'number' ? (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          setCurrentPage(item);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className={`w-10 h-10 rounded-lg border text-sm font-medium transition-colors duration-200 ${
+                          currentPage === item
+                            ? 'bg-[#AA0111] text-white border-[#AA0111]'
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                        }`}
+                      >
+                        {item}
+                      </button>
+                    ) : (
+                      <span key={index} className="px-3 py-1 text-gray-400 text-lg">…</span>
+                    )
                   )}
                 </div>
               )}

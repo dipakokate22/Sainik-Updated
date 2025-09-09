@@ -743,16 +743,18 @@ const faqs = parseFaqs(school?.faqs);
                     ) : nearbySchools.length === 0 ? (
                       <div className="text-gray-500 text-center py-4">No nearby schools found.</div>
                     ) : (
-                      nearbySchools.map((s) => (
-                        <HorizontalSchoolCard
-                          key={s.id}
-                          name={s.name}
-                          image={s.profileImage || s.gallery?.[0] || '/Listing/Logo.png'}
-                          location={s.address?.city || ''}
-                          distance=""
-                          rating={s.reviews?.[0]?.rating || 0}
-                        />
-                      ))
+                     // Fixed code:
+nearbySchools.map((s) => (
+  <HorizontalSchoolCard
+    key={s.id}
+    name={s.name}
+    image={s.profileImage || s.gallery?.[0] || '/Listing/Logo.png'}
+    location={s.address?.city || ''}
+    distance={s.distance || ''} // ✅ Use the distance from API
+    rating={s.rating || s.reviews?.[0]?.rating || 0} // ✅ Also fixed rating
+  />
+))
+
                     )}
                   </div>
                 </div>
