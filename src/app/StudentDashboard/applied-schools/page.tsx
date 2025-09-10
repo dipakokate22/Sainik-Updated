@@ -5,8 +5,8 @@ import Header from '../Header';
 import { Poppins } from 'next/font/google';
 import { useState, useEffect } from 'react';
 import { X, Trash2 } from 'lucide-react';
-import { getAppliedStudentsByUser, updateAppliedStudentStatus } from '../../../../services/studentServices';
-import { getAllSchools } from '../../../../services/schoolServices'; // <-- Import API
+import { getAppliedStudentsByUser, updateAppliedStudentStatus, applyToSchool } from '../../../../services/studentServices';
+import { getAllSchools } from '../../../../services/schoolServices';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -20,7 +20,7 @@ const AppliedSchoolsPage = () => {
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [selectedSchool, setSelectedSchool] = useState<any>(null);
   const [appliedSchools, setAppliedSchools] = useState<any[]>([]);
-  const [availableSchools, setAvailableSchools] = useState<any[]>([]); // <-- Use state for schools
+  const [availableSchools, setAvailableSchools] = useState<any[]>([]);
   const [selectedPreference, setSelectedPreference] = useState(1);
   const [userId, setUserId] = useState<number | null>(null);
 
@@ -32,29 +32,43 @@ const AppliedSchoolsPage = () => {
     }
   }, []);
 
+  // Helper function to safely parse JSON strings
+  const safeJsonParse = (jsonString: any, fallback: any = []) => {
+    if (!jsonString) return fallback;
+    if (Array.isArray(jsonString)) return jsonString;
+    if (typeof jsonString === 'string') {
+      try {
+        const parsed = JSON.parse(jsonString);
+        return Array.isArray(parsed) ? parsed : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+    return fallback;
+  };
+
   // Fetch applied schools from API
   useEffect(() => {
     async function fetchAppliedSchools() {
       if (userId === null) return;
       try {
         const res = await getAppliedStudentsByUser(userId);
-        // API response: { success, message, data: [...] }
-        if (res.success && Array.isArray(res.data)) {
-          // Map API data to UI format
-          setAppliedSchools(res.data.map((app: any) => ({
+        console.log('Applied Schools Response:', res);
+        // Updated to match actual API response structure
+        if (res.success && res.data && Array.isArray(res.data.applied_students)) {
+          setAppliedSchools(res.data.applied_students.map((app: any) => ({
             id: app.id,
-            school: app.school?.name || '',
-            location: app.school?.city || '',
+            school: app.school?.name || `${app.user?.firstName || ''} ${app.user?.lastName || ''}`.trim() || 'Unknown School',
+            location: app.school?.city || app.school?.full_address || 'N/A',
             appliedDate: new Date(app.applied_date).toLocaleDateString('en-GB'),
             status: app.status.charAt(0).toUpperCase() + app.status.slice(1),
-            preference: app.preference || '', // If available
+            preference: app.preference || (appliedSchools.length + 1),
             school_id: app.school_id,
             user_id: app.user_id,
-            raw: app, // keep raw for further use
+            raw: app,
           })));
         }
       } catch (err) {
-        // Handle error
         console.error('Failed to fetch applied schools', err);
       }
     }
@@ -66,37 +80,49 @@ const AppliedSchoolsPage = () => {
     async function fetchSchools() {
       try {
         const res = await getAllSchools();
-        if (res.success && Array.isArray(res.data)) {
+        console.log('Available Schools Response:', res);
+        // Updated to match actual API response structure - checking both res.success and res.status
+        if ((res.success || res.status) && Array.isArray(res.data)) {
           setAvailableSchools(
-            res.data.map((school: any) => ({
-              id: school.id,
-              name: school.name,
-              location: school.address?.city || '',
-              grade: school.overview?.admissionCriteriaEligibility?.join(', ') || '',
-              type: school.tags?.join(', ') || '',
-              board: school.overview?.schoolInformation?.board || '',
-              medium: school.overview?.schoolInformation?.medium || '',
-              category: school.overview?.schoolInformation?.category || '',
-              rating: school.reviews?.length
-                ? (
-                    school.reviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) /
-                    school.reviews.length
-                  ).toFixed(1)
-                : '4.5',
-              distance: 0, // <-- Always set a default value
-              logo: school.profileImage,
-              image: school.gallery?.[0] || school.profileImage,
-              description: school.overview?.welcomeNote || '',
-              facilities: [
-                ...(school.facilities?.academic || []),
-                ...(school.facilities?.sportsRecreation || []),
-                ...(school.facilities?.infrastructure || [])
-              ].filter(Boolean), // <-- Ensure array, filter out falsy
-              fees: school.fees?.annualFeeStructure?.[0]?.totalFee || '',
-              contact: school.address?.mobile || '',
-              email: school.address?.email || '',
-              raw: school, // keep raw for further use
-            }))
+            res.data.map((school: any) => {
+              // Parse JSON strings safely
+              const keyHighlights = safeJsonParse(school.key_highlights);
+              const admissionCriteria = safeJsonParse(school.admission_criteria_eligibility);
+              const annualFees = safeJsonParse(school.annual_fee_structure);
+              const academicFacilities = safeJsonParse(school.academic_facilities);
+              
+              return {
+                id: school.id,
+                name: school.name || 'Unknown School',
+                location: school.city || school.full_address || 'N/A',
+                grade: admissionCriteria.length ? admissionCriteria.join(', ') : 'All Grades',
+                type: school.category || 'General',
+                board: school.board || 'N/A',
+                medium: school.medium || 'N/A',
+                category: school.category || 'Co-ed',
+                rating: school.reviews?.length
+                  ? (
+                      school.reviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) /
+                      school.reviews.length
+                    ).toFixed(1)
+                  : '4.5',
+                distance: 0,
+                logo: school.profile_image,
+                image: school.gallery?.[0] || school.profile_image,
+                description: school.welcome_note || 'A quality educational institution.',
+                facilities: [
+                  ...academicFacilities,
+                  ...(keyHighlights || [])
+                ].filter(Boolean),
+                fees: annualFees.length 
+                  ? annualFees.join(', ')
+                  : 'Contact for fees',
+                contact: school.mobile || 'N/A',
+                email: school.email || 'N/A',
+                website: school.website || 'N/A',
+                raw: school,
+              };
+            })
           );
         }
       } catch (err) {
@@ -109,22 +135,25 @@ const AppliedSchoolsPage = () => {
   // Sort schools by distance and get first 9 for grid display
   const sortedSchools = [...availableSchools].sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0));
   const gridSchools = sortedSchools.slice(0, 9);
-  const remainingSchools = sortedSchools.slice(9);
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Applied': return 'text-blue-600 bg-blue-50';
-      case 'Accepted': return 'text-green-600 bg-green-50';
-      case 'Rejected': return 'text-red-600 bg-red-50';
-      case 'Waitlisted': return 'text-orange-600 bg-orange-50';
+    switch (status.toLowerCase()) {
+      case 'applied': 
+      case 'pending': return 'text-blue-600 bg-blue-50';
+      case 'accepted': return 'text-green-600 bg-green-50';
+      case 'rejected': return 'text-red-600 bg-red-50';
+      case 'waitlisted': return 'text-orange-600 bg-orange-50';
+      case 'withdrawn': return 'text-gray-600 bg-gray-50';
       default: return 'text-gray-600 bg-gray-50';
     }
   };
 
   const handleViewSchool = (schoolName: string) => {
     const school = availableSchools.find(s => s.name === schoolName);
-    setSelectedSchool(school);
-    setShowSchoolDetailsModal(true);
+    if (school) {
+      setSelectedSchool(school);
+      setShowSchoolDetailsModal(true);
+    }
   };
 
   const handleDeleteApplication = (applicationId: number) => {
@@ -149,7 +178,8 @@ const AppliedSchoolsPage = () => {
     setShowApplicationModal(true);
   };
 
-  const handleApplyToSchool = () => {
+  // Updated to use the actual API
+  const handleApplyToSchool = async () => {
     if (appliedSchools.length >= 5) {
       alert('You can only apply to a maximum of 5 schools.');
       return;
@@ -161,19 +191,37 @@ const AppliedSchoolsPage = () => {
       return;
     }
 
-    const newApplication = {
-      id: appliedSchools.length + 1,
-      school: selectedSchool.name,
-      location: selectedSchool.location,
-      appliedDate: new Date().toLocaleDateString('en-GB'),
-      status: 'Applied',
-      preference: selectedPreference
-    };
+    try {
+      // Use the actual API call
+      await applyToSchool({
+        school_id: selectedSchool.id,
+        user_id: userId,
+        applied_date: new Date().toISOString().split('T')[0] // YYYY-MM-DD format
+      });
 
-    setAppliedSchools([...appliedSchools, newApplication]);
-    setShowApplicationModal(false);
-    setSelectedPreference(1);
-    alert('Application submitted successfully!');
+      // Refresh the applied schools list
+      const res = await getAppliedStudentsByUser(userId);
+      if (res.success && res.data && Array.isArray(res.data.applied_students)) {
+        setAppliedSchools(res.data.applied_students.map((app: any) => ({
+          id: app.id,
+          school: app.school?.name || `${app.user?.firstName || ''} ${app.user?.lastName || ''}`.trim() || 'Unknown School',
+          location: app.school?.city || app.school?.full_address || 'N/A',
+          appliedDate: new Date(app.applied_date).toLocaleDateString('en-GB'),
+          status: app.status.charAt(0).toUpperCase() + app.status.slice(1),
+          preference: app.preference || '',
+          school_id: app.school_id,
+          user_id: app.user_id,
+          raw: app,
+        })));
+      }
+
+      setShowApplicationModal(false);
+      setSelectedPreference(1);
+      alert('Application submitted successfully!');
+    } catch (err) {
+      console.error('Failed to apply to school:', err);
+      alert('Failed to submit application. Please try again.');
+    }
   };
 
   const getAvailablePreferences = () => {
@@ -181,24 +229,26 @@ const AppliedSchoolsPage = () => {
     return [1, 2, 3, 4, 5].filter(pref => !usedPreferences.includes(pref));
   };
 
-  // Withdraw application handler
+  // Fixed withdraw application handler - using correct student ID and only passing status
   const handleWithdrawApplication = async (application: any) => {
     if (!window.confirm('Are you sure you want to withdraw this application?')) return;
     try {
+      // Pass the correct student ID (application.id) and only status
       await updateAppliedStudentStatus(application.id, {
         school_id: application.school_id,
         user_id: application.user_id,
-        applied_date: application.raw.applied_date,
+        applied_date: application.appliedDate,
         status: 'withdrawn',
       });
+      
       // Refresh list after withdrawal
       if (userId === null) return;
       const res = await getAppliedStudentsByUser(userId);
-      if (res.success && Array.isArray(res.data)) {
-        setAppliedSchools(res.data.map((app: any) => ({
+      if (res.success && res.data && Array.isArray(res.data.applied_students)) {
+        setAppliedSchools(res.data.applied_students.map((app: any) => ({
           id: app.id,
-          school: app.school?.name || '',
-          location: app.school?.city || '',
+          school: app.school?.name || `${app.user?.firstName || ''} ${app.user?.lastName || ''}`.trim() || 'Unknown School',
+          location: app.school?.city || app.school?.full_address || 'N/A',
           appliedDate: new Date(app.applied_date).toLocaleDateString('en-GB'),
           status: app.status.charAt(0).toUpperCase() + app.status.slice(1),
           preference: app.preference || '',
@@ -209,6 +259,7 @@ const AppliedSchoolsPage = () => {
       }
       alert('Application withdrawn successfully!');
     } catch (err) {
+      console.error('Failed to withdraw application:', err);
       alert('Failed to withdraw application');
     }
   };
@@ -239,7 +290,7 @@ const AppliedSchoolsPage = () => {
             </div>
           </div>
 
-          {/* Applied Schools Table - Now First */}
+          {/* Applied Schools Table */}
           <div className="rounded-lg shadow-md overflow-x-auto border border-black mb-8">
             <div className="flex justify-between items-center px-4 py-4 border-b border-black">
               <h2 className="font-semibold text-lg text-black">Your Applications</h2>
@@ -257,18 +308,16 @@ const AppliedSchoolsPage = () => {
                   <th className="font-medium text-sm text-left pl-4 text-black border-r border-black last:border-r-0">School</th>
                   <th className="font-medium text-sm text-black border-r border-black last:border-r-0">Location</th>
                   <th className="font-medium text-sm text-black border-r border-black last:border-r-0">Applied Date</th>
-                  <th className="font-medium text-sm text-black border-r border-black last:border-r-0">Preference</th>
                   <th className="font-medium text-sm text-black border-r border-black last:border-r-0">Status</th>
                   <th className="font-medium text-sm text-black">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {appliedSchools.map((app, index) => (
+                {appliedSchools.length > 0 ? appliedSchools.map((app, index) => (
                   <tr key={index} className="h-[70px] border-b border-black last:border-b-0">
                     <td className="text-sm text-left pl-4 text-[#6C6B6B] border-r border-black">{app.school}</td>
                     <td className="text-sm text-[#6C6B6B] border-r border-black">{app.location}</td>
                     <td className="text-sm text-[#6C6B6B] border-r border-black">{app.appliedDate}</td>
-                    <td className="text-sm text-[#6C6B6B] border-r border-black">#{app.preference}</td>
                     <td className="border-r border-black">
                       <span className={`text-sm font-medium px-3 py-1 rounded-full ${getStatusColor(app.status)}`}>
                         {app.status}
@@ -282,14 +331,6 @@ const AppliedSchoolsPage = () => {
                         >
                           View
                         </button>
-                        <button 
-                          onClick={() => handleDeleteApplication(app.id)}
-                          className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
-                          title="Delete Application"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                        {/* Withdraw button */}
                         {app.status.toLowerCase() !== 'withdrawn' && (
                           <button
                             onClick={() => handleWithdrawApplication(app)}
@@ -302,7 +343,13 @@ const AppliedSchoolsPage = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
+                )) : (
+                  <tr className="h-[70px]">
+                    <td colSpan={5} className="text-center text-gray-500">
+                      No applications found
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -320,7 +367,7 @@ const AppliedSchoolsPage = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {gridSchools.map((school) => (
+              {gridSchools.length > 0 ? gridSchools.map((school) => (
                 <div key={school.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
                   <div className="flex flex-col h-full">
                     <div className="flex items-center mb-3">
@@ -362,7 +409,11 @@ const AppliedSchoolsPage = () => {
                     </button>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="col-span-full text-center text-gray-500 py-8">
+                  No schools available at the moment
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -371,7 +422,6 @@ const AppliedSchoolsPage = () => {
       {/* All Applications Modal */}
       {showAllApplicationsModal && (
         <div className="fixed inset-0 bg-transparent bg-opacity-20 backdrop-blur-[2px] flex items-center justify-center z-50 p-4">
-
           <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-300">
             <div className="flex justify-between items-center p-6 border-b border-black bg-gray-50 rounded-t-xl">
               <h2 className="text-xl font-semibold text-black">All Applications</h2>
@@ -391,7 +441,6 @@ const AppliedSchoolsPage = () => {
                       <th className="font-medium text-sm text-left pl-4 text-black border border-black">School</th>
                       <th className="font-medium text-sm text-black border border-black">Location</th>
                       <th className="font-medium text-sm text-black border border-black">Applied Date</th>
-                      <th className="font-medium text-sm text-black border border-black">Preference</th>
                       <th className="font-medium text-sm text-black border border-black">Status</th>
                       <th className="font-medium text-sm text-black">Action</th>
                     </tr>
@@ -402,7 +451,6 @@ const AppliedSchoolsPage = () => {
                         <td className="text-sm text-left pl-4 text-[#6C6B6B] border border-gray-700">{app.school}</td>
                         <td className="text-sm text-[#6C6B6B] border border-gray-700">{app.location}</td>
                         <td className="text-sm text-[#6C6B6B] border border-gray-700">{app.appliedDate}</td>
-                        <td className="text-sm text-[#6C6B6B] border border-gray-700">#{app.preference}</td>
                         <td className="border border-gray-700">
                           <span className={`text-sm font-medium px-3 py-1 rounded-full ${getStatusColor(app.status)}`}>
                             {app.status}
@@ -418,13 +466,6 @@ const AppliedSchoolsPage = () => {
                               className="text-sm text-[#4D4D4D] hover:text-blue-600 hover:underline transition-colors"
                             >
                               View
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteApplication(app.id)}
-                              className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
-                              title="Delete Application"
-                            >
-                              <Trash2 size={16} />
                             </button>
                             {app.status.toLowerCase() !== 'withdrawn' && (
                               <button
@@ -571,38 +612,11 @@ const AppliedSchoolsPage = () => {
                   </div>
                 </div>
 
-                {/* Preference Selection */}
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                  <h4 className="font-semibold text-gray-800 mb-3">Select Preference</h4>
-                  <p className="text-sm text-gray-600 mb-4">Choose your preference for this school (1 = Highest preference)</p>
-                  
-                  <div className="flex flex-wrap gap-2">
-                    {getAvailablePreferences().map((pref) => (
-                      <button
-                        key={pref}
-                        onClick={() => setSelectedPreference(pref)}
-                        className={`px-4 py-2 rounded-lg border-2 transition-colors ${
-                          selectedPreference === pref
-                            ? 'bg-[#5B63B7] text-white border-[#5B63B7]'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-[#5B63B7]'
-                        }`}
-                      >
-                        Preference #{pref}
-                      </button>
-                    ))}
-                  </div>
-                  
-                  {getAvailablePreferences().length === 0 && (
-                    <p className="text-red-600 text-sm mt-2">All preferences are already assigned to other schools.</p>
-                  )}
-                </div>
-
                 {/* Application Summary */}
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-semibold text-black mb-2">Application Summary</h4>
                   <div className="text-sm space-y-1 text-black">
                     <p><span className="font-medium text-black">School:</span> {selectedSchool.name}</p>
-                    <p><span className="font-medium text-black">Selected Preference:</span> #{selectedPreference}</p>
                     <p><span className="font-medium text-black">Applications Used:</span> {appliedSchools.length}/5</p>
                   </div>
                 </div>
@@ -617,12 +631,7 @@ const AppliedSchoolsPage = () => {
                   </button>
                   <button 
                     onClick={handleApplyToSchool}
-                    disabled={getAvailablePreferences().length === 0}
-                    className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
-                      getAvailablePreferences().length === 0
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-[#2C946D] text-white hover:bg-opacity-90'
-                    }`}
+                    className="flex-1 bg-[#2C946D] text-white py-3 px-6 rounded-lg font-medium hover:bg-opacity-90 transition-colors"
                   >
                     Submit Application
                   </button>
@@ -684,6 +693,7 @@ const AppliedSchoolsPage = () => {
                     <div className="space-y-3 text-sm">
                       <p className="flex justify-between"><span className="font-medium text-gray-700">Phone:</span> <span className="text-gray-600">{selectedSchool.contact}</span></p>
                       <p className="flex justify-between"><span className="font-medium text-gray-700">Email:</span> <span className="text-gray-600">{selectedSchool.email}</span></p>
+                      <p className="flex justify-between"><span className="font-medium text-gray-700">Website:</span> <span className="text-gray-600">{selectedSchool.website}</span></p>
                     </div>
                   </div>
                 </div>
@@ -691,11 +701,15 @@ const AppliedSchoolsPage = () => {
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-3 text-lg">Facilities</h4>
                   <div className="grid grid-cols-2 gap-3">
-                    {selectedSchool.facilities.map((facility: string, index: number) => (
+                    {selectedSchool.facilities && selectedSchool.facilities.length > 0 ? selectedSchool.facilities.map((facility: string, index: number) => (
                       <div key={index} className="bg-gradient-to-r from-green-100 to-blue-100 px-4 py-3 rounded-lg text-sm font-medium text-gray-700 text-center shadow-sm">
                         {facility}
                       </div>
-                    ))}
+                    )) : (
+                      <div className="col-span-2 text-center text-gray-500 py-4">
+                        No facilities information available
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

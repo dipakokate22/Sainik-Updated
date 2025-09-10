@@ -96,14 +96,24 @@ export const getSchoolBySlug = async (slug) => {
   }
 };
 
-// Get School By ID
-export const getSchoolById = async (id) => {
+// Get School By ID (with optional lat/long for nearby schools calculation)
+export const getSchoolById = async (id, latitude = null, longitude = null) => {
   try {
     const token = getAuthToken();
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers.Authorization = `Bearer ${token}`;
 
-    const res = await fetch(`${API_BASE_URL}/schools/${id}`, { method: 'GET', headers });
+    // Build query parameters
+    const queryParams = new URLSearchParams();
+    if (latitude !== null && longitude !== null) {
+      queryParams.append('latitude', latitude.toString());
+      queryParams.append('longitude', longitude.toString());
+    }
+
+    const queryString = queryParams.toString();
+    const url = `${API_BASE_URL}/schools/${id}${queryString ? `?${queryString}` : ''}`;
+
+    const res = await fetch(url, { method: 'GET', headers });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Failed to fetch school by id');
     return data;
@@ -112,6 +122,9 @@ export const getSchoolById = async (id) => {
     throw err;
   }
 };
+
+
+
 
 // ✅ Get School By User ID
 export const getSchoolByUserId = async (userId) => {

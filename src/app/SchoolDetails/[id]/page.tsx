@@ -16,9 +16,74 @@ import { FiArrowRight } from 'react-icons/fi';
 import Navbar from '../../../Components/NavBar';
 import Footer from '../../../Components/Footer';
 import { getSchoolById, searchSchoolsByCoordinates } from '../../../../services/schoolServices';
+import { getAuthToken, getUserRole, getUserId } from '../../../../services/authServices';
+import { applyToSchool } from '../../../../services/studentServices';
+
+// Type definitions
+interface School {
+  id: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  profileImage?: string;
+  gallery?: string[];
+  rating?: number;
+  reviews?: Review[];
+  address?: {
+    city?: string;
+    website?: string;
+    email?: string;
+    mobile?: string;
+    fullAddress?: string;
+  };
+  website?: string;
+  email?: string;
+  mobile?: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
+  overview?: {
+    keyHighlights?: any;
+    admissionCriteriaEligibility?: any;
+    schoolHours?: any;
+    welcomeNote?: string;
+    schoolInformation?: Record<string, any>;
+  };
+  facilities?: {
+    academic?: any;
+    sportsRecreation?: any;
+    infrastructure?: any;
+  };
+  fees?: {
+    annualFeeStructure?: any;
+    additionalFees?: any;
+  };
+  faqs?: any;
+  isRegistered?: boolean;
+}
+
+interface Review {
+  name?: string;
+  rating?: number;
+  comment?: string;
+}
+
+interface NearbySchool {
+  id: string;
+  name: string;
+  profileImage?: string;
+  gallery?: string[];
+  address?: {
+    city?: string;
+  };
+  distance?: string;
+  rating?: number;
+  reviews?: Review[];
+}
 
 // Function to check if a URL is external
-const isExternalUrl = (url: string) => /^https?:\/\//.test(url);
+const isExternalUrl = (url: string): boolean => /^https?:\/\//.test(url);
 
 // Horizontal School Card Component
 const HorizontalSchoolCard = ({
@@ -123,29 +188,101 @@ function parseFaqs(value: any): Faq[] {
   }
 }
 
-
 export default function SchoolDetailSection() {
   const { id } = useParams() as { id: string };
   const router = useRouter();
-  const [school, setSchool] = useState<any>(null);
+  const [school, setSchool] = useState<School | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
-  const [nearbySchools, setNearbySchools] = useState<any[]>([]);
+  const [nearbySchools, setNearbySchools] = useState<NearbySchool[]>([]);
   const [nearbyLoading, setNearbyLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isApplying, setIsApplying] = useState(false);
+
+  useEffect(() => {
+    // Check if user is logged in and is a student
+    const token = getAuthToken();
+    const userId = getUserId();
+    const userRole = getUserRole();
+    
+    if (token && userId && userRole === 'student') {
+      setIsLoggedIn(true);
+      setCurrentUserId(userId);
+    }
+  }, []);
+
+  const handleApply = async () => {
+    const userId = getUserId();
+    if (!userId || !school) return;
+    
+    setIsApplying(true);
+    try {
+      await applyToSchool({
+        school_id: school.id,
+        user_id: parseInt(userId),
+        applied_date: new Date().toISOString().split('T')[0]
+      });
+      
+      setSchool(prev => prev ? { ...prev, isRegistered: true } : null);
+      alert('Successfully applied to the school!');
+    } catch (error) {
+      console.error('Error applying to school:', error);
+      alert('Failed to apply. Please try again.');
+    } finally {
+      setIsApplying(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchSchool() {
+      if (!id) return;
+      
       setLoading(true);
+      setError(null);
+      
       try {
-        const data = await getSchoolById(id);
-        setSchool(data?.data || null);
-      } catch {
-        setSchool(null);
+        // Function to fetch school data with coordinates
+        const fetchWithCoordinates = async (lat?: number | null, lng?: number | null): Promise<School | null> => {
+  const data = await getSchoolById(id, lat ?? null, lng ?? null);
+  return data?.data || null;
+};
+
+        // Try to get user's current location
+        if (navigator.geolocation) {
+          const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              timeout: 5000,
+              enableHighAccuracy: false
+            });
+          });
+
+          const { latitude, longitude } = position.coords;
+const schoolData = await fetchWithCoordinates(latitude || null, longitude || null);
+
+          setSchool(schoolData);
+        } else {
+          // Geolocation not supported
+          const schoolData = await fetchWithCoordinates();
+          setSchool(schoolData);
+        }
+      } catch (geoError) {
+        // Geolocation failed or API error, try without coordinates
+        try {
+          const schoolData = await getSchoolById(id);
+          setSchool(schoolData);
+        } catch (apiError) {
+          console.error('Error fetching school:', apiError);
+          setError('Failed to load school details');
+          setSchool(null);
+        }
       } finally {
         setLoading(false);
       }
     }
-    if (id) fetchSchool();
+
+    fetchSchool();
   }, [id]);
 
   useEffect(() => {
@@ -157,8 +294,10 @@ export default function SchoolDetailSection() {
             school.location.latitude,
             school.location.longitude
           );
-          setNearbySchools(res?.data?.filter((s: any) => s.id !== school.id).slice(0, 6) || []);
-        } catch {
+          const filtered = res?.data?.filter((s: NearbySchool) => s.id !== school.id).slice(0, 6) || [];
+          setNearbySchools(filtered);
+        } catch (error) {
+          console.error('Error fetching nearby schools:', error);
           setNearbySchools([]);
         } finally {
           setNearbyLoading(false);
@@ -168,40 +307,8 @@ export default function SchoolDetailSection() {
     fetchNearbySchools();
   }, [school]);
 
-  // Replace the facilities-related part of your useMemo with this:
-const {
-  keyHighlights,
-  admissionCriteriaEligibility,
-  schoolHours,
-  annualFeeStructure,
-  additionalFees,
-  academicFacilities,
-  sportsFacilities,
-  infraFacilities,
-  gallery,
-  reviews,
-  faqs,
-  schoolInfoEntries
-} = useMemo(() => {
-  const keyHighlights = parseArray(school?.overview?.keyHighlights);
-  const admissionCriteriaEligibility = parseArray(school?.overview?.admissionCriteriaEligibility);
-  const schoolHours = parseArray(school?.overview?.schoolHours);
-  const annualFeeStructure = parseArray(school?.fees?.annualFeeStructure);
-  const additionalFees = parseArray(school?.fees?.additionalFees);
-
-  // NEW: keep facilities groups separate (API may return stringified arrays)
-  const academicFacilities = parseArray(school?.facilities?.academic);
-  const sportsFacilities = parseArray(school?.facilities?.sportsRecreation);
-  const infraFacilities = parseArray(school?.facilities?.infrastructure);
-
-  const gallery = Array.isArray(school?.gallery) ? school.gallery : [];
-  const reviews = Array.isArray(school?.reviews) ? school.reviews : [];
-const faqs = parseFaqs(school?.faqs);
-
-  const infoObj = school?.overview?.schoolInformation || {};
-  const schoolInfoEntries = Object.entries(infoObj || {}).filter(([, v]) => v);
-
-  return {
+  // Parse school data
+  const {
     keyHighlights,
     admissionCriteriaEligibility,
     schoolHours,
@@ -214,13 +321,60 @@ const faqs = parseFaqs(school?.faqs);
     reviews,
     faqs,
     schoolInfoEntries
-  };
-}, [school]);
+  } = useMemo(() => {
+    if (!school) {
+      return {
+        keyHighlights: [],
+        admissionCriteriaEligibility: [],
+        schoolHours: [],
+        annualFeeStructure: [],
+        additionalFees: [],
+        academicFacilities: [],
+        sportsFacilities: [],
+        infraFacilities: [],
+        gallery: [],
+        reviews: [],
+        faqs: [],
+        schoolInfoEntries: []
+      };
+    }
 
+    const keyHighlights = parseArray(school.overview?.keyHighlights);
+    const admissionCriteriaEligibility = parseArray(school.overview?.admissionCriteriaEligibility);
+    const schoolHours = parseArray(school.overview?.schoolHours);
+    const annualFeeStructure = parseArray(school.fees?.annualFeeStructure);
+    const additionalFees = parseArray(school.fees?.additionalFees);
+    
+    const academicFacilities = parseArray(school.facilities?.academic);
+    const sportsFacilities = parseArray(school.facilities?.sportsRecreation);
+    const infraFacilities = parseArray(school.facilities?.infrastructure);
+    
+    const gallery = Array.isArray(school.gallery) ? school.gallery : [];
+    const reviews = Array.isArray(school.reviews) ? school.reviews : [];
+    const faqs = parseFaqs(school.faqs);
+    
+    const infoObj = school.overview?.schoolInformation || {};
+    const schoolInfoEntries = Object.entries(infoObj).filter(([, v]) => v);
+
+    return {
+      keyHighlights,
+      admissionCriteriaEligibility,
+      schoolHours,
+      annualFeeStructure,
+      additionalFees,
+      academicFacilities,
+      sportsFacilities,
+      infraFacilities,
+      gallery,
+      reviews,
+      faqs,
+      schoolInfoEntries
+    };
+  }, [school]);
 
   const avgRating = useMemo(() => {
     if (!reviews.length) return 0;
-    const sum = reviews.reduce((acc: number, r: any) => acc + (Number(r?.rating) || 0), 0);
+    const sum = reviews.reduce((acc: number, r: Review) => acc + (Number(r?.rating) || 0), 0);
     return sum / reviews.length;
   }, [reviews]);
 
@@ -293,7 +447,7 @@ const faqs = parseFaqs(school?.faqs);
 
             {/* Admission Criteria */}
             {admissionCriteriaEligibility.length > 0 && (
-              <div className="bg-white border rounded-lg  px-4 md:px-[26px] py-[25px]">
+              <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
                 <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
                   Admission Criteria & Eligibility
                 </h4>
@@ -327,62 +481,61 @@ const faqs = parseFaqs(school?.faqs);
           </div>
         );
 
-     case 'facilities':
-  return (
-    <div className="space-y-6">
-      <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
-        <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
-          🏫 Facilities
-        </h4>
-
-        {(academicFacilities.length + sportsFacilities.length + infraFacilities.length) > 0 ? (
+      case 'facilities':
+        return (
           <div className="space-y-6">
-            {academicFacilities.length > 0 && (
-              <div>
-                <h5 className="text-[15px] sm:text-[16px] md:text-[18px] font-semibold text-black mb-2">
-                  Academic Facilities
-                </h5>
-                <ul className="list-disc pl-6 text-[16px] text-black space-y-1">
-                  {academicFacilities.map((item: string, idx: number) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
+              <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
+                🏫 Facilities
+              </h4>
 
-            {sportsFacilities.length > 0 && (
-              <div>
-                <h5 className="text-[15px] sm:text-[16px] md:text-[18px] font-semibold text-black mb-2">
-                  Sports & Recreation
-                </h5>
-                <ul className="list-disc pl-6 text-[16px] text-black space-y-1">
-                  {sportsFacilities.map((item: string, idx: number) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+              {(academicFacilities.length + sportsFacilities.length + infraFacilities.length) > 0 ? (
+                <div className="space-y-6">
+                  {academicFacilities.length > 0 && (
+                    <div>
+                      <h5 className="text-[15px] sm:text-[16px] md:text-[18px] font-semibold text-black mb-2">
+                        Academic Facilities
+                      </h5>
+                      <ul className="list-disc pl-6 text-[16px] text-black space-y-1">
+                        {academicFacilities.map((item: string, idx: number) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
-            {infraFacilities.length > 0 && (
-              <div>
-                <h5 className="text-[15px] sm:text-[16px] md:text-[18px] font-semibold text-black mb-2">
-                  Infrastructure
-                </h5>
-                <ul className="list-disc pl-6 text-[16px] text-black space-y-1">
-                  {infraFacilities.map((item: string, idx: number) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                  {sportsFacilities.length > 0 && (
+                    <div>
+                      <h5 className="text-[15px] sm:text-[16px] md:text-[18px] font-semibold text-black mb-2">
+                        Sports & Recreation
+                      </h5>
+                      <ul className="list-disc pl-6 text-[16px] text-black space-y-1">
+                        {sportsFacilities.map((item: string, idx: number) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {infraFacilities.length > 0 && (
+                    <div>
+                      <h5 className="text-[15px] sm:text-[16px] md:text-[18px] font-semibold text-black mb-2">
+                        Infrastructure
+                      </h5>
+                      <ul className="list-disc pl-6 text-[16px] text-black space-y-1">
+                        {infraFacilities.map((item: string, idx: number) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-[16px] text-gray-600">No facilities listed.</p>
+              )}
+            </div>
           </div>
-        ) : (
-          <p className="text-[16px] text-gray-600">No facilities listed.</p>
-        )}
-      </div>
-    </div>
-  );
-
+        );
 
       case 'fees':
         return (
@@ -428,10 +581,10 @@ const faqs = parseFaqs(school?.faqs);
               <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
                 🏫 Campus Gallery
               </h4>
-              {gallery && gallery.filter((s: any) => typeof s === 'string' && s.trim()).length ? (
+              {gallery && gallery.filter((s: string) => s && s.trim()).length ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {gallery
-                    .filter((src: any) => typeof src === 'string' && src.trim())
+                    .filter((src: string) => src && src.trim())
                     .map((src: string, i: number) => (
                       <div key={i} className="relative group cursor-pointer overflow-hidden rounded-lg">
                         {isExternalUrl(src) ? (
@@ -494,7 +647,7 @@ const faqs = parseFaqs(school?.faqs);
               </h4>
               {reviews.length ? (
                 <div className="space-y-6">
-                  {reviews.map((rev: any, i: number) => (
+                  {reviews.map((rev: Review, i: number) => (
                     <div key={i} className="border-b pb-4 last:border-b-0">
                       <div className="flex items-start justify-between mb-2">
                         <div>
@@ -531,7 +684,7 @@ const faqs = parseFaqs(school?.faqs);
               </h4>
               {faqs.length ? (
                 <div className="space-y-4">
-                  {faqs.map((faq: any, i: number) => (
+                  {faqs.map((faq: Faq, i: number) => (
                     <div key={i} className="border border-gray-200 rounded-lg p-4">
                       <h5 className="font-semibold text-black mb-2">Q: {faq?.question}</h5>
                       <p className="text-gray-700 text-[15px] leading-relaxed">A: {faq?.answer}</p>
@@ -551,10 +704,38 @@ const faqs = parseFaqs(school?.faqs);
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-lg text-gray-600">Loading...</div>;
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center text-lg text-gray-600 bg-[#F7F1EE]">
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#257B5A]"></div>
+            <p>Loading school details...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
   }
-  if (!school) {
-    return <div className="min-h-screen flex items-center justify-center text-lg text-red-600">School not found.</div>;
+
+  if (error || !school) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center text-lg text-red-600 bg-[#F7F1EE]">
+          <div className="text-center">
+            <p className="mb-4">{error || 'School not found.'}</p>
+            <button 
+              onClick={() => router.back()}
+              className="px-6 py-2 bg-[#257B5A] text-white rounded-lg hover:bg-[#1e6b4a] transition-colors"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
   }
 
   const avgStars = Math.round(avgRating);
@@ -639,12 +820,6 @@ const faqs = parseFaqs(school?.faqs);
                     </span>
                   </div>
                 </div>
-
-                {/* Add to Compare Button */}
-{/*                 <button className="flex items-center gap-2 border border-[#10744E] text-[#10744E] px-4 py-2 rounded-full hover:bg-[#10744E] hover:text-white transition-colors duration-300 font-medium">
-                  <FaPlus className="w-4 h-4" />
-                  <span>Add to Compare</span>
-                </button> */}
               </div>
             </div>
           </div>
@@ -654,55 +829,76 @@ const faqs = parseFaqs(school?.faqs);
         <section className="max-w-[1440px] w-full mx-auto bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-14 pb-8 sm:pb-12 md:pb-16">
           <div className="max-w-[1440px] w-full mx-auto pt-4 sm:pt-6">
             {/* Top Bar with Contact Info and Register Button */}
-           {/* Top Bar with Contact Info and Register Button */}
-<div className="border border-[#257B5A] rounded-lg px-3 sm:px-4 md:px-6 lg:px-[26px] py-3 sm:py-4 lg:py-[25px] mb-4 sm:mb-6">
-  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:flex-nowrap gap-3 sm:gap-4 lg:gap-6">
-    {/* School Info */}
-    <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-2 sm:gap-4 lg:gap-6 flex-1 min-w-0">
-      <div className="flex items-center gap-1 min-w-0">
-        <FaMapMarkerAlt className="text-[#257B5A] text-sm sm:text-base" />
-        <span
-          className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate min-w-0"
-          title={fullAddress}
-        >
-          {fullAddress}
-        </span>
-      </div>
-      <div className="flex items-center gap-1 min-w-0">
-        <FaPhone className="text-[#257B5A] text-sm sm:text-base" />
-        <span
-          className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate min-w-0"
-          title={mobile}
-        >
-          {mobile}
-        </span>
-      </div>
-      <div className="flex items-center gap-1 min-w-0">
-        <FaEnvelope className="text-[#257B5A] text-sm sm:text-base" />
-        <span
-          className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate min-w-0"
-          title={email}
-        >
-          {email}
-        </span>
-      </div>
-      <div className="flex items-center gap-1 min-w-0">
-        <FaGlobe className="text-[#257B5A] text-sm sm:text-base" />
-        <span
-          className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate min-w-0"
-          title={website}
-        >
-          {website}
-        </span>
-      </div>
-    </div>
+            <div className="border border-[#257B5A] rounded-lg px-3 sm:px-4 md:px-6 lg:px-[26px] py-3 sm:py-4 lg:py-[25px] mb-4 sm:mb-6">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:flex-nowrap gap-3 sm:gap-4 lg:gap-6">
+                {/* School Info */}
+                <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-2 sm:gap-4 lg:gap-6 flex-1 min-w-0">
+                  <div className="flex items-center gap-1 min-w-0">
+                    <FaMapMarkerAlt className="text-[#257B5A] text-sm sm:text-base" />
+                    <span
+                      className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate min-w-0"
+                      title={fullAddress}
+                    >
+                      {fullAddress}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 min-w-0">
+                    <FaPhone className="text-[#257B5A] text-sm sm:text-base" />
+                    <span
+                      className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate min-w-0"
+                      title={mobile}
+                    >
+                      {mobile}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 min-w-0">
+                    <FaEnvelope className="text-[#257B5A] text-sm sm:text-base" />
+                    <span
+                      className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate min-w-0"
+                      title={email}
+                    >
+                      {email}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 min-w-0">
+                    <FaGlobe className="text-[#257B5A] text-sm sm:text-base" />
+                    <span
+                      className="text-[12px] sm:text-[14px] lg:text-[16px] text-gray-700 truncate min-w-0"
+                      title={website}
+                    >
+                      {website}
+                    </span>
+                  </div>
+                </div>
 
-    {/* Register Button */}
-{/*     <button className="bg-[#257B5A] text-white px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full hover:bg-[#1e6b4a] transition-colors duration-300 font-medium text-xs sm:text-sm lg:text-base whitespace-nowrap flex-shrink-0">
-      📝 Register for Admission
-    </button> */}
-  </div>
-</div>
+                {/* Apply Button - Only visible for logged-in students */}
+                {isLoggedIn && (
+                  <button 
+                    onClick={handleApply}
+                    disabled={school?.isRegistered || isApplying}
+                    className={`px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 lg:py-3 rounded-full font-medium text-xs sm:text-sm lg:text-base whitespace-nowrap flex-shrink-0 transition-colors duration-300 ${
+                      school?.isRegistered 
+                        ? 'bg-gray-400 text-white cursor-not-allowed' 
+                        : 'bg-[#257B5A] text-white hover:bg-[#1e6b4a]'
+                    }`}
+                  >
+                    {isApplying ? (
+                      <span className="flex items-center gap-2">
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Applying...
+                      </span>
+                    ) : (
+                      <>
+                        📝 {school?.isRegistered ? 'Applied' : 'Apply for Admission'}
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
 
             {/* Tab Navigation */}
             <div className="bg-white border rounded-lg mb-4 sm:mb-6 overflow-x-auto">
@@ -743,18 +939,16 @@ const faqs = parseFaqs(school?.faqs);
                     ) : nearbySchools.length === 0 ? (
                       <div className="text-gray-500 text-center py-4">No nearby schools found.</div>
                     ) : (
-                     // Fixed code:
-nearbySchools.map((s) => (
-  <HorizontalSchoolCard
-    key={s.id}
-    name={s.name}
-    image={s.profileImage || s.gallery?.[0] || '/Listing/Logo.png'}
-    location={s.address?.city || ''}
-    distance={s.distance || ''} // ✅ Use the distance from API
-    rating={s.rating || s.reviews?.[0]?.rating || 0} // ✅ Also fixed rating
-  />
-))
-
+                      nearbySchools.map((s) => (
+                        <HorizontalSchoolCard
+                          key={s.id}
+                          name={s.name}
+                          image={s.profileImage || s.gallery?.[0] || '/Listing/Logo.png'}
+                          location={s.address?.city || ''}
+                          distance={s.distance || ''}
+                          rating={s.rating || s.reviews?.[0]?.rating || 0}
+                        />
+                      ))
                     )}
                   </div>
                 </div>
