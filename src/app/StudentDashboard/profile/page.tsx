@@ -6,6 +6,7 @@ import { Poppins } from 'next/font/google';
 import { Edit, Mail, Phone, MapPin, Calendar, Globe, User, GraduationCap, Check, X, Pencil } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { getStudentProfile, updateStudentProfile, uploadStudentProfileImage } from '../../../../services/studentServices';
+import { getStates, getCities } from '../../../../services/schoolServices'; // Import the new API functions
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -13,11 +14,24 @@ const poppins = Poppins({
 });
 
 const classOptions = ['12th', '11th ', '10th ','9th', '8th', '7th', '6th', '5th', '4th', '3rd', '2nd', '1st'];
-const stateOptions = ['Maharashtra', 'Delhi', 'Karnataka'];
 const countryOptions = ['India', 'USA', 'UK'];
+
+// Define types for states and cities
+interface State {
+  id: number;
+  name: string;
+  code: string;
+}
+
+interface City {
+  id: number;
+  name: string;
+  state_id: number;
+}
 
 const ProfilePage = () => {
   const studentId = typeof window !== 'undefined' ? localStorage.getItem('studentId') : null;
+
   type Profile = {
     firstName?: string;
     lastName?: string;
@@ -33,51 +47,117 @@ const ProfilePage = () => {
     id?: string;
     academic_year?: string;
     admission_date?: string;
-    image?: string; // <-- added
+    image?: string;
   };
-  
+
   const [profile, setProfile] = useState<Profile | null>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [fieldValue, setFieldValue] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [imageUploading, setImageUploading] = useState(false); // <-- added
+  const [imageUploading, setImageUploading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [backupLoginImage, setBackupLoginImage] = useState<string>('');
+
+  // NEW: State and City management
+  const [states, setStates] = useState<State[]>([]);
+  const [cities, setCities] = useState<City[]>([]);
+  const [selectedStateId, setSelectedStateId] = useState<number | null>(null);
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(false);
 
   // Ensure Next/Image gets an absolute or root-relative URL
   const normalizeImageUrl = (url?: string) => {
     if (!url) return '';
-    // convert http -> https
     const httpsUrl = url.replace(/^http:/, 'https:');
     if (/^https?:\/\//i.test(httpsUrl)) return httpsUrl;
     if (httpsUrl.startsWith('/')) return httpsUrl;
-    // treat as relative from API origin
     return `https://sainik.codekrafters.in/${httpsUrl.replace(/^\/+/, '')}`;
+  };
+
+  // Load states on component mount
+  useEffect(() => {
+    const loadStates = async () => {
+      setLoadingStates(true);
+      try {
+        const response = await getStates();
+        setStates(response.data || []);
+      } catch (error) {
+        console.error('Failed to load states:', error);
+      } finally {
+        setLoadingStates(false);
+      }
+    };
+
+    loadStates();
+  }, []);
+
+  // Load cities when state is selected
+  useEffect(() => {
+    if (selectedStateId) {
+      const loadCities = async () => {
+        setLoadingCities(true);
+        try {
+          const response = await getCities(selectedStateId);
+          setCities(response.data || []);
+        } catch (error) {
+          console.error('Failed to load cities:', error);
+          setCities([]);
+        } finally {
+          setLoadingCities(false);
+        }
+      };
+
+      loadCities();
+    } else {
+      setCities([]);
+    }
+  }, [selectedStateId]);
+
+  // Handle state selection
+  const handleStateChange = (stateName: string) => {
+    const selectedState = states.find(state => state.name === stateName);
+    if (selectedState) {
+      setSelectedStateId(selectedState.id);
+      // Clear city when state changes
+      if (profile?.city) {
+        setProfile(prev => ({ ...prev!, city: '' }));
+      }
+    }
+    setFieldValue(stateName);
   };
 
   useEffect(() => {
     if (!studentId) return;
-    // Load backup image saved at login
+    
     if (typeof window !== 'undefined') {
       const loginImg = localStorage.getItem('image') || '';
       setBackupLoginImage(loginImg);
     }
+
     getStudentProfile(studentId).then(data => {
       const profileData = data.data || data;
-      // prefer API image, else fallback to login image
       const normalizedApiImage = profileData.image ? profileData.image : '';
       const fallback = !normalizedApiImage && typeof window !== 'undefined' ? (localStorage.getItem('image') || '') : '';
       const finalImage = normalizedApiImage || fallback;
+      
       setProfile({ ...profileData, image: finalImage });
-      // Store image, name, email in localStorage
+
+      // Set selected state ID if state exists in profile
+      if (profileData.state) {
+        const matchingState = states.find(state => state.name === profileData.state);
+        if (matchingState) {
+          setSelectedStateId(matchingState.id);
+        }
+      }
+
       if (typeof window !== 'undefined') {
         if (finalImage) localStorage.setItem('studentImage', finalImage);
         if (profileData.firstName) localStorage.setItem('studentName', profileData.firstName);
         if (profileData.email) localStorage.setItem('studentEmail', profileData.email);
       }
     });
-  }, [studentId]);
+  }, [studentId, states]); // Add states as dependency
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -87,7 +167,6 @@ const ProfilePage = () => {
   const handleSave = async () => {
     setLoading(true);
     try {
-      // Send only changed field as JSON
       const updated = { ...profile, [editingField!]: fieldValue };
       const res = await updateStudentProfile(studentId, updated);
       setProfile(updated);
@@ -99,16 +178,14 @@ const ProfilePage = () => {
     setLoading(false);
   };
 
-  // Image upload handler
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !studentId) return;
+
     setImageUploading(true);
     setMessage('');
     try {
-      // Use new API to upload profile image
       const res = await uploadStudentProfileImage(studentId, file);
-      // Try to get the image URL from different possible response keys
       const newImage =
         res.data?.image ||
         res.image ||
@@ -127,14 +204,11 @@ const ProfilePage = () => {
     setImageUploading(false);
   };
 
-  // Modern Indian Army medal loader
   const SainikLoader = () => (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#F7F1EE]">
       <div className="flex flex-col items-center">
         <svg width="80" height="80" viewBox="0 0 80 80" className="mb-4 sainik-medal-loader">
-          {/* Medal base */}
           <circle cx="40" cy="40" r="24" fill="#257B5A" stroke="#FFD700" strokeWidth="4" />
-          {/* Animated rays */}
           {[...Array(12)].map((_, i) => (
             <rect
               key={i}
@@ -158,10 +232,8 @@ const ProfilePage = () => {
               />
             </rect>
           ))}
-          {/* Center star */}
           <polygon points="40,28 43,37 52,37 45,42 48,51 40,46 32,51 35,42 28,37 37,37"
             fill="#FFD700" />
-          {/* Pulse effect */}
           <circle cx="40" cy="40" r="24" fill="none" stroke="#257B5A" strokeWidth="4">
             <animate
               attributeName="r"
@@ -195,24 +267,6 @@ const ProfilePage = () => {
 
   if (!profile) return <SainikLoader />;
 
-  const personalInfo = [
-    { label: 'Email Address', value: profile.email, icon: <Mail size={16} /> },
-    { label: 'Date of Birth', value: profile.dob, icon: <Calendar size={16} /> },
-    { label: 'Contact Number', value: profile.mobile, icon: <Phone size={16} /> },
-    { label: 'Country', value: profile.country, icon: <Globe size={16} /> },
-    { label: 'Street Address', value: profile.street_address, icon: <MapPin size={16} /> },
-    { label: 'City', value: profile.city, icon: <MapPin size={16} /> },
-    { label: 'State', value: profile.state, icon: <MapPin size={16} /> },
-    { label: 'Zip Code', value: profile.zip_code, icon: <MapPin size={16} /> },
-  ];
-
-  const academicInfo = [
-    { label: 'Current Class', value: profile.current_class },
-    { label: 'Student ID', value: profile.id ? `SK-A-${profile.id}` : 'SK-A-2025001' },
-    { label: 'Academic Year', value: profile.academic_year },
-    { label: 'Admission Date', value: profile.admission_date || '-' },
-  ];
-
   // Helper for rendering inline editable field
   const renderEditableField = (
     field: string,
@@ -222,10 +276,21 @@ const ProfilePage = () => {
     options?: string[]
   ) => {
     const isEditing = editingField === field;
+    
+    // Special handling for state and city fields
+    let dynamicOptions = options;
+    if (field === 'state') {
+      dynamicOptions = states.map(state => state.name);
+    } else if (field === 'city') {
+      dynamicOptions = cities.map(city => city.name);
+    }
+
     return (
       <div className="group flex items-center gap-2 w-full">
         {icon && <span className="text-[#257B5A]">{icon}</span>}
-        <p className="text-sm font-medium text-gray-500">{field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+        <p className="text-sm font-medium text-gray-500">
+          {field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+        </p>
         <div className="flex-1 ml-2 flex items-center">
           {isEditing ? (
             <div className="flex items-center gap-2">
@@ -233,10 +298,24 @@ const ProfilePage = () => {
                 <select
                   className="border rounded-lg px-2 py-1 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#257B5A]/40"
                   value={fieldValue}
-                  onChange={e => setFieldValue(e.target.value)}
+                  onChange={e => {
+                    if (field === 'state') {
+                      handleStateChange(e.target.value);
+                    } else {
+                      setFieldValue(e.target.value);
+                    }
+                  }}
+                  disabled={(field === 'state' && loadingStates) || (field === 'city' && (loadingCities || !selectedStateId))}
                 >
-                  <option value="">Select</option>
-                  {options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                  <option value="">
+                    {field === 'state' && loadingStates ? 'Loading states...' :
+                     field === 'city' && loadingCities ? 'Loading cities...' :
+                     field === 'city' && !selectedStateId ? 'Select state first' :
+                     'Select'}
+                  </option>
+                  {dynamicOptions?.map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
                 </select>
               ) : (
                 <input
@@ -277,6 +356,14 @@ const ProfilePage = () => {
                   setEditingField(field);
                   setFieldValue(value || '');
                   setMessage('');
+                  
+                  // Set state ID when editing state field
+                  if (field === 'state' && value) {
+                    const matchingState = states.find(state => state.name === value);
+                    if (matchingState) {
+                      setSelectedStateId(matchingState.id);
+                    }
+                  }
                 }}
               >
                 {value || '-'}
@@ -288,6 +375,14 @@ const ProfilePage = () => {
                     setEditingField(field);
                     setFieldValue(value || '');
                     setMessage('');
+                    
+                    // Set state ID when editing state field
+                    if (field === 'state' && value) {
+                      const matchingState = states.find(state => state.name === value);
+                      if (matchingState) {
+                        setSelectedStateId(matchingState.id);
+                      }
+                    }
                   }}
                   title="Edit"
                 >
@@ -310,7 +405,11 @@ const ProfilePage = () => {
           <div className="flex items-center justify-between">
             <div />
             <button
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-sm transition-colors ${isEditMode ? 'bg-[#257B5A] text-white hover:bg-[#1e6b4a]' : 'bg-white text-[#257B5A] border border-[#257B5A]/40 hover:bg-[#257B5A]/5'}`}
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-sm transition-colors ${
+                isEditMode 
+                  ? 'bg-[#257B5A] text-white hover:bg-[#1e6b4a]' 
+                  : 'bg-white text-[#257B5A] border border-[#257B5A]/40 hover:bg-[#257B5A]/5'
+              }`}
               onClick={() => {
                 setIsEditMode(m => !m);
                 setEditingField(null);
@@ -323,6 +422,7 @@ const ProfilePage = () => {
               {isEditMode ? 'Exit Edit Mode' : 'Edit Profile'}
             </button>
           </div>
+
           {/* Profile Header Card */}
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
@@ -353,6 +453,7 @@ const ProfilePage = () => {
                   <div className="absolute left-0 right-0 bottom-[-28px] text-xs text-[#257B5A] text-center">Uploading...</div>
                 )}
               </div>
+
               {/* Profile Info */}
               <div className="flex-1">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between">
@@ -376,6 +477,7 @@ const ProfilePage = () => {
               </div>
             </div>
           </div>
+
           {/* Academic Information Card */}
           <div className="bg-white rounded-xl shadow-sm">
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
@@ -391,14 +493,10 @@ const ProfilePage = () => {
                   <p className="text-sm font-medium text-gray-500">Student ID</p>
                   <p className="text-gray-800 font-medium">{profile.id ? `SK-A-${profile.id}` : 'SK-A-2025001'}</p>
                 </div>
-                {/* <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">Admission Date</p>
-                  <p className="text-gray-800 font-medium">{profile.admission_date || '-'}</p>
-                  <p className="text-xs text-gray-400 mt-1">Admission date is set at creation and cannot be changed.</p>
-                </div> */}
               </div>
             </div>
           </div>
+
           {/* Personal Information Card */}
           <div className="bg-white rounded-xl shadow-sm">
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
@@ -414,12 +512,13 @@ const ProfilePage = () => {
                 {renderEditableField('mobile', profile.mobile, <Phone size={16} />)}
                 {renderEditableField('country', profile.country, <Globe size={16} />, 'select', countryOptions)}
                 {renderEditableField('street_address', profile.street_address, <MapPin size={16} />)}
-                {renderEditableField('city', profile.city, <MapPin size={16} />)}
-                {renderEditableField('state', profile.state, <MapPin size={16} />, 'select', stateOptions)}
+                {renderEditableField('state', profile.state, <MapPin size={16} />, 'select')}
+                {renderEditableField('city', profile.city, <MapPin size={16} />, 'select')}
                 {renderEditableField('zip_code', profile.zip_code, <MapPin size={16} />)}
               </div>
             </div>
           </div>
+
           {message && <div className="mt-4 text-center text-green-700 font-semibold">{message}</div>}
         </div>
       </main>
