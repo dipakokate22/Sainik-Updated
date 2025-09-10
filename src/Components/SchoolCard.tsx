@@ -5,22 +5,29 @@ interface SchoolCardProps {
   image: string;
   desc: string;
   logo?: string; // optional logo
-  distance?: string; // Add distance prop
+  distance?: string;
+  thumbnail?: string; // Add thumbnail prop
 }
 
-export default function SchoolCard({ name, image, desc, logo, distance }: SchoolCardProps) {
+export default function SchoolCard({ name, image, desc, logo, distance, thumbnail }: SchoolCardProps) {
   const getInitial = (name: string) => name?.charAt(0)?.toUpperCase();
 
+  // Use thumbnail as main banner image, fallback to image if no thumbnail
+  const bannerImage = thumbnail || image;
+  
+  // Use image as logo, fallback to original logo prop
+  const logoImage = image;
+
   return (
-    <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
-      {/* Banner Image */}
-      <div className="w-full h-48 overflow-hidden rounded-t-2xl relative">
+    <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col min-h-[420px]">
+      {/* Banner Image - Fixed height to maintain thumbnail size */}
+      <div className="w-full h-48 overflow-hidden rounded-t-2xl relative flex-shrink-0">
         <Image
-          src={image}
+          src={bannerImage}
           alt={name}
-          width={400}
-          height={130}
-          className="object-cover w-full h-full"
+          layout="fill"
+          objectFit="cover"
+          className="rounded-t-2xl"
         />
         {/* Distance Badge */}
         {distance && (
@@ -36,38 +43,53 @@ export default function SchoolCard({ name, image, desc, logo, distance }: School
         )}
       </div>
 
-      {/* Content */}
+      {/* Content - Flexible height */}
       <div className="flex flex-col justify-between flex-1 p-5">
-        <div>
+        <div className="flex-1">
           {/* Logo or Initial + Name */}
-          <div className="flex items-center gap-3">
-            {logo ? (
+          <div className="flex items-start gap-3 mb-3">
+            {logoImage ? (
+              <Image
+                src={logoImage}
+                alt={`${name} logo`}
+                width={32}
+                height={32}
+                className="rounded-full object-cover w-8 h-8 flex-shrink-0"
+              />
+            ) : logo ? (
               <Image
                 src={logo}
                 alt={`${name} logo`}
                 width={32}
                 height={32}
-                className="rounded-full"
+                className="rounded-full object-cover w-8 h-8 flex-shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-[#10744E] text-white flex items-center justify-center font-semibold text-sm">
+              <div className="w-8 h-8 rounded-full bg-[#10744E] text-white flex items-center justify-center font-semibold text-sm flex-shrink-0">
                 {getInitial(name)}
               </div>
             )}
-            <h3 className="text-xl font-semibold text-black">{name}</h3>
+            <h3 
+              className="text-lg font-semibold text-black leading-tight line-clamp-2 flex-1"
+              title={name}
+            >
+              {name}
+            </h3>
           </div>
 
-          <p className="text-sm text-gray-600 mt-2 hidden sm:block">{desc}</p>
+          <p className="text-sm text-gray-600 hidden sm:block line-clamp-2 leading-relaxed mb-4">
+            {desc}
+          </p>
         </div>
 
-        <div className="mt-4">
-          <div className="flex flex-wrap gap-2">
+        <div className="mt-auto">
+          <div className="flex flex-wrap gap-2 mb-3">
             <span className="bg-[#DAEADD] text-black px-3 py-1 rounded-md text-xs font-medium">Education</span>
             <span className="bg-[#DAEADD] text-black px-3 py-1 rounded-md text-xs font-medium">Fees</span>
             <span className="bg-[#DAEADD] text-black px-3 py-1 rounded-md text-xs font-medium">Rating</span>
           </div>
 
-          <div className="flex items-center text-lg mb-1">
+          <div className="flex items-center text-lg mb-3">
             <span className="text-yellow-400">★</span>
             <span className="text-yellow-400">★</span>
             <span className="text-yellow-400">★</span>
@@ -75,7 +97,7 @@ export default function SchoolCard({ name, image, desc, logo, distance }: School
             <span className="text-gray-300">★</span>
           </div>
 
-          <button className="text-[#10744E] mt-2 text-sm font-medium hover:underline flex items-center gap-1 group">
+          <button className="text-[#10744E] text-sm font-medium hover:underline flex items-center gap-1 group">
               View Details 
              <svg 
                 width="14" 

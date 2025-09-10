@@ -7,13 +7,14 @@ import { getAllSchools, searchSchools, searchSchoolsByCoordinates } from '../../
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-// School data interface (same as before)
+// School data interface - Added thumbnail field
 interface School {
   id: number;
   slug: string;
   name: string;
   isFeatured?: boolean;
   profileImage?: string;
+  thumbnail?: string; // Added thumbnail field
   location: {
     latitude: number;
     longitude: number;
@@ -764,7 +765,7 @@ const SchoolListSection = () => {
             {/* School Cards */}
             <div className="w-full lg:w-[calc(100%-296px)] flex flex-col gap-6">
               
-              {/* Featured Schools Section */}
+              {/* Featured Schools Section - Updated with thumbnail */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-2 lg:mb-4">
                   <h2 className="text-2xl sm:text-3xl md:text-[42px] font-poppins font-medium text-black leading-tight">
@@ -813,6 +814,7 @@ const SchoolListSection = () => {
                             <SchoolCard
                               name={school.name}
                               image={school.profileImage || school.gallery?.[0] || '/default-school.jpg'}
+                              thumbnail={school.thumbnail || school.gallery?.[0] || school.profileImage || '/default-school.jpg'}
                               desc={`${school.address?.city || ''} | ${school.overview?.schoolInformation?.board || ''} | ${school.overview?.schoolInformation?.medium || ''} | ${school.overview?.schoolInformation?.category || ''}`}
                             />
                           </Link>
@@ -823,7 +825,7 @@ const SchoolListSection = () => {
                 </div>
               </div>
 
-              {/* Main Schools Section */}
+              {/* Main Schools Section - Updated with thumbnail */}
               {nearbySchools.length > 0 ? (
                 <div ref={nearMeSectionRef}>
                   <div className="flex items-center justify-between mb-2 lg:mb-4">
@@ -857,6 +859,7 @@ const SchoolListSection = () => {
                         <SchoolCard
                           name={school.name}
                           image={school.profileImage || school.gallery?.[0] || '/default-school.jpg'}
+                          thumbnail={school.thumbnail || school.gallery?.[0] || school.profileImage || '/default-school.jpg'}
                           desc={`${school.address?.city || ''} | ${school.overview?.schoolInformation?.board || ''} | ${school.overview?.schoolInformation?.medium || ''} | ${school.overview?.schoolInformation?.category || ''}`}
                           distance={school.distance}
                         />
@@ -899,6 +902,7 @@ const SchoolListSection = () => {
                           <SchoolCard
                             name={school.name}
                             image={school.profileImage || school.gallery?.[0] || '/default-school.jpg'}
+                            thumbnail={school.thumbnail || school.gallery?.[0] || school.profileImage || '/default-school.jpg'}
                             desc={`${school.address?.city || ''} | ${school.overview?.schoolInformation?.board || ''} | ${school.overview?.schoolInformation?.medium || ''} | ${school.overview?.schoolInformation?.category || ''}`}
                           />
                         </div>

@@ -115,6 +115,7 @@ const mapToPayload = (data: any) => {
     firstName: data.firstName || "",
     lastName: data.lastName || "",
     profile_image: data.profileImage || data.profile_image || null,
+    thumbnail: data.thumbnail || null,
     latitude: data.location?.latitude || null,
     longitude: data.location?.longitude || null,
     full_address: data.address?.fullAddress || "",
@@ -866,6 +867,7 @@ const GalleryTab = ({
   };
 
   const galleryItems: string[] = parseGallery();
+  const currentThumbnail = data.thumbnail || "";
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -883,56 +885,158 @@ const GalleryTab = ({
   };
 
   const handleRemove = (index: number) => {
+    const imageToRemove = galleryItems[index];
     const updated = galleryItems.filter((_, i) => i !== index);
+    
+    // If removing the current thumbnail, clear it
+    if (imageToRemove === currentThumbnail) {
+      onUpdate("thumbnail", "");
+    }
+    
     onUpdate("gallery", updated);
   };
 
+  const handleSetThumbnail = (imageUrl: string) => {
+    // Just use the same onUpdate flow
+    onUpdate("thumbnail", imageUrl);
+  };
+
+  const handleClearThumbnail = () => {
+    onUpdate("thumbnail", "");
+  };
+
   return (
-    <div className="bg-white rounded-lg border p-6 shadow-sm">
-      <h3 className="text-xl font-semibold text-gray-800 mb-4">Gallery</h3>
-
-      {/* Upload Button */}
-      <div className="mb-4">
-        <label className="inline-flex items-center gap-2 px-3 py-2 bg-[#257B5A] text-white rounded-lg cursor-pointer hover:bg-[#1e6249]">
-          <Plus size={16} />
-          Upload Images
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            className="hidden"
-            onChange={handleUpload}
-          />
-        </label>
-        <p className="text-xs text-gray-500 mt-1">
-          Upload school images. Uploaded images will appear below.
-        </p>
-      </div>
-
-      {/* Image Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {galleryItems.map((img, idx) => (
-          <div
-            key={idx}
-            className="relative group rounded-lg overflow-hidden border bg-gray-50"
-          >
-            <img
-              src={img}
-              alt={`Gallery ${idx + 1}`}
-              className="w-full h-40 object-cover"
-            />
+    <div className="space-y-6">
+      {/* Current Thumbnail Display */}
+      {currentThumbnail && (
+        <div className="bg-white rounded-lg border p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-lg font-semibold text-gray-800">Current Thumbnail</h4>
             <button
-              onClick={() => handleRemove(idx)}
-              className="absolute top-2 right-2 p-1.5 rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100 transition"
+              onClick={handleClearThumbnail}
+              className="px-3 py-1 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition-colors"
             >
-              <Trash2 size={14} />
+              Clear Thumbnail
             </button>
           </div>
-        ))}
+          <div className="relative inline-block">
+            <img
+              src={currentThumbnail}
+              alt="Current Thumbnail"
+              className="w-48 h-32 object-cover rounded-lg border-2 border-green-500"
+            />
+            <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 text-xs rounded-full">
+              Thumbnail
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Gallery Management */}
+      <div className="bg-white rounded-lg border p-6 shadow-sm">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">Gallery Management</h3>
+
+        {/* Upload Button */}
+        <div className="mb-4">
+          <label className="inline-flex items-center gap-2 px-3 py-2 bg-[#257B5A] text-white rounded-lg cursor-pointer hover:bg-[#1e6249]">
+            <Plus size={16} />
+            Upload Images
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              className="hidden"
+              onChange={handleUpload}
+            />
+          </label>
+          <p className="text-xs text-gray-500 mt-1">
+            Upload school images. You can set any image as thumbnail after upload.
+          </p>
+        </div>
+
+        {/* Image Grid */}
+        {galleryItems.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {galleryItems.map((img, idx) => {
+              const isCurrentThumbnail = img === currentThumbnail;
+              
+              return (
+                <div
+                  key={idx}
+                  className={`relative group rounded-lg overflow-hidden border-2 bg-gray-50 transition-all duration-200 ${
+                    isCurrentThumbnail 
+                      ? 'border-green-500 shadow-lg' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`Gallery ${idx + 1}`}
+                    className="w-full h-40 object-cover"
+                  />
+                  
+                  {/* Thumbnail indicator */}
+                  {isCurrentThumbnail && (
+                    <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 text-xs rounded-full font-medium">
+                      Thumbnail
+                    </div>
+                  )}
+                  
+                  {/* Action buttons */}
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <div className="flex gap-2">
+                      {!isCurrentThumbnail && (
+                        <button
+                          onClick={() => handleSetThumbnail(img)}
+                          className="px-3 py-1 bg-green-600 text-white text-xs rounded-lg hover:bg-green-700 transition-colors"
+                          title="Set as Thumbnail"
+                        >
+                          Set Thumbnail
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleRemove(idx)}
+                        className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                        title="Remove Image"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            <div className="mb-4">
+              <svg className="mx-auto h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <p>No images uploaded yet</p>
+            <p className="text-sm">Upload some images to get started</p>
+          </div>
+        )}
+
+        {/* Instructions */}
+        {galleryItems.length > 0 && (
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <h5 className="text-sm font-medium text-blue-800 mb-2">How to manage your gallery:</h5>
+            <ul className="text-sm text-blue-700 space-y-1">
+              <li>• Hover over any image to see action buttons</li>
+              <li>• Click "Set Thumbnail" to make an image your school's main thumbnail</li>
+              <li>• The thumbnail will be used as your school's main display image</li>
+              <li>• Only one image can be set as thumbnail at a time</li>
+              <li>• Use the trash icon to remove images from your gallery</li>
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
 
 const ReviewsTab = () => (
   <div className="bg-white rounded-lg border p-6 shadow-sm text-gray-600">
