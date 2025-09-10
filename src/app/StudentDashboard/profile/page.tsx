@@ -14,7 +14,6 @@ const poppins = Poppins({
 });
 
 const classOptions = ['12th', '11th ', '10th ','9th', '8th', '7th', '6th', '5th', '4th', '3rd', '2nd', '1st'];
-const countryOptions = ['India', 'USA', 'UK'];
 
 // Define types for states and cities
 interface State {
@@ -38,15 +37,12 @@ const ProfilePage = () => {
     email?: string;
     dob?: string;
     mobile?: string;
-    country?: string;
     street_address?: string;
     city?: string;
     state?: string;
     zip_code?: string;
     current_class?: string;
     id?: string;
-    academic_year?: string;
-    admission_date?: string;
     image?: string;
   };
 
@@ -267,7 +263,7 @@ const ProfilePage = () => {
 
   if (!profile) return <SainikLoader />;
 
-  // Helper for rendering inline editable field
+  // Helper for rendering inline editable field - FIXED FOR STATE DROPDOWN UI
   const renderEditableField = (
     field: string,
     value: string | undefined,
@@ -286,17 +282,20 @@ const ProfilePage = () => {
     }
 
     return (
-      <div className="group flex items-center gap-2 w-full">
-        {icon && <span className="text-[#257B5A]">{icon}</span>}
-        <p className="text-sm font-medium text-gray-500">
-          {field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-        </p>
-        <div className="flex-1 ml-2 flex items-center">
+      <div className="group flex flex-col gap-1 w-full">
+        <div className="flex items-center gap-2">
+          {icon && <span className="text-[#257B5A]">{icon}</span>}
+          <p className="text-sm font-medium text-gray-500">
+            {field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-2 w-full">
           {isEditing ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full">
               {type === 'select' ? (
                 <select
-                  className="border rounded-lg px-2 py-1 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#257B5A]/40"
+                  className="flex-1 border rounded-lg px-3 py-2 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#257B5A]/40 min-w-0"
                   value={fieldValue}
                   onChange={e => {
                     if (field === 'state') {
@@ -320,22 +319,22 @@ const ProfilePage = () => {
               ) : (
                 <input
                   type={type}
-                  className="border rounded-lg px-2 py-1 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#257B5A]/40"
+                  className="flex-1 border rounded-lg px-3 py-2 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#257B5A]/40 min-w-0"
                   value={fieldValue}
                   onChange={e => setFieldValue(e.target.value)}
                 />
               )}
               <button
-                className="inline-flex items-center gap-1 text-white bg-green-600 hover:bg-green-700 rounded-full px-2 py-1"
+                className="inline-flex items-center gap-1 text-white bg-green-600 hover:bg-green-700 rounded-full px-3 py-1.5 flex-shrink-0"
                 onClick={handleSave}
                 disabled={loading}
                 title="Save"
               >
-                <Check size={16} />
+                <Check size={14} />
                 <span className="text-xs font-semibold">Save</span>
               </button>
               <button
-                className="inline-flex items-center gap-1 text-white bg-red-600 hover:bg-red-700 rounded-full px-2 py-1"
+                className="inline-flex items-center gap-1 text-white bg-red-600 hover:bg-red-700 rounded-full px-3 py-1.5 flex-shrink-0"
                 onClick={() => {
                   setEditingField(null);
                   setFieldValue('');
@@ -343,14 +342,14 @@ const ProfilePage = () => {
                 disabled={loading}
                 title="Cancel"
               >
-                <X size={16} />
+                <X size={14} />
                 <span className="text-xs font-semibold">Cancel</span>
               </button>
             </div>
           ) : (
-            <>
+            <div className="flex items-center justify-between w-full">
               <span
-                className={`text-gray-800 font-medium ${isEditMode ? 'cursor-text' : ''}`}
+                className={`text-gray-800 font-medium ${isEditMode ? 'cursor-text' : ''} flex-1`}
                 onClick={() => {
                   if (!isEditMode) return;
                   setEditingField(field);
@@ -370,7 +369,7 @@ const ProfilePage = () => {
               </span>
               {isEditMode && (
                 <button
-                  className="ml-2 transition-opacity text-[#257B5A] hover:bg-gray-100 rounded-full p-1 border border-gray-200"
+                  className="ml-2 transition-opacity text-[#257B5A] hover:bg-gray-100 rounded-full p-1 border border-gray-200 flex-shrink-0"
                   onClick={() => {
                     setEditingField(field);
                     setFieldValue(value || '');
@@ -386,10 +385,10 @@ const ProfilePage = () => {
                   }}
                   title="Edit"
                 >
-                  <Pencil size={16} />
+                  <Pencil size={14} />
                 </button>
               )}
-            </>
+            </div>
           )}
         </div>
       </div>
@@ -457,41 +456,22 @@ const ProfilePage = () => {
               {/* Profile Info */}
               <div className="flex-1">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <div className="flex flex-col gap-2">
+                  <div className="w-full">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       {renderEditableField('firstName', profile.firstName)}
                       {renderEditableField('lastName', profile.lastName)}
                     </div>
-                    <div className="flex items-center gap-2 text-gray-600 mb-3 mt-2">
+                    <div className="flex items-center gap-2 text-gray-600 mb-3">
                       <GraduationCap size={18} className="text-[#257B5A]" />
                       <div className="flex-1">
                         {renderEditableField('current_class', profile.current_class, undefined, 'select', classOptions)}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-500 mt-2">
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
                       <User size={14} />
                       <span>Student ID: {profile.id ? `SK-A-${profile.id}` : 'SK-A-2025001'}</span>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Academic Information Card */}
-          <div className="bg-white rounded-xl shadow-sm">
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                <GraduationCap size={20} className="text-[#257B5A]" />
-                Academic Information
-              </h2>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {renderEditableField('academic_year', profile.academic_year)}
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">Student ID</p>
-                  <p className="text-gray-800 font-medium">{profile.id ? `SK-A-${profile.id}` : 'SK-A-2025001'}</p>
                 </div>
               </div>
             </div>
@@ -510,7 +490,6 @@ const ProfilePage = () => {
                 {renderEditableField('email', profile.email, <Mail size={16} />)}
                 {renderEditableField('dob', profile.dob, <Calendar size={16} />, 'date')}
                 {renderEditableField('mobile', profile.mobile, <Phone size={16} />)}
-                {renderEditableField('country', profile.country, <Globe size={16} />, 'select', countryOptions)}
                 {renderEditableField('street_address', profile.street_address, <MapPin size={16} />)}
                 {renderEditableField('state', profile.state, <MapPin size={16} />, 'select')}
                 {renderEditableField('city', profile.city, <MapPin size={16} />, 'select')}
