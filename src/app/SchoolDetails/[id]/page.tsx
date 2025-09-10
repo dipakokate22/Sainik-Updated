@@ -19,71 +19,8 @@ import { getSchoolById, searchSchoolsByCoordinates } from '../../../../services/
 import { getAuthToken, getUserRole, getUserId } from '../../../../services/authServices';
 import { applyToSchool } from '../../../../services/studentServices';
 
-// Type definitions
-interface School {
-  id: string;
-  name?: string;
-  firstName?: string;
-  lastName?: string;
-  profileImage?: string;
-  gallery?: string[];
-  rating?: number;
-  reviews?: Review[];
-  address?: {
-    city?: string;
-    website?: string;
-    email?: string;
-    mobile?: string;
-    fullAddress?: string;
-  };
-  website?: string;
-  email?: string;
-  mobile?: string;
-  location?: {
-    latitude: number;
-    longitude: number;
-  };
-  overview?: {
-    keyHighlights?: any;
-    admissionCriteriaEligibility?: any;
-    schoolHours?: any;
-    welcomeNote?: string;
-    schoolInformation?: Record<string, any>;
-  };
-  facilities?: {
-    academic?: any;
-    sportsRecreation?: any;
-    infrastructure?: any;
-  };
-  fees?: {
-    annualFeeStructure?: any;
-    additionalFees?: any;
-  };
-  faqs?: any;
-  isRegistered?: boolean;
-}
-
-interface Review {
-  name?: string;
-  rating?: number;
-  comment?: string;
-}
-
-interface NearbySchool {
-  id: string;
-  name: string;
-  profileImage?: string;
-  gallery?: string[];
-  address?: {
-    city?: string;
-  };
-  distance?: string;
-  rating?: number;
-  reviews?: Review[];
-}
-
 // Function to check if a URL is external
-const isExternalUrl = (url: string): boolean => /^https?:\/\//.test(url);
+const isExternalUrl = (url: string) => /^https?:\/\//.test(url);
 
 // Horizontal School Card Component
 const HorizontalSchoolCard = ({
@@ -123,7 +60,6 @@ const HorizontalSchoolCard = ({
           />
         )}
       </div>
-
       {/* School Info */}
       <div className="flex-1 min-w-0">
         <h3 className="text-sm font-semibold text-gray-900 truncate">{name}</h3>
@@ -140,7 +76,6 @@ const HorizontalSchoolCard = ({
           </div>
         </div>
       </div>
-
       {/* Arrow Icon */}
       <div className="flex-shrink-0">
         <FiArrowRight className="w-4 h-4 text-gray-400" />
@@ -176,7 +111,6 @@ function parseFaqs(value: any): Faq[] {
         : typeof v === "string"
         ? JSON.parse(v.trim() || "[]")
         : [];
-
     const raw = toArray(value);
     if (!Array.isArray(raw)) return [];
     return raw.map((f: any) => ({
@@ -191,18 +125,18 @@ function parseFaqs(value: any): Faq[] {
 export default function SchoolDetailSection() {
   const { id } = useParams() as { id: string };
   const router = useRouter();
-  const [school, setSchool] = useState<School | null>(null);
+  const [school, setSchool] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
-  const [nearbySchools, setNearbySchools] = useState<NearbySchool[]>([]);
+  const [nearbySchools, setNearbySchools] = useState<any[]>([]);
   const [nearbyLoading, setNearbyLoading] = useState(false);
+  // NEW: Application related states
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isApplying, setIsApplying] = useState(false);
 
+  // NEW: Check if user is logged in and is a student
   useEffect(() => {
-    // Check if user is logged in and is a student
     const token = getAuthToken();
     const userId = getUserId();
     const userRole = getUserRole();
@@ -213,6 +147,7 @@ export default function SchoolDetailSection() {
     }
   }, []);
 
+  // NEW: Handle application to school
   const handleApply = async () => {
     const userId = getUserId();
     if (!userId || !school) return;
@@ -225,7 +160,7 @@ export default function SchoolDetailSection() {
         applied_date: new Date().toISOString().split('T')[0]
       });
       
-      setSchool(prev => prev ? { ...prev, isRegistered: true } : null);
+      setSchool((prev: any) => prev ? { ...prev, isRegistered: true } : null);
       alert('Successfully applied to the school!');
     } catch (error) {
       console.error('Error applying to school:', error);
@@ -237,52 +172,17 @@ export default function SchoolDetailSection() {
 
   useEffect(() => {
     async function fetchSchool() {
-      if (!id) return;
-      
       setLoading(true);
-      setError(null);
-      
       try {
-        // Function to fetch school data with coordinates
-        const fetchWithCoordinates = async (lat?: number | null, lng?: number | null): Promise<School | null> => {
-  const data = await getSchoolById(id, lat ?? null, lng ?? null);
-  return data?.data || null;
-};
-
-        // Try to get user's current location
-        if (navigator.geolocation) {
-          const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, {
-              timeout: 5000,
-              enableHighAccuracy: false
-            });
-          });
-
-          const { latitude, longitude } = position.coords;
-const schoolData = await fetchWithCoordinates(latitude || null, longitude || null);
-
-          setSchool(schoolData);
-        } else {
-          // Geolocation not supported
-          const schoolData = await fetchWithCoordinates();
-          setSchool(schoolData);
-        }
-      } catch (geoError) {
-        // Geolocation failed or API error, try without coordinates
-        try {
-          const schoolData = await getSchoolById(id);
-          setSchool(schoolData);
-        } catch (apiError) {
-          console.error('Error fetching school:', apiError);
-          setError('Failed to load school details');
-          setSchool(null);
-        }
+        const data = await getSchoolById(id);
+        setSchool(data?.data || null);
+      } catch {
+        setSchool(null);
       } finally {
         setLoading(false);
       }
     }
-
-    fetchSchool();
+    if (id) fetchSchool();
   }, [id]);
 
   useEffect(() => {
@@ -294,10 +194,8 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
             school.location.latitude,
             school.location.longitude
           );
-          const filtered = res?.data?.filter((s: NearbySchool) => s.id !== school.id).slice(0, 6) || [];
-          setNearbySchools(filtered);
-        } catch (error) {
-          console.error('Error fetching nearby schools:', error);
+          setNearbySchools(res?.data?.filter((s: any) => s.id !== school.id).slice(0, 6) || []);
+        } catch {
           setNearbySchools([]);
         } finally {
           setNearbyLoading(false);
@@ -307,7 +205,7 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
     fetchNearbySchools();
   }, [school]);
 
-  // Parse school data
+  // Replace the facilities-related part of your useMemo with this:
   const {
     keyHighlights,
     admissionCriteriaEligibility,
@@ -322,40 +220,20 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
     faqs,
     schoolInfoEntries
   } = useMemo(() => {
-    if (!school) {
-      return {
-        keyHighlights: [],
-        admissionCriteriaEligibility: [],
-        schoolHours: [],
-        annualFeeStructure: [],
-        additionalFees: [],
-        academicFacilities: [],
-        sportsFacilities: [],
-        infraFacilities: [],
-        gallery: [],
-        reviews: [],
-        faqs: [],
-        schoolInfoEntries: []
-      };
-    }
-
-    const keyHighlights = parseArray(school.overview?.keyHighlights);
-    const admissionCriteriaEligibility = parseArray(school.overview?.admissionCriteriaEligibility);
-    const schoolHours = parseArray(school.overview?.schoolHours);
-    const annualFeeStructure = parseArray(school.fees?.annualFeeStructure);
-    const additionalFees = parseArray(school.fees?.additionalFees);
-    
-    const academicFacilities = parseArray(school.facilities?.academic);
-    const sportsFacilities = parseArray(school.facilities?.sportsRecreation);
-    const infraFacilities = parseArray(school.facilities?.infrastructure);
-    
-    const gallery = Array.isArray(school.gallery) ? school.gallery : [];
-    const reviews = Array.isArray(school.reviews) ? school.reviews : [];
-    const faqs = parseFaqs(school.faqs);
-    
-    const infoObj = school.overview?.schoolInformation || {};
-    const schoolInfoEntries = Object.entries(infoObj).filter(([, v]) => v);
-
+    const keyHighlights = parseArray(school?.overview?.keyHighlights);
+    const admissionCriteriaEligibility = parseArray(school?.overview?.admissionCriteriaEligibility);
+    const schoolHours = parseArray(school?.overview?.schoolHours);
+    const annualFeeStructure = parseArray(school?.fees?.annualFeeStructure);
+    const additionalFees = parseArray(school?.fees?.additionalFees);
+    // NEW: keep facilities groups separate (API may return stringified arrays)
+    const academicFacilities = parseArray(school?.facilities?.academic);
+    const sportsFacilities = parseArray(school?.facilities?.sportsRecreation);
+    const infraFacilities = parseArray(school?.facilities?.infrastructure);
+    const gallery = Array.isArray(school?.gallery) ? school.gallery : [];
+    const reviews = Array.isArray(school?.reviews) ? school.reviews : [];
+    const faqs = parseFaqs(school?.faqs);
+    const infoObj = school?.overview?.schoolInformation || {};
+    const schoolInfoEntries = Object.entries(infoObj || {}).filter(([, v]) => v);
     return {
       keyHighlights,
       admissionCriteriaEligibility,
@@ -374,7 +252,7 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
 
   const avgRating = useMemo(() => {
     if (!reviews.length) return 0;
-    const sum = reviews.reduce((acc: number, r: Review) => acc + (Number(r?.rating) || 0), 0);
+    const sum = reviews.reduce((acc: number, r: any) => acc + (Number(r?.rating) || 0), 0);
     return sum / reviews.length;
   }, [reviews]);
 
@@ -413,7 +291,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
                 </div>
               </div>
             )}
-
             {/* Welcome / Description */}
             {school?.overview?.welcomeNote && (
               <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
@@ -430,7 +307,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
                   ))}
               </div>
             )}
-
             {/* Key Highlights */}
             {keyHighlights.length > 0 && (
               <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
@@ -444,10 +320,9 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
                 </ul>
               </div>
             )}
-
             {/* Admission Criteria */}
             {admissionCriteriaEligibility.length > 0 && (
-              <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
+              <div className="bg-white border rounded-lg  px-4 md:px-[26px] py-[25px]">
                 <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
                   Admission Criteria & Eligibility
                 </h4>
@@ -461,7 +336,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
                 </ul>
               </div>
             )}
-
             {/* School Hours */}
             {schoolHours.length > 0 && (
               <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
@@ -480,7 +354,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
             )}
           </div>
         );
-
       case 'facilities':
         return (
           <div className="space-y-6">
@@ -488,7 +361,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
               <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
                 🏫 Facilities
               </h4>
-
               {(academicFacilities.length + sportsFacilities.length + infraFacilities.length) > 0 ? (
                 <div className="space-y-6">
                   {academicFacilities.length > 0 && (
@@ -503,7 +375,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
                       </ul>
                     </div>
                   )}
-
                   {sportsFacilities.length > 0 && (
                     <div>
                       <h5 className="text-[15px] sm:text-[16px] md:text-[18px] font-semibold text-black mb-2">
@@ -516,7 +387,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
                       </ul>
                     </div>
                   )}
-
                   {infraFacilities.length > 0 && (
                     <div>
                       <h5 className="text-[15px] sm:text-[16px] md:text-[18px] font-semibold text-black mb-2">
@@ -536,7 +406,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
             </div>
           </div>
         );
-
       case 'fees':
         return (
           <div className="space-y-6">
@@ -555,7 +424,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
                 <p className="text-[16px] text-gray-600">No fee details available.</p>
               )}
             </div>
-
             {/* Additional Fees */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
               <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
@@ -573,7 +441,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
             </div>
           </div>
         );
-
       case 'gallery':
         return (
           <div className="space-y-6">
@@ -581,10 +448,10 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
               <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
                 🏫 Campus Gallery
               </h4>
-              {gallery && gallery.filter((s: string) => s && s.trim()).length ? (
+              {gallery && gallery.filter((s: any) => typeof s === 'string' && s.trim()).length ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {gallery
-                    .filter((src: string) => src && src.trim())
+                    .filter((src: any) => typeof src === 'string' && src.trim())
                     .map((src: string, i: number) => (
                       <div key={i} className="relative group cursor-pointer overflow-hidden rounded-lg">
                         {isExternalUrl(src) ? (
@@ -618,7 +485,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
             </div>
           </div>
         );
-
       case 'reviews':
         return (
           <div className="space-y-6">
@@ -639,7 +505,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
                 </div>
               </div>
             </div>
-
             {/* Individual Reviews */}
             <div className="bg-white border rounded-lg px-4 md:px-[26px] py-[25px]">
               <h4 className="font-semibold font-poppins text-[16px] text-black sm:text-[18px] md:text-[20px] mb-4">
@@ -647,7 +512,7 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
               </h4>
               {reviews.length ? (
                 <div className="space-y-6">
-                  {reviews.map((rev: Review, i: number) => (
+                  {reviews.map((rev: any, i: number) => (
                     <div key={i} className="border-b pb-4 last:border-b-0">
                       <div className="flex items-start justify-between mb-2">
                         <div>
@@ -674,7 +539,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
             </div>
           </div>
         );
-
       case 'faqs':
         return (
           <div className="space-y-6">
@@ -684,7 +548,7 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
               </h4>
               {faqs.length ? (
                 <div className="space-y-4">
-                  {faqs.map((faq: Faq, i: number) => (
+                  {faqs.map((faq: any, i: number) => (
                     <div key={i} className="border border-gray-200 rounded-lg p-4">
                       <h5 className="font-semibold text-black mb-2">Q: {faq?.question}</h5>
                       <p className="text-gray-700 text-[15px] leading-relaxed">A: {faq?.answer}</p>
@@ -697,45 +561,17 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
             </div>
           </div>
         );
-
       default:
         return null;
     }
   };
 
   if (loading) {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen flex items-center justify-center text-lg text-gray-600 bg-[#F7F1EE]">
-          <div className="flex flex-col items-center gap-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#257B5A]"></div>
-            <p>Loading school details...</p>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
+    return <div className="min-h-screen flex items-center justify-center text-lg text-gray-600">Loading...</div>;
   }
 
-  if (error || !school) {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen flex items-center justify-center text-lg text-red-600 bg-[#F7F1EE]">
-          <div className="text-center">
-            <p className="mb-4">{error || 'School not found.'}</p>
-            <button 
-              onClick={() => router.back()}
-              className="px-6 py-2 bg-[#257B5A] text-white rounded-lg hover:bg-[#1e6b4a] transition-colors"
-            >
-              Go Back
-            </button>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
+  if (!school) {
+    return <div className="min-h-screen flex items-center justify-center text-lg text-red-600">School not found.</div>;
   }
 
   const avgStars = Math.round(avgRating);
@@ -745,7 +581,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
     school?.name ||
     [school?.firstName, school?.lastName].filter(Boolean).join(' ').trim() ||
     'School';
-
   const website = school?.address?.website || school?.website || '';
   const email = school?.address?.email || school?.email || '';
   const mobile = school?.address?.mobile || school?.mobile || '';
@@ -770,7 +605,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
                 <span className="text-sm sm:text-base lg:text-lg font-medium">Back</span>
               </button>
             </div>
-
             {/* School Header Card */}
             <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 lg:gap-6">
               {/* School Logo */}
@@ -795,13 +629,11 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
                   />
                 )}
               </div>
-
               {/* School Information */}
               <div className="flex-1">
                 <h1 className="text-lg sm:text-xl md:text-2xl lg:text-[32px] font-poppins font-medium text-black mb-2 lg:mb-2 leading-tight">
                   {displayName}
                 </h1>
-
                 {/* City and Rating */}
                 <div className="flex items-center gap-4 mb-4">
                   <span className="text-gray-600 font-medium">{city}</span>
@@ -820,15 +652,19 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
                     </span>
                   </div>
                 </div>
+                {/* Add to Compare Button */}
+                {/* <button className="flex items-center gap-2 border border-[#10744E] text-[#10744E] px-4 py-2 rounded-full hover:bg-[#10744E] hover:text-white transition-colors duration-300 font-medium">
+                  <FaPlus className="w-4 h-4" />
+                  <span>Add to Compare</span>
+                </button> */}
               </div>
             </div>
           </div>
         </div>
-
         {/* Main Content Section */}
         <section className="max-w-[1440px] w-full mx-auto bg-[#F7F1EE] px-4 sm:px-6 md:px-10 lg:px-14 pb-8 sm:pb-12 md:pb-16">
           <div className="max-w-[1440px] w-full mx-auto pt-4 sm:pt-6">
-            {/* Top Bar with Contact Info and Register Button */}
+            {/* Top Bar with Contact Info and Apply Button */}
             <div className="border border-[#257B5A] rounded-lg px-3 sm:px-4 md:px-6 lg:px-[26px] py-3 sm:py-4 lg:py-[25px] mb-4 sm:mb-6">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:flex-nowrap gap-3 sm:gap-4 lg:gap-6">
                 {/* School Info */}
@@ -870,7 +706,6 @@ const schoolData = await fetchWithCoordinates(latitude || null, longitude || nul
                     </span>
                   </div>
                 </div>
-
                 {/* Apply Button - Only visible for logged-in students */}
                 {isLoggedIn && (
                   <button 
