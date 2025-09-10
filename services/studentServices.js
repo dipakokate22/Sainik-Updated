@@ -64,10 +64,18 @@ export async function uploadStudentProfileImage(id, imageFile) {
 }
 
 export async function getLibraryResources() {
-  const res = await fetch('https://sainik.codekrafters.in/api/Library');
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
+  const res = await fetch('https://sainik.codekrafters.in/api/library/class', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
   if (!res.ok) throw new Error('Failed to fetch library resources');
   return res.json();
 }
+
 
 export async function applyToSchool({ school_id, user_id, applied_date }) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
