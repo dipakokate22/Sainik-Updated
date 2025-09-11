@@ -76,7 +76,6 @@ export async function getLibraryResources() {
   return res.json();
 }
 
-
 export async function applyToSchool({ school_id, user_id, applied_date }) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
   const res = await fetch('https://sainik.codekrafters.in/api/applied-students', {
@@ -115,5 +114,59 @@ export async function getAppliedStudentsByUser(user_id) {
     },
   });
   if (!res.ok) throw new Error('Failed to fetch applied students');
+  return res.json();
+}
+export async function getSubscriptionPlans() {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
+  const res = await fetch('https://sainik.codekrafters.in/api/student-subscription-plans', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  
+  if (!res.ok) {
+    const errorData = await res.text();
+    throw new Error(`Failed to fetch subscription plans: ${res.status} - ${errorData}`);
+  }
+  
+  return res.json();
+}
+
+export async function purchaseSubscriptionPlan(user_id, plan_id) {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
+  const res = await fetch('https://sainik.codekrafters.in/api/student-subscription-purchase', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ user_id, plan_id }),
+  });
+  
+  if (!res.ok) {
+    const errorData = await res.text();
+    throw new Error(`Failed to purchase subscription plan: ${res.status} - ${errorData}`);
+  }
+  
+  return res.json();
+}
+
+export async function getUserSubscriptions(userId) {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
+  const res = await fetch(`https://sainik.codekrafters.in/api/student-subscription-get/${userId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  
+  if (!res.ok) {
+    const errorData = await res.text();
+    throw new Error(`Failed to fetch user subscriptions: ${res.status} - ${errorData}`);
+  }
+  
   return res.json();
 }

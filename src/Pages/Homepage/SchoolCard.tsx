@@ -1,88 +1,193 @@
-import Image from "next/image";
+'use client';
+import { useState, useEffect } from 'react';
+import SchoolCard from '../../Components/SchoolCard'; // Adjust path as needed
+import { searchSchoolsByCoordinates } from '../../../services/schoolServices'; // Adjust path as needed
 
-interface SchoolCardProps {
+// Type definitions
+interface SchoolApiData {
+  id: number;
+  name: string;
+  profileImage: string;
+  overview?: {
+    welcomeNote?: string;
+  };
+  thumbnail?: string;
+  distance: string;
+}
+
+interface SchoolCardData {
   name: string;
   image: string;
   desc: string;
-  logo?: string; // optional logo
+  logo: string;
+  distance: string;
+  thumbnail?: string;
 }
 
-export default function SchoolCard({ name, image, desc, logo }: SchoolCardProps) {
-  const getInitial = (name: string) => name?.charAt(0)?.toUpperCase();
+interface ApiResponse {
+  status: boolean;
+  message: string;
+  data: SchoolApiData[];
+  pagination: any;
+}
+
+export default function SchoolsSection() {
+  const [schools, setSchools] = useState<SchoolCardData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        // Get user location first
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              try {
+                const response: ApiResponse = await searchSchoolsByCoordinates(
+                  position.coords.latitude, 
+                  position.coords.longitude
+                );
+                
+                // Map API data to SchoolCard props and limit to 6
+                const mappedSchools: SchoolCardData[] = response.data.slice(0, 6).map((school: SchoolApiData) => ({
+                  name: school.name,
+                  image: school.profileImage,
+                  desc: school.overview?.welcomeNote || 'A quality educational institution.',
+                  logo: school.profileImage,
+                  distance: school.distance,
+                  thumbnail: school.thumbnail
+                }));
+                
+                setSchools(mappedSchools);
+              } catch (err: unknown) {
+                const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+                setError(errorMessage);
+              } finally {
+                setLoading(false);
+              }
+            },
+            (error) => {
+              // Fallback to default location if geolocation fails
+              fetchSchoolsWithLocation(28.6139, 77.2090);
+            }
+          );
+        } else {
+          // Fallback if geolocation not supported
+          fetchSchoolsWithLocation(28.6139, 77.2090);
+        }
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+        setError(errorMessage);
+        setLoading(false);
+      }
+    };
+
+    const fetchSchoolsWithLocation = async (lat: number, lng: number) => {
+      try {
+        const response: ApiResponse = await searchSchoolsByCoordinates(lat, lng);
+        
+        const mappedSchools: SchoolCardData[] = response.data.slice(0, 6).map((school: SchoolApiData) => ({
+          name: school.name,
+          image: school.profileImage,
+          desc: school.overview?.welcomeNote || 'A quality educational institution.',
+          logo: school.profileImage,
+          distance: school.distance,
+          thumbnail: school.thumbnail
+        }));
+        
+        setSchools(mappedSchools);
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchools();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="w-full py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10744E] mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading nearby schools...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="w-full py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center bg-red-50 p-6 rounded-lg border border-red-200">
+            <p className="text-red-600">Error loading schools: {error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
-      {/* Banner Image */}
-      <div className="w-full h-48 overflow-hidden rounded-t-2xl">
-        <Image
-          src={image}
-          alt={name}
-          width={400}
-          height={192}
-          className="object-cover w-full h-full"
-        />
-      </div>
-
-      {/* Content */}
-      <div className="flex flex-col justify-between flex-1 p-5">
-        <div>
-          {/* Logo or Initial + Name */}
-          <div className="flex items-center gap-3">
-            {logo ? (
-              <Image
-                src={logo}
-                alt={`${name} logo`}
-                width={32}
-                height={32}
-                className="rounded-full"
-              />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-[#10744E] text-white flex items-center justify-center font-semibold text-sm">
-                {getInitial(name)}
-              </div>
-            )}
-            <h3 className="text-xl font-semibold text-black">{name}</h3>
-          </div>
-
-          <p className="text-sm text-gray-600 mt-2 hidden sm:block">{desc}</p>
+    <section className="w-full py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            Nearby Sainik Schools
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Discover quality Sainik schools in your area. Find the perfect institution for your child's education and development.
+          </p>
         </div>
 
-        <div className="mt-4">
-          <div className="flex flex-wrap gap-2">
-            <span className="bg-[#DAEADD] text-black px-3 py-1 rounded-md text-xs font-medium">Education</span>
-            <span className="bg-[#DAEADD] text-black px-3 py-1 rounded-md text-xs font-medium">Fees</span>
-            <span className="bg-[#DAEADD] text-black px-3 py-1 rounded-md text-xs font-medium">Rating</span>
-          </div>
-
-          <div className="flex items-center mt-3 text-xl">
-            <span className="text-yellow-400">★</span>
-            <span className="text-yellow-400">★</span>
-            <span className="text-yellow-400">★</span>
-            <span className="text-gray-300">★</span>
-            <span className="text-gray-300">★</span>
-          </div>
-
-          <button className="text-[#10744E] mt-2 text-sm font-medium hover:underline flex items-center gap-1 group">
-            View Details 
-            <svg 
-              width="14" 
-              height="14" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
-              className="transition-transform duration-200 group-hover:translate-x-1"
-            >
-              <path 
-                d="M9 18L15 12L9 6" 
-                stroke="#10744E" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
+        {/* Schools Grid */}
+        {schools.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {schools.map((school, index) => (
+              <SchoolCard
+                key={index}
+                name={school.name}
+                image={school.image}
+                desc={school.desc}
+                logo={school.logo}
+                distance={school.distance}
+                thumbnail={school.thumbnail}
               />
-            </svg>
-          </button>
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-gray-400 mb-4">
+              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-600 mb-2">No Schools Found</h3>
+            <p className="text-gray-500">We couldn't find any Sainik schools in your area.</p>
+          </div>
+        )}
+
+        {/* View All Button */}
+        {schools.length >= 6 && (
+          <div className="text-center mt-8">
+            <button className="bg-[#10744E] hover:bg-[#0d5a3c] text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
+              View All Schools
+            </button>
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 }

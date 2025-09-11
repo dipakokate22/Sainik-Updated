@@ -5,14 +5,14 @@ import TrustedBySection from "@/Pages/Homepage/TrustedBySection";
 import VoicesAndViews from "@/Pages/Homepage/VoicesAndViews";
 import WhyJoinSainikSchool from "@/Pages/Homepage/WhyJoinSainikSchool";
 import StateMap from "@/Pages/Homepage/StateMap";
-import Card from "@/Pages/Homepage/Card";
+import SchoolCard from "@/Pages/Homepage/SchoolCard";
 import Hero from "@/Pages/Homepage/Hero";
 
 export default function Home() {
   return (
     <Layout>
       <Hero />
-      <Card />
+      <SchoolCard />
       <StateMap />
       <SainikPointsSection />
       <WhyJoinSainikSchool />
