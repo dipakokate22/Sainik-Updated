@@ -139,6 +139,10 @@ const PaymentHistoryPage = () => {
     return 'text-green-600';
   };
 
+  // Check if user can attempt exams
+  const canAttemptExams = userSubscriptions?.exam_attempts?.can_attempt_exams === true;
+  const showPurchaseButton = !canAttemptExams; // Show purchase button only when can_attempt_exams is false
+
   if (loading) {
     return (
       <div className="flex min-h-screen bg-[#F7F1EE] relative overflow-hidden">
@@ -204,8 +208,8 @@ const PaymentHistoryPage = () => {
               <p className="text-sm text-gray-500">View and track all your subscription and payment details</p>
             </div>
 
-            {/* Pay for New Entrance Exam Section */}
-            {subscriptionPlan && (
+            {/* Pay for New Entrance Exam Section - Show only when can_attempt_exams is false */}
+            {subscriptionPlan && showPurchaseButton && (
               <div className="bg-white p-6 rounded-lg shadow-md mb-6">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Available Subscription Plan</h2>
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
@@ -238,6 +242,17 @@ const PaymentHistoryPage = () => {
                     </button>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Display message when user can attempt exams */}
+            {canAttemptExams && (
+              <div className="bg-green-50 p-6 rounded-lg shadow-md mb-6 border border-green-200">
+                <h2 className="text-xl font-semibold text-green-800 mb-2">Active Subscription</h2>
+                <p className="text-green-700">
+                  🎉 You have an active subscription and can attempt exams! 
+                  Check your remaining attempts below.
+                </p>
               </div>
             )}
 
@@ -311,7 +326,7 @@ const PaymentHistoryPage = () => {
               </div>
             )}
 
-            {/* Transaction History */}
+            {/* Transaction History - Removed "Plan" column */}
             {userSubscriptions && userSubscriptions.transactions && userSubscriptions.transactions.length > 0 && (
               <div className="bg-white p-4 md:p-6 rounded-lg shadow-md overflow-x-auto">
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center border-b pb-4 mb-4">
@@ -325,7 +340,6 @@ const PaymentHistoryPage = () => {
                   <thead className="text-gray-600 bg-[#E8F0FE]">
                     <tr>
                       <th className="pl-4 py-3 rounded-tl-lg">Transaction ID</th>
-                      <th className="text-center py-3">Plan</th>
                       <th className="text-center py-3">Amount</th>
                       <th className="text-center py-3">Date</th>
                       <th className="text-center py-3">Status</th>
@@ -336,7 +350,6 @@ const PaymentHistoryPage = () => {
                     {userSubscriptions.transactions.map((transaction: Transaction, index: number) => (
                       <tr key={index} className="border-t border-gray-200 hover:bg-gray-50">
                         <td className="pl-4 py-3 font-medium">#{transaction.id || `TXN-${index + 1}`}</td>
-                        <td className="text-center py-3 text-gray-600">{transaction.plan_name || 'N/A'}</td>
                         <td className="text-center py-3 text-gray-600 font-medium">
                           Rs. {transaction.amount ? parseFloat(transaction.amount).toLocaleString() : 'N/A'}
                         </td>

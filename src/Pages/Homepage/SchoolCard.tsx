@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import SchoolCard from '../../Components/SchoolCard'; // Adjust path as needed
 import { searchSchoolsByCoordinates } from '../../../services/schoolServices'; // Adjust path as needed
 
@@ -16,6 +17,7 @@ interface SchoolApiData {
 }
 
 interface SchoolCardData {
+  id: number; // Add id to the SchoolCardData interface
   name: string;
   image: string;
   desc: string;
@@ -51,6 +53,7 @@ export default function SchoolsSection() {
                 
                 // Map API data to SchoolCard props and limit to 6
                 const mappedSchools: SchoolCardData[] = response.data.slice(0, 6).map((school: SchoolApiData) => ({
+                  id: school.id, // Include the id for navigation
                   name: school.name,
                   image: school.profileImage,
                   desc: school.overview?.welcomeNote || 'A quality educational institution.',
@@ -88,6 +91,7 @@ export default function SchoolsSection() {
         const response: ApiResponse = await searchSchoolsByCoordinates(lat, lng);
         
         const mappedSchools: SchoolCardData[] = response.data.slice(0, 6).map((school: SchoolApiData) => ({
+          id: school.id, // Include the id for navigation
           name: school.name,
           image: school.profileImage,
           desc: school.overview?.welcomeNote || 'A quality educational institution.',
@@ -155,16 +159,22 @@ export default function SchoolsSection() {
         {/* Schools Grid */}
         {schools.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {schools.map((school, index) => (
-              <SchoolCard
-                key={index}
-                name={school.name}
-                image={school.image}
-                desc={school.desc}
-                logo={school.logo}
-                distance={school.distance}
-                thumbnail={school.thumbnail}
-              />
+            {schools.map((school) => (
+              <Link
+                key={school.id}
+                href={`/SchoolDetails/${school.id}`}
+                className="block"
+                prefetch
+              >
+                <SchoolCard
+                  name={school.name}
+                  image={school.image}
+                  desc={school.desc}
+                  logo={school.logo}
+                  distance={school.distance}
+                  thumbnail={school.thumbnail}
+                />
+              </Link>
             ))}
           </div>
         ) : (
@@ -182,9 +192,11 @@ export default function SchoolsSection() {
         {/* View All Button */}
         {schools.length >= 6 && (
           <div className="text-center mt-8">
-            <button className="bg-[#10744E] hover:bg-[#0d5a3c] text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
-              View All Schools
-            </button>
+            <Link href="/Listing">
+              <button className="bg-[#10744E] hover:bg-[#0d5a3c] text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
+                View All Schools
+              </button>
+            </Link>
           </div>
         )}
       </div>

@@ -21,11 +21,13 @@ interface School {
   name: string;
   profileImage?: string;
   gallery?: string[];
+  thumbnail?: string; // Add thumbnail property
   address: {
     city: string;
     state: string;
   };
   overview?: {
+    welcomeNote?: string; // Add welcomeNote for description
     schoolInformation?: {
       board?: string;
       medium?: string;
@@ -354,7 +356,9 @@ const SchoolListingPage = () => {
                   <SchoolCard
                     name={school.name}
                     image={school.profileImage || school.gallery?.[0] || '/default-school.jpg'}
-                    desc={`${school.address?.city || ''} | ${school.overview?.schoolInformation?.board || ''} | ${school.overview?.schoolInformation?.medium || ''} | ${school.overview?.schoolInformation?.category || ''}`}
+                    desc={school.overview?.welcomeNote || `${school.address?.city || ''} | ${school.overview?.schoolInformation?.board || ''} | ${school.overview?.schoolInformation?.medium || ''} | ${school.overview?.schoolInformation?.category || ''}`}
+                    logo={school.profileImage}
+                    thumbnail={school.thumbnail}
                   />
                 </Link>
               ))}
