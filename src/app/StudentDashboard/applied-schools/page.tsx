@@ -54,7 +54,6 @@ const AppliedSchoolsPage = () => {
       try {
         const res = await getAppliedStudentsByUser(userId);
         console.log('Applied Schools Response:', res);
-        // Updated to match actual API response structure
         if (res.success && res.data && Array.isArray(res.data.applied_students)) {
           setAppliedSchools(res.data.applied_students.map((app: any) => ({
             id: app.id,
@@ -81,11 +80,9 @@ const AppliedSchoolsPage = () => {
       try {
         const res = await getAllSchools();
         console.log('Available Schools Response:', res);
-        // Updated to match actual API response structure - checking both res.success and res.status
         if ((res.success || res.status) && Array.isArray(res.data)) {
           setAvailableSchools(
             res.data.map((school: any) => {
-              // Parse JSON strings safely
               const keyHighlights = safeJsonParse(school.key_highlights);
               const admissionCriteria = safeJsonParse(school.admission_criteria_eligibility);
               const annualFees = safeJsonParse(school.annual_fee_structure);
@@ -136,18 +133,6 @@ const AppliedSchoolsPage = () => {
   const sortedSchools = [...availableSchools].sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0));
   const gridSchools = sortedSchools.slice(0, 9);
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'applied': 
-      case 'pending': return 'text-blue-600 bg-blue-50';
-      case 'accepted': return 'text-green-600 bg-green-50';
-      case 'rejected': return 'text-red-600 bg-red-50';
-      case 'waitlisted': return 'text-orange-600 bg-orange-50';
-      case 'withdrawn': return 'text-gray-600 bg-gray-50';
-      default: return 'text-gray-600 bg-gray-50';
-    }
-  };
-
   const handleViewSchool = (schoolName: string) => {
     const school = availableSchools.find(s => s.name === schoolName);
     if (school) {
@@ -178,13 +163,8 @@ const AppliedSchoolsPage = () => {
     setShowApplicationModal(true);
   };
 
-  // Updated to use the actual API
+  // Updated to remove the 5-application limit
   const handleApplyToSchool = async () => {
-    if (appliedSchools.length >= 5) {
-      alert('You can only apply to a maximum of 5 schools.');
-      return;
-    }
-
     const isAlreadyApplied = appliedSchools.some(app => app.school === selectedSchool.name);
     if (isAlreadyApplied) {
       alert('You have already applied to this school.');
@@ -192,14 +172,12 @@ const AppliedSchoolsPage = () => {
     }
 
     try {
-      // Use the actual API call
       await applyToSchool({
         school_id: selectedSchool.id,
         user_id: userId,
-        applied_date: new Date().toISOString().split('T')[0] // YYYY-MM-DD format
+        applied_date: new Date().toISOString().split('T')[0]
       });
 
-      // Refresh the applied schools list
       const res = await getAppliedStudentsByUser(userId);
       if (res.success && res.data && Array.isArray(res.data.applied_students)) {
         setAppliedSchools(res.data.applied_students.map((app: any) => ({
@@ -227,41 +205,6 @@ const AppliedSchoolsPage = () => {
   const getAvailablePreferences = () => {
     const usedPreferences = appliedSchools.map(app => app.preference);
     return [1, 2, 3, 4, 5].filter(pref => !usedPreferences.includes(pref));
-  };
-
-  // Fixed withdraw application handler - using correct student ID and only passing status
-  const handleWithdrawApplication = async (application: any) => {
-    if (!window.confirm('Are you sure you want to withdraw this application?')) return;
-    try {
-      // Pass the correct student ID (application.id) and only status
-      await updateAppliedStudentStatus(application.id, {
-        school_id: application.school_id,
-        user_id: application.user_id,
-        applied_date: application.appliedDate,
-        status: 'withdrawn',
-      });
-      
-      // Refresh list after withdrawal
-      if (userId === null) return;
-      const res = await getAppliedStudentsByUser(userId);
-      if (res.success && res.data && Array.isArray(res.data.applied_students)) {
-        setAppliedSchools(res.data.applied_students.map((app: any) => ({
-          id: app.id,
-          school: app.school?.name || `${app.user?.firstName || ''} ${app.user?.lastName || ''}`.trim() || 'Unknown School',
-          location: app.school?.city || app.school?.full_address || 'N/A',
-          appliedDate: new Date(app.applied_date).toLocaleDateString('en-GB'),
-          status: app.status.charAt(0).toUpperCase() + app.status.slice(1),
-          preference: app.preference || '',
-          school_id: app.school_id,
-          user_id: app.user_id,
-          raw: app,
-        })));
-      }
-      alert('Application withdrawn successfully!');
-    } catch (err) {
-      console.error('Failed to withdraw application:', err);
-      alert('Failed to withdraw application');
-    }
   };
 
   return (
@@ -308,7 +251,6 @@ const AppliedSchoolsPage = () => {
                   <th className="font-medium text-sm text-left pl-4 text-black border-r border-black last:border-r-0">School</th>
                   <th className="font-medium text-sm text-black border-r border-black last:border-r-0">Location</th>
                   <th className="font-medium text-sm text-black border-r border-black last:border-r-0">Applied Date</th>
-                  <th className="font-medium text-sm text-black border-r border-black last:border-r-0">Status</th>
                   <th className="font-medium text-sm text-black">Actions</th>
                 </tr>
               </thead>
@@ -318,11 +260,6 @@ const AppliedSchoolsPage = () => {
                     <td className="text-sm text-left pl-4 text-[#6C6B6B] border-r border-black">{app.school}</td>
                     <td className="text-sm text-[#6C6B6B] border-r border-black">{app.location}</td>
                     <td className="text-sm text-[#6C6B6B] border-r border-black">{app.appliedDate}</td>
-                    <td className="border-r border-black">
-                      <span className={`text-sm font-medium px-3 py-1 rounded-full ${getStatusColor(app.status)}`}>
-                        {app.status}
-                      </span>
-                    </td>
                     <td>
                       <div className="flex items-center justify-center gap-3">
                         <button 
@@ -331,21 +268,12 @@ const AppliedSchoolsPage = () => {
                         >
                           View
                         </button>
-                        {app.status.toLowerCase() !== 'withdrawn' && (
-                          <button
-                            onClick={() => handleWithdrawApplication(app)}
-                            className="text-orange-600 hover:text-orange-800 p-1 rounded transition-colors text-sm font-medium"
-                            title="Withdraw Application"
-                          >
-                            Withdraw
-                          </button>
-                        )}
                       </div>
                     </td>
                   </tr>
                 )) : (
                   <tr className="h-[70px]">
-                    <td colSpan={5} className="text-center text-gray-500">
+                    <td colSpan={4} className="text-center text-gray-500">
                       No applications found
                     </td>
                   </tr>
@@ -397,15 +325,14 @@ const AppliedSchoolsPage = () => {
                     
                     <button 
                       onClick={() => handleApplyClick(school)}
-                      disabled={appliedSchools.length >= 5 || appliedSchools.some(app => app.school === school.name)}
+                      disabled={appliedSchools.some(app => app.school === school.name)}
                       className={`w-full text-sm font-medium py-2 px-4 rounded-lg transition-colors ${
-                        appliedSchools.length >= 5 || appliedSchools.some(app => app.school === school.name)
+                        appliedSchools.some(app => app.school === school.name)
                           ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                           : 'bg-[#5B63B7] text-white hover:bg-opacity-90'
                       }`}
                     >
-                      {appliedSchools.some(app => app.school === school.name) ? 'Applied' : 
-                       appliedSchools.length >= 5 ? 'Limit Reached' : 'Apply Now'}
+                      {appliedSchools.some(app => app.school === school.name) ? 'Applied' : 'Apply Now'}
                     </button>
                   </div>
                 </div>
@@ -441,7 +368,6 @@ const AppliedSchoolsPage = () => {
                       <th className="font-medium text-sm text-left pl-4 text-black border border-black">School</th>
                       <th className="font-medium text-sm text-black border border-black">Location</th>
                       <th className="font-medium text-sm text-black border border-black">Applied Date</th>
-                      <th className="font-medium text-sm text-black border border-black">Status</th>
                       <th className="font-medium text-sm text-black">Action</th>
                     </tr>
                   </thead>
@@ -451,11 +377,6 @@ const AppliedSchoolsPage = () => {
                         <td className="text-sm text-left pl-4 text-[#6C6B6B] border border-gray-700">{app.school}</td>
                         <td className="text-sm text-[#6C6B6B] border border-gray-700">{app.location}</td>
                         <td className="text-sm text-[#6C6B6B] border border-gray-700">{app.appliedDate}</td>
-                        <td className="border border-gray-700">
-                          <span className={`text-sm font-medium px-3 py-1 rounded-full ${getStatusColor(app.status)}`}>
-                            {app.status}
-                          </span>
-                        </td>
                         <td>
                           <div className="flex items-center justify-center gap-3">
                             <button 
@@ -467,15 +388,6 @@ const AppliedSchoolsPage = () => {
                             >
                               View
                             </button>
-                            {app.status.toLowerCase() !== 'withdrawn' && (
-                              <button
-                                onClick={() => handleWithdrawApplication(app)}
-                                className="text-orange-600 hover:text-orange-800 p-1 rounded transition-colors text-sm font-medium"
-                                title="Withdraw Application"
-                              >
-                                Withdraw
-                              </button>
-                            )}
                           </div>
                         </td>
                       </tr>
@@ -537,15 +449,14 @@ const AppliedSchoolsPage = () => {
                           setShowAllSchoolsModal(false);
                           handleApplyClick(school);
                         }}
-                        disabled={appliedSchools.length >= 5 || appliedSchools.some(app => app.school === school.name)}
+                        disabled={appliedSchools.some(app => app.school === school.name)}
                         className={`w-full text-sm font-medium py-2 px-4 rounded-lg transition-colors ${
-                          appliedSchools.length >= 5 || appliedSchools.some(app => app.school === school.name)
+                          appliedSchools.some(app => app.school === school.name)
                             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                             : 'bg-[#5B63B7] text-white hover:bg-opacity-90'
                         }`}
                       >
-                        {appliedSchools.some(app => app.school === school.name) ? 'Applied' : 
-                         appliedSchools.length >= 5 ? 'Limit Reached' : 'Apply Now'}
+                        {appliedSchools.some(app => app.school === school.name) ? 'Applied' : 'Apply Now'}
                       </button>
                     </div>
                   </div>
@@ -572,7 +483,6 @@ const AppliedSchoolsPage = () => {
             
             <div className="p-6">
               <div className="space-y-6">
-                {/* School Basic Details */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg">
                   <div className="flex items-center mb-4">
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-full flex items-center justify-center mr-4">
@@ -612,16 +522,14 @@ const AppliedSchoolsPage = () => {
                   </div>
                 </div>
 
-                {/* Application Summary */}
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-semibold text-black mb-2">Application Summary</h4>
                   <div className="text-sm space-y-1 text-black">
                     <p><span className="font-medium text-black">School:</span> {selectedSchool.name}</p>
-                    <p><span className="font-medium text-black">Applications Used:</span> {appliedSchools.length}/5</p>
+                    <p><span className="font-medium text-black">Total Applications:</span> {appliedSchools.length}</p>
                   </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex gap-4 pt-4">
                   <button 
                     onClick={() => setShowApplicationModal(false)}
@@ -637,7 +545,6 @@ const AppliedSchoolsPage = () => {
                   </button>
                 </div>
 
-                {/* Cancel Application Section */}
                 {isSchoolApplied(selectedSchool.name) && (
                   <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
                     <h4 className="font-semibold text-red-800 mb-2">Application Status</h4>

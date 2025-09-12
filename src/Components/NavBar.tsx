@@ -94,13 +94,16 @@ export default function Navbar() {
       <div className="flex justify-between items-center">
         {/* Left Logo & Search */}
         <div className="flex items-center gap-2 sm:gap-4">
-          <Image 
-            src="/Image/Sainik-logo.png" 
-            alt="Sainik Logo" 
-            width={160} 
-            height={55} 
-            className="h-12 w-auto sm:h-14" // Increased height for mobile
-          />
+          {/* Make logo clickable and route to home */}
+          <Link href="/" className="cursor-pointer">
+            <Image 
+              src="/Image/Sainik-logo.png" 
+              alt="Sainik Logo" 
+              width={160} 
+              height={55} 
+              className="h-12 w-auto sm:h-14" // Increased height for mobile
+            />
+          </Link>
 
          {/* Desktop Only */}
 <div className="hidden md:flex items-center gap-3 lg:gap-4">
@@ -121,7 +124,7 @@ export default function Navbar() {
     <FaSearch className="text-[#257B5A]" size={14} />
     <input
       type="text"
-      placeholder="Search"
+      placeholder="ENTER THE SCHOOL NAME"
       className="outline-none text-sm font-normal w-12 lg:w-20 xl:w-28 bg-transparent placeholder-gray-400 text-[#257B5A] ml-2"
       value={searchValue}
       onChange={e => setSearchValue(e.target.value)}
@@ -173,9 +176,6 @@ export default function Navbar() {
             {isExploreOpen && (
               <div className="absolute top-[70px] right-0 w-56 bg-[#1C1F24] text-white rounded-xl shadow-xl p-2 z-50">
                 <ul className="space-y-1 text-sm">
-                  {/* <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
-                    <Link href="/Schools">Recommended Schools</Link>
-                  </li> */}
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/Listing">School List</Link>
                   </li>
@@ -185,9 +185,6 @@ export default function Navbar() {
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/CarrerCounselling">Career Counselling</Link>
                   </li>
-                  {/* <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
-                    <Link href="/SchoolDetails">School Details</Link>
-                  </li> */}
                   <li className="hover:bg-[#257B5A] px-3 py-2 rounded-md transition">
                     <Link href="/NewsUpdates">News & Blogs</Link>
                   </li>
@@ -209,9 +206,17 @@ export default function Navbar() {
           <ProfileDropdown />
         </div>
 
-        {/* Mobile Right Side - School Icon + Hamburger */}
+        {/* Mobile Right Side - Schools Near You + Hamburger */}
         <div className="md:hidden flex items-center gap-3">
-          <FaMapMarkerAlt size={18} className="text-[#257B5A]" />
+          <button
+            onClick={() => {
+              router.push('/Schools?nearMe=true');
+            }}
+            className="bg-[#10744E] text-white text-[12px] font-medium px-3 py-2 rounded-full hover:bg-[#0d6342] transition flex items-center gap-2"
+          >
+            <FaMapMarkerAlt size={14} />
+            <span>Near You</span>
+          </button>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="focus:outline-none mobile-menu-container"
@@ -243,7 +248,7 @@ export default function Navbar() {
               </div>
               <input
                 type="text"
-                placeholder="Search schools..."
+                placeholder="ENTER THE SCHOOL NAME"
                 className="w-full pl-10 pr-4 py-3 bg-[#2A2E34] border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent"
                 value={searchValue}
                 onChange={e => setSearchValue(e.target.value)}
@@ -268,18 +273,17 @@ export default function Navbar() {
               <div className="mb-6">
                 <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">Quick Actions</h3>
                 <div className="space-y-2">
-                  <Link href="/Schools" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group">
+                  <Link href="/Schools" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group" onClick={() => setMobileMenuOpen(false)}>
                     <FaSchool className="text-[#257B5A] mr-3" size={18} />
                     <span className="text-white font-medium">Find Schools</span>
                   </Link>
-                  {/* <Link href="/AddSchool" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group">
-                    <FaPlus className="text-[#257B5A] mr-3" size={18} />
-                    <span className="text-white font-medium">Add Your School</span>
-                  </Link> */}
-                  <Link href="/CompareSchools" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group">
-                    <FaPlus className="text-[#257B5A] mr-3" size={18} />
-                    <span className="text-white font-medium">Compare Schools</span>
-                  </Link>
+                  {/* Show Compare Schools only for authenticated students */}
+                  {isUserAuthenticated && userRole === 'student' && (
+                    <Link href="/CompareSchools" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group" onClick={() => setMobileMenuOpen(false)}>
+                      <FaPlus className="text-[#257B5A] mr-3" size={18} />
+                      <span className="text-white font-medium">Compare Schools</span>
+                    </Link>
+                  )}
                 </div>
               </div>
 
@@ -303,20 +307,19 @@ export default function Navbar() {
                   
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isExploreOpen ? 'max-h-96' : 'max-h-0'}`}>
                     <div className="pl-9 space-y-1">
-                      <Link href="/Schools" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
-                        Recommended Schools
-                      </Link>
-                      {/* <Link href="/Listing" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
+                      <Link href="/Listing" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm" onClick={() => setMobileMenuOpen(false)}>
                         School List
-                      </Link> */}
-                      
-                      <Link href="/CarrerCounselling" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
+                      </Link>
+                      <Link href="/About" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm" onClick={() => setMobileMenuOpen(false)}>
+                        About Us
+                      </Link>
+                      <Link href="/CarrerCounselling" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm" onClick={() => setMobileMenuOpen(false)}>
                         Career Counselling
                       </Link>
-                      <Link href="/NewsUpdates" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
+                      <Link href="/NewsUpdates" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm" onClick={() => setMobileMenuOpen(false)}>
                         News & Blogs
                       </Link>
-                      <Link href="/ContactUs" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm">
+                      <Link href="/ContactUs" className="block p-2 rounded-md hover:bg-[#2A2E34] transition-colors text-gray-300 hover:text-white text-sm" onClick={() => setMobileMenuOpen(false)}>
                         Contact Us
                       </Link>
                     </div>
@@ -328,22 +331,21 @@ export default function Navbar() {
               <div className="mb-6">
                 <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">Resources</h3>
                 <div className="space-y-2">
-                  <Link href="/About" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group">
+                  <Link href="/About" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group" onClick={() => setMobileMenuOpen(false)}>
                     <FaInfoCircle className="text-[#257B5A] mr-3" size={18} />
                     <span className="text-white font-medium">About Us</span>
                   </Link>
-                  
-                  <Link href="/NewsUpdates" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group">
+                  <Link href="/NewsUpdates" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group" onClick={() => setMobileMenuOpen(false)}>
                     <FaNewspaper className="text-[#257B5A] mr-3" size={18} />
                     <span className="text-white font-medium">News & Updates</span>
                   </Link>
-                  <Link href="/contact" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group">
+                  <Link href="/ContactUs" className="flex items-center p-3 rounded-lg hover:bg-[#2A2E34] transition-colors group" onClick={() => setMobileMenuOpen(false)}>
                     <FaEnvelope className="text-[#257B5A] mr-3" size={18} />
                     <span className="text-white font-medium">Contact Us</span>
                   </Link>
                 </div>
               </div>
-                <ProfileDropdown />
+              <ProfileDropdown />
             </nav>
           </div>
         </div>
@@ -351,6 +353,5 @@ export default function Navbar() {
     </div>
     </div>
     </div>
-    
   );
 }

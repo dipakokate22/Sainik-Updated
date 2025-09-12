@@ -13,22 +13,26 @@ export default function SchoolCard({ name, image, desc, logo, distance, thumbnai
   const getInitial = (name: string) => name?.charAt(0)?.toUpperCase();
 
   // Use thumbnail as main banner image, fallback to image if no thumbnail
-  const bannerImage = thumbnail || image;
+  const bannerImage = thumbnail || image || '/placeholder-image.jpg';
   
   // Use image as logo, fallback to original logo prop
-  const logoImage = image;
+  const logoImage = image || logo;
 
   return (
-    <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col min-h-[420px]">
-      {/* Banner Image - Fixed height to maintain thumbnail size */}
+   // In SchoolCard component, change the first div:
+<div className="w-full bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-[420px]">
+
+      {/* Banner Image - Fixed height */}
       <div className="w-full h-48 overflow-hidden rounded-t-2xl relative flex-shrink-0">
-        <Image
-          src={bannerImage}
-          alt={name}
-          layout="fill"
-          objectFit="cover"
-          className="rounded-t-2xl"
-        />
+        {bannerImage && (
+          <Image
+            src={bannerImage}
+            alt={`${name} banner image`}
+            layout="fill"
+            objectFit="cover"
+            className="rounded-t-2xl"
+          />
+        )}
         {/* Distance Badge */}
         {distance && (
           <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-md">
@@ -43,22 +47,14 @@ export default function SchoolCard({ name, image, desc, logo, distance, thumbnai
         )}
       </div>
 
-      {/* Content - Flexible height */}
-      <div className="flex flex-col justify-between flex-1 p-5">
-        <div className="flex-1">
-          {/* Logo or Initial + Name */}
-          <div className="flex items-start gap-3 mb-3">
+      {/* Content - Fixed height with overflow handling */}
+      <div className="flex flex-col justify-between flex-1 p-5 overflow-hidden">
+        <div className="flex-1 min-h-0">
+          {/* Logo or Initial + Name - Fixed height with truncation */}
+          <div className="flex items-start gap-3 mb-3 h-10">
             {logoImage ? (
               <Image
                 src={logoImage}
-                alt={`${name} logo`}
-                width={32}
-                height={32}
-                className="rounded-full object-cover w-8 h-8 flex-shrink-0"
-              />
-            ) : logo ? (
-              <Image
-                src={logo}
                 alt={`${name} logo`}
                 width={32}
                 height={32}
@@ -70,19 +66,23 @@ export default function SchoolCard({ name, image, desc, logo, distance, thumbnai
               </div>
             )}
             <h3 
-              className="text-lg font-semibold text-black leading-tight line-clamp-2 flex-1"
+              className="text-lg font-semibold text-black leading-tight line-clamp-2 flex-1 overflow-hidden"
               title={name}
             >
               {name}
             </h3>
           </div>
 
-          <p className="text-sm text-gray-600 hidden sm:block line-clamp-2 leading-relaxed mb-4">
-            {desc}
-          </p>
+          {/* Description - Fixed height with line clamping */}
+          <div className="h-10 mb-4">
+            <p className="text-sm text-gray-600 hidden sm:block line-clamp-2 leading-relaxed h-full overflow-hidden">
+              {desc}
+            </p>
+          </div>
         </div>
 
-        <div className="mt-auto">
+        {/* Footer section - Fixed height */}
+        <div className="flex-shrink-0 h-20">
           <div className="flex flex-wrap gap-2 mb-3">
             <span className="bg-[#DAEADD] text-black px-3 py-1 rounded-md text-xs font-medium">Education</span>
             <span className="bg-[#DAEADD] text-black px-3 py-1 rounded-md text-xs font-medium">Fees</span>

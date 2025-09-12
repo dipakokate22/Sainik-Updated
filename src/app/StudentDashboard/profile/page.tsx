@@ -6,14 +6,14 @@ import { Poppins } from 'next/font/google';
 import { Edit, Mail, Phone, MapPin, Calendar, Globe, User, GraduationCap, Check, X, Pencil } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { getStudentProfile, updateStudentProfile, uploadStudentProfileImage } from '../../../../services/studentServices';
-import { getStates, getCities } from '../../../../services/schoolServices'; // Import the new API functions
+import { getStates, getCities } from '../../../../services/schoolServices';
 
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['300', '400', '500', '700'],
 });
 
-const classOptions = ['12th', '11th ', '10th ','9th', '8th', '7th', '6th', '5th', '4th', '3rd', '2nd', '1st'];
+const classOptions = ['12th', '11th', '10th', '9th', '8th', '7th', '6th', '5th', '4th', '3rd', '2nd', '1st'];
 
 // Define types for states and cities
 interface State {
@@ -55,7 +55,7 @@ const ProfilePage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [backupLoginImage, setBackupLoginImage] = useState<string>('');
 
-  // NEW: State and City management
+  // State and City management
   const [states, setStates] = useState<State[]>([]);
   const [cities, setCities] = useState<City[]>([]);
   const [selectedStateId, setSelectedStateId] = useState<number | null>(null);
@@ -153,7 +153,7 @@ const ProfilePage = () => {
         if (profileData.email) localStorage.setItem('studentEmail', profileData.email);
       }
     });
-  }, [studentId, states]); // Add states as dependency
+  }, [studentId, states]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -263,15 +263,16 @@ const ProfilePage = () => {
 
   if (!profile) return <SainikLoader />;
 
-  // Helper for rendering inline editable field - FIXED FOR STATE DROPDOWN UI
+  // Helper for rendering inline editable field with editability control
   const renderEditableField = (
     field: string,
     value: string | undefined,
     icon?: React.ReactNode,
-    type: 'text' | 'date' | 'select' = 'text',
-    options?: string[]
+    type: 'text' | 'date' | 'select' | 'email' = 'text',
+    options?: string[],
+    isEditable: boolean = true
   ) => {
-    const isEditing = editingField === field;
+    const isEditing = editingField === field && isEditable;
     
     // Special handling for state and city fields
     let dynamicOptions = options;
@@ -282,7 +283,7 @@ const ProfilePage = () => {
     }
 
     return (
-      <div className="group flex flex-col gap-1 w-full">
+      <div className="group flex flex-col gap-2 w-full">
         <div className="flex items-center gap-2">
           {icon && <span className="text-[#257B5A]">{icon}</span>}
           <p className="text-sm font-medium text-gray-500">
@@ -318,7 +319,7 @@ const ProfilePage = () => {
                 </select>
               ) : (
                 <input
-                  type={type}
+                  type={type === 'email' ? 'email' : type}
                   className="flex-1 border rounded-lg px-3 py-2 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#257B5A]/40 min-w-0"
                   value={fieldValue}
                   onChange={e => setFieldValue(e.target.value)}
@@ -349,9 +350,9 @@ const ProfilePage = () => {
           ) : (
             <div className="flex items-center justify-between w-full">
               <span
-                className={`text-gray-800 font-medium ${isEditMode ? 'cursor-text' : ''} flex-1`}
+                className={`text-gray-800 font-medium ${isEditMode && isEditable ? 'cursor-text' : ''} flex-1`}
                 onClick={() => {
-                  if (!isEditMode) return;
+                  if (!isEditMode || !isEditable) return;
                   setEditingField(field);
                   setFieldValue(value || '');
                   setMessage('');
@@ -367,7 +368,7 @@ const ProfilePage = () => {
               >
                 {value || '-'}
               </span>
-              {isEditMode && (
+              {isEditMode && isEditable && (
                 <button
                   className="ml-2 transition-opacity text-[#257B5A] hover:bg-gray-100 rounded-full p-1 border border-gray-200 flex-shrink-0"
                   onClick={() => {
@@ -401,6 +402,7 @@ const ProfilePage = () => {
       <main className="flex flex-col min-h-screen md:ml-[270px] overflow-y-auto">
         <Header />
         <div className="px-8 py-8 space-y-6">
+          {/* Edit Mode Toggle Button */}
           <div className="flex items-center justify-between">
             <div />
             <button
@@ -453,24 +455,24 @@ const ProfilePage = () => {
                 )}
               </div>
 
-              {/* Profile Info */}
-              <div className="flex-1">
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between">
-                  <div className="w-full">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      {renderEditableField('firstName', profile.firstName)}
-                      {renderEditableField('lastName', profile.lastName)}
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-600 mb-3">
-                      <GraduationCap size={18} className="text-[#257B5A]" />
-                      <div className="flex-1">
-                        {renderEditableField('current_class', profile.current_class, undefined, 'select', classOptions)}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <User size={14} />
-                      <span>Student ID: {profile.id ? `SK-A-${profile.id}` : 'SK-A-2025001'}</span>
-                    </div>
+              {/* Profile Info - Fixed Layout */}
+              <div className="flex-1 w-full">
+                <div className="space-y-4">
+                  {/* Name Section - Fixed Grid Layout */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {renderEditableField('firstName', profile.firstName, undefined, 'text', undefined, true)}
+                    {renderEditableField('lastName', profile.lastName, undefined, 'text', undefined, true)}
+                  </div>
+                  
+                  {/* Current Class - NOT EDITABLE */}
+                  <div className="w-full md:w-1/2">
+                    {renderEditableField('current_class', profile.current_class, <GraduationCap size={16} />, 'select', classOptions, false)}
+                  </div>
+                  
+                  {/* Student ID - Non-editable */}
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <User size={14} />
+                    <span>Student ID: {profile.id ? `SK-A-${profile.id}` : 'SK-A-2025001'}</span>
                   </div>
                 </div>
               </div>
@@ -487,18 +489,31 @@ const ProfilePage = () => {
             </div>
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {renderEditableField('email', profile.email, <Mail size={16} />)}
-                {renderEditableField('dob', profile.dob, <Calendar size={16} />, 'date')}
-                {renderEditableField('mobile', profile.mobile, <Phone size={16} />)}
-                {renderEditableField('street_address', profile.street_address, <MapPin size={16} />)}
-                {renderEditableField('state', profile.state, <MapPin size={16} />, 'select')}
-                {renderEditableField('city', profile.city, <MapPin size={16} />, 'select')}
-                {renderEditableField('zip_code', profile.zip_code, <MapPin size={16} />)}
+                {/* Left Column - Address First (State → Street → City → ZIP) */}
+                <div className="space-y-4">
+                  {renderEditableField('state', profile.state, <MapPin size={16} />, 'select', undefined, true)}
+                  {renderEditableField('street_address', profile.street_address, <MapPin size={16} />, 'text', undefined, true)}
+                  {renderEditableField('city', profile.city, <MapPin size={16} />, 'select', undefined, true)}
+                  {renderEditableField('zip_code', profile.zip_code, <MapPin size={16} />, 'text', undefined, true)}
+                </div>
+                
+                {/* Right Column - Contact Information */}
+                <div className="space-y-4">
+                  {/* Email - NOT EDITABLE */}
+                  {renderEditableField('email', profile.email, <Mail size={16} />, 'email', undefined, false)}
+                  {renderEditableField('mobile', profile.mobile, <Phone size={16} />, 'text', undefined, true)}
+                  {renderEditableField('dob', profile.dob, <Calendar size={16} />, 'date', undefined, true)}
+                </div>
               </div>
             </div>
           </div>
 
-          {message && <div className="mt-4 text-center text-green-700 font-semibold">{message}</div>}
+          {/* Success/Error Message */}
+          {message && (
+            <div className={`mt-4 text-center font-semibold ${message.includes('Failed') ? 'text-red-700' : 'text-green-700'}`}>
+              {message}
+            </div>
+          )}
         </div>
       </main>
     </div>

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import SchoolCard from '../../Components/SchoolCard'; // Adjust path as needed
 import { searchSchoolsByCoordinates } from '../../../services/schoolServices'; // Adjust path as needed
 
-// Type definitions
+// Type definitions remain the same...
 interface SchoolApiData {
   id: number;
   name: string;
@@ -17,7 +17,7 @@ interface SchoolApiData {
 }
 
 interface SchoolCardData {
-  id: number; // Add id to the SchoolCardData interface
+  id: number;
   name: string;
   image: string;
   desc: string;
@@ -38,10 +38,11 @@ export default function SchoolsSection() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // ... useEffect and other functions remain the same ...
+
   useEffect(() => {
     const fetchSchools = async () => {
       try {
-        // Get user location first
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             async (position) => {
@@ -51,9 +52,8 @@ export default function SchoolsSection() {
                   position.coords.longitude
                 );
                 
-                // Map API data to SchoolCard props and limit to 6
                 const mappedSchools: SchoolCardData[] = response.data.slice(0, 6).map((school: SchoolApiData) => ({
-                  id: school.id, // Include the id for navigation
+                  id: school.id,
                   name: school.name,
                   image: school.profileImage,
                   desc: school.overview?.welcomeNote || 'A quality educational institution.',
@@ -71,12 +71,10 @@ export default function SchoolsSection() {
               }
             },
             (error) => {
-              // Fallback to default location if geolocation fails
               fetchSchoolsWithLocation(28.6139, 77.2090);
             }
           );
         } else {
-          // Fallback if geolocation not supported
           fetchSchoolsWithLocation(28.6139, 77.2090);
         }
       } catch (err: unknown) {
@@ -91,7 +89,7 @@ export default function SchoolsSection() {
         const response: ApiResponse = await searchSchoolsByCoordinates(lat, lng);
         
         const mappedSchools: SchoolCardData[] = response.data.slice(0, 6).map((school: SchoolApiData) => ({
-          id: school.id, // Include the id for navigation
+          id: school.id,
           name: school.name,
           image: school.profileImage,
           desc: school.overview?.welcomeNote || 'A quality educational institution.',
@@ -114,8 +112,8 @@ export default function SchoolsSection() {
 
   if (loading) {
     return (
-      <section className="w-full py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="w-full bg-white py-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10744E] mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading nearby schools...</p>
@@ -127,8 +125,8 @@ export default function SchoolsSection() {
 
   if (error) {
     return (
-      <section className="w-full py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="w-full bg-white py-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center bg-red-50 p-6 rounded-lg border border-red-200">
             <p className="text-red-600">Error loading schools: {error}</p>
             <button 
@@ -144,8 +142,8 @@ export default function SchoolsSection() {
   }
 
   return (
-    <section className="w-full py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="w-full bg-white py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -156,14 +154,14 @@ export default function SchoolsSection() {
           </p>
         </div>
 
-        {/* Schools Grid */}
+        {/* Schools Grid - Cards expand to fill available space */}
         {schools.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-12">
             {schools.map((school) => (
               <Link
                 key={school.id}
                 href={`/SchoolDetails/${school.id}`}
-                className="block"
+                className="block min-w-0"
                 prefetch
               >
                 <SchoolCard

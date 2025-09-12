@@ -1,6 +1,5 @@
 'use client';
 import Image from 'next/image';
-
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -14,6 +13,23 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+
+  // Class options for dropdown
+  const classOptions = [
+    '12th',
+    '11th',
+    '10th',
+    '9th',
+    '8th',
+    '7th',
+    '6th',
+    '5th',
+    '4th',
+    '3rd',
+    '2nd',
+    '1st'
+  ];
+
   const [formData, setFormData] = useState<{
     firstName: string;
     lastName: string;
@@ -41,8 +57,11 @@ export default function SignupPage() {
   });
   const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({});
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked, files } = e.target;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const files = (e.target as HTMLInputElement).files;
+    const checked = (e.target as HTMLInputElement).checked;
+    
     if (type === 'file') {
       setFormData({
         ...formData,
@@ -300,23 +319,28 @@ export default function SignupPage() {
                     <p className="mt-1 text-sm text-red-600">{fieldErrors.lastName}</p>
                   )}
                 </div>
-                {/* Current Class */}
+                {/* Current Class - NOW A DROPDOWN */}
                 <div>
                   <label htmlFor="currentClass" className="block text-sm font-semibold text-gray-800 mb-2">
                     Current Class
                   </label>
-                  <input
-                    type="text"
+                  <select
                     id="currentClass"
                     name="currentClass"
                     value={formData.currentClass}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 placeholder-gray-700 ${
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#257B5A] focus:border-transparent transition-colors text-gray-900 bg-white ${
                       fieldErrors.currentClass ? 'border-red-500 bg-red-50' : 'border-gray-300'
                     }`}
-                    placeholder="Enter your current class (e.g., 8th, 9th)"
                     required
-                  />
+                  >
+                    <option value="">Select your current class</option>
+                    {classOptions.map((classOption) => (
+                      <option key={classOption} value={classOption}>
+                        {classOption}
+                      </option>
+                    ))}
+                  </select>
                   {fieldErrors.currentClass && (
                     <p className="mt-1 text-sm text-red-600">{fieldErrors.currentClass}</p>
                   )}

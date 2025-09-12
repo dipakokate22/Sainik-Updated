@@ -130,12 +130,54 @@ export default function SchoolDetailSection() {
   const [activeTab, setActiveTab] = useState('overview');
   const [nearbySchools, setNearbySchools] = useState<any[]>([]);
   const [nearbyLoading, setNearbyLoading] = useState(false);
-  // NEW: Application related states
+  
+  // NEW: State for user location
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  
+  // Application related states
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isApplying, setIsApplying] = useState(false);
 
-  // NEW: Check if user is logged in and is a student
+  // NEW: Get user's current location
+  useEffect(() => {
+    const getUserLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setUserLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            });
+          },
+          (error) => {
+            console.warn('Error getting user location:', error);
+            // Fallback to a default location (e.g., Delhi coordinates)
+            setUserLocation({
+              latitude: 28.6139,
+              longitude: 77.2090
+            });
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000 // 5 minutes cache
+          }
+        );
+      } else {
+        console.warn('Geolocation is not supported by this browser.');
+        // Fallback to default location
+        setUserLocation({
+          latitude: 28.6139,
+          longitude: 77.2090
+        });
+      }
+    };
+
+    getUserLocation();
+  }, []);
+
+  // Check if user is logged in and is a student
   useEffect(() => {
     const token = getAuthToken();
     const userId = getUserId();
@@ -147,7 +189,7 @@ export default function SchoolDetailSection() {
     }
   }, []);
 
-  // NEW: Handle application to school
+  // Handle application to school
   const handleApply = async () => {
     const userId = getUserId();
     if (!userId || !school) return;
@@ -185,25 +227,33 @@ export default function SchoolDetailSection() {
     if (id) fetchSchool();
   }, [id]);
 
+  // UPDATED: Fetch nearby schools using user's current location
   useEffect(() => {
     async function fetchNearbySchools() {
-      if (school?.location?.latitude && school?.location?.longitude) {
+      if (userLocation && school) {
         setNearbyLoading(true);
         try {
           const res = await searchSchoolsByCoordinates(
-            school.location.latitude,
-            school.location.longitude
+            userLocation.latitude,
+            userLocation.longitude
           );
-          setNearbySchools(res?.data?.filter((s: any) => s.id !== school.id).slice(0, 6) || []);
-        } catch {
+          // Filter out the current school and limit to 6 results
+          const filteredSchools = res?.data?.filter((s: any) => s.id !== school.id).slice(0, 6) || [];
+          setNearbySchools(filteredSchools);
+        } catch (error) {
+          console.error('Error fetching nearby schools:', error);
           setNearbySchools([]);
         } finally {
           setNearbyLoading(false);
         }
       }
     }
-    fetchNearbySchools();
-  }, [school]);
+    
+    // Only fetch when both userLocation and school are available
+    if (userLocation && school) {
+      fetchNearbySchools();
+    }
+  }, [userLocation, school]);
 
   // Replace the facilities-related part of your useMemo with this:
   const {
@@ -652,11 +702,6 @@ export default function SchoolDetailSection() {
                     </span>
                   </div>
                 </div>
-                {/* Add to Compare Button */}
-                {/* <button className="flex items-center gap-2 border border-[#10744E] text-[#10744E] px-4 py-2 rounded-full hover:bg-[#10744E] hover:text-white transition-colors duration-300 font-medium">
-                  <FaPlus className="w-4 h-4" />
-                  <span>Add to Compare</span>
-                </button> */}
               </div>
             </div>
           </div>
