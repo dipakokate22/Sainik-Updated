@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://sainik.codekrafters.in/api";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://sainik.skdagriculturecollege.org/api";
 
 const GOOGLE_MAPS_API_KEY =
   process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||

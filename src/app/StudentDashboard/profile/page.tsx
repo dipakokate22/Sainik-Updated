@@ -68,7 +68,7 @@ const ProfilePage = () => {
     const httpsUrl = url.replace(/^http:/, 'https:');
     if (/^https?:\/\//i.test(httpsUrl)) return httpsUrl;
     if (httpsUrl.startsWith('/')) return httpsUrl;
-    return `https://sainik.codekrafters.in/${httpsUrl.replace(/^\/+/, '')}`;
+    return `https://sainik.skdagriculturecollege.org/${httpsUrl.replace(/^\/+/, '')}`;
   };
 
   // Load states on component mount

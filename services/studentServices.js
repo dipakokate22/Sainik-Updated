@@ -1,6 +1,6 @@
 export async function getStudentProfile(id) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
-  const res = await fetch(`https://sainik.codekrafters.in/api/student/profile/${id}`, {
+  const res = await fetch(`https://sainik.skdagriculturecollege.org/api/student/profile/${id}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
@@ -23,7 +23,7 @@ export async function updateStudentProfile(id, payload) {
       }
     });
     formData.append('id', id);
-    res = await fetch(`https://sainik.codekrafters.in/api/student/profile`, {
+    res = await fetch(`https://sainik.skdagriculturecollege.org/api/student/profile`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -32,7 +32,7 @@ export async function updateStudentProfile(id, payload) {
       body: formData,
     });
   } else {
-    res = await fetch(`https://sainik.codekrafters.in/api/student/profile`, {
+    res = await fetch(`https://sainik.skdagriculturecollege.org/api/student/profile`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export async function uploadStudentProfileImage(id, imageFile) {
   const formData = new FormData();
   formData.append('image', imageFile);
 
-  const res = await fetch(`https://sainik.codekrafters.in/api/profile/image/${id}`, {
+  const res = await fetch(`https://sainik.skdagriculturecollege.org/api/profile/image/${id}`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -65,7 +65,7 @@ export async function uploadStudentProfileImage(id, imageFile) {
 
 export async function getLibraryResources() {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
-  const res = await fetch('https://sainik.codekrafters.in/api/library/class', {
+  const res = await fetch('https://sainik.skdagriculturecollege.org/api/library/class', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -78,7 +78,7 @@ export async function getLibraryResources() {
 
 export async function applyToSchool({ school_id, user_id, applied_date }) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
-  const res = await fetch('https://sainik.codekrafters.in/api/applied-students', {
+  const res = await fetch('https://sainik.skdagriculturecollege.org/api/applied-students', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export async function applyToSchool({ school_id, user_id, applied_date }) {
 
 export async function updateAppliedStudentStatus(id, { school_id, user_id, applied_date, status }) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
-  const res = await fetch(`https://sainik.codekrafters.in/api/applied-students/${id}`, {
+  const res = await fetch(`https://sainik.skdagriculturecollege.org/api/applied-students/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ export async function updateAppliedStudentStatus(id, { school_id, user_id, appli
 
 export async function getAppliedStudentsByUser(user_id) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
-  const res = await fetch(`https://sainik.codekrafters.in/api/applied-students?user_id=${encodeURIComponent(user_id)}`, {
+  const res = await fetch(`https://sainik.skdagriculturecollege.org/api/applied-students?user_id=${encodeURIComponent(user_id)}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -118,7 +118,7 @@ export async function getAppliedStudentsByUser(user_id) {
 }
 export async function getSubscriptionPlans() {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
-  const res = await fetch('https://sainik.codekrafters.in/api/student-subscription-plans', {
+  const res = await fetch('https://sainik.skdagriculturecollege.org/api/student-subscription-plans', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -136,7 +136,7 @@ export async function getSubscriptionPlans() {
 
 export async function purchaseSubscriptionPlan(user_id, plan_id) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
-  const res = await fetch('https://sainik.codekrafters.in/api/student-subscription-purchase', {
+  const res = await fetch('https://sainik.skdagriculturecollege.org/api/student-subscription-purchase', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ export async function purchaseSubscriptionPlan(user_id, plan_id) {
 
 export async function getUserSubscriptions(userId) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : '';
-  const res = await fetch(`https://sainik.codekrafters.in/api/student-subscription-get/${userId}`, {
+  const res = await fetch(`https://sainik.skdagriculturecollege.org/api/student-subscription-get/${userId}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,

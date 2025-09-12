@@ -40,7 +40,7 @@ export default function HeroSection() {
             { id: 1, icon: "📍", title: "Cities Covered", description: "Across all major Indian regions" },
             { id: 2, icon: "🏫", title: "Schools Listed", description: "From CBSE, ICSE, & state boards" }
           ],
-          button: { text: "Take Admission", link: "https://sainik.codekrafters.in/admission" },
+          button: { text: "Take Admission", link: "https://sainik.skdagriculturecollege.org/admission" },
           images: [
             "/Image/img.png",
             "/Image/img.png",

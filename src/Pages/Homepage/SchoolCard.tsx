@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import SchoolCard from '../../Components/SchoolCard'; // Adjust path as needed
-import { searchSchoolsByCoordinates } from '../../../services/schoolServices'; // Adjust path as needed
+import SchoolCard from '../../Components/SchoolCard';
+import { searchSchoolsByCoordinates } from '../../../services/schoolServices';
 
 // Type definitions remain the same...
 interface SchoolApiData {
@@ -37,8 +37,7 @@ export default function SchoolsSection() {
   const [schools, setSchools] = useState<SchoolCardData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-  // ... useEffect and other functions remain the same ...
+  const [dataLoaded, setDataLoaded] = useState<boolean>(false); // Add this flag
 
   useEffect(() => {
     const fetchSchools = async () => {
@@ -63,6 +62,7 @@ export default function SchoolsSection() {
                 }));
                 
                 setSchools(mappedSchools);
+                setDataLoaded(true); // Set data loaded flag
               } catch (err: unknown) {
                 const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
                 setError(errorMessage);
@@ -99,6 +99,7 @@ export default function SchoolsSection() {
         }));
         
         setSchools(mappedSchools);
+        setDataLoaded(true); // Set data loaded flag
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
         setError(errorMessage);
@@ -154,8 +155,8 @@ export default function SchoolsSection() {
           </p>
         </div>
 
-        {/* Schools Grid - Cards expand to fill available space */}
-        {schools.length > 0 ? (
+        {/* Schools Grid - Only render when data is loaded */}
+        {dataLoaded && schools.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-12">
             {schools.map((school) => (
               <Link
@@ -171,11 +172,12 @@ export default function SchoolsSection() {
                   logo={school.logo}
                   distance={school.distance}
                   thumbnail={school.thumbnail}
+                  isLoaded={true} // Pass this prop to prevent internal loading
                 />
               </Link>
             ))}
           </div>
-        ) : (
+        ) : dataLoaded && schools.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
               <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -185,10 +187,10 @@ export default function SchoolsSection() {
             <h3 className="text-lg font-medium text-gray-600 mb-2">No Schools Found</h3>
             <p className="text-gray-500">We couldn't find any Sainik schools in your area.</p>
           </div>
-        )}
+        ) : null}
 
         {/* View All Button */}
-        {schools.length >= 6 && (
+        {dataLoaded && schools.length >= 6 && (
           <div className="text-center mt-8">
             <Link href="/Listing">
               <button className="bg-[#10744E] hover:bg-[#0d5a3c] text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">

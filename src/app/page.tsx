@@ -1,4 +1,5 @@
 import { Layout } from "./layout";
+import ScrollHandler from "@/Components/ScrollHandler";
 import SainikPointsSection from "@/Pages/Homepage/SainikPointsSection";
 import Testimonials from "@/Pages/Homepage/Testimonials";
 import TrustedBySection from "@/Pages/Homepage/TrustedBySection";
@@ -11,14 +12,16 @@ import Hero from "@/Pages/Homepage/Hero";
 export default function Home() {
   return (
     <Layout>
-      <Hero />
-      <SchoolCard />
-      <StateMap />
-      <SainikPointsSection />
-      <WhyJoinSainikSchool />
-      <VoicesAndViews />
-      <TrustedBySection />
-      <Testimonials />
+      <ScrollHandler>
+        <Hero />
+        <SchoolCard />
+        <StateMap />
+        <SainikPointsSection />
+        <WhyJoinSainikSchool />
+        <VoicesAndViews />
+        <TrustedBySection />
+        <Testimonials />
+      </ScrollHandler>
     </Layout>
   );
 }

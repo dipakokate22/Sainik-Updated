@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.skdagriculturecollege.org/api';
 
 // Helper to build query string from params object
 const buildQueryString = (params) => {

@@ -1,9 +1,9 @@
 import { getAuthToken,getUserId } from './authServices';
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.skdagriculturecollege.org/api';
 const SEARCH_API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.codekrafters.in/api';
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sainik.skdagriculturecollege.org/api';
 
 /* ================== SCHOOL APIs ================== */
 
@@ -264,7 +264,7 @@ export const getCategoriesBoardMedium = async () => {
 
 
 export const getStates = async () => {
-  const res = await fetch("https://sainik.codekrafters.in/api/states");
+  const res = await fetch("https://sainik.skdagriculturecollege.org/api/states");
   if (!res.ok) {
     throw new Error("Failed to fetch states");
   }
@@ -272,7 +272,7 @@ export const getStates = async () => {
 };
 
 export const getCities = async (stateId) => {
-  const res = await fetch(`https://sainik.codekrafters.in/api/cities/${stateId}`);
+  const res = await fetch(`https://sainik.skdagriculturecollege.org/api/cities/${stateId}`);
   if (!res.ok) {
     throw new Error("Failed to fetch cities for state " + stateId);
   }
